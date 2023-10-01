@@ -2,6 +2,8 @@
 #include "physics/math/math.hpp"
 #include "physics/bodies/Body.hpp"
 
+
+
 class PositionalConstraint{
     private:
         // Reference to the first body
@@ -12,14 +14,18 @@ class PositionalConstraint{
         vec3 r_1;
         // Constraint position relative to the second body
         vec3 r_2;
-        // Value of the constraint
-        vec3 value;
+        // Normal vector of the constraint
+        vec3 n;
+        // Magnitude of the constraint
+        scalar magnitude;
         // Lagrange multiplier
-        vec3 lambda;
+        scalar lambda;
         // Compliance
         scalar compliance;
         // Damping
         scalar damping;
+        // Force value of the constraint
+        vec3 force;
     public:
         // Constructor
         /*
@@ -39,17 +45,27 @@ class PositionalConstraint{
                              scalar damping = 0.0);
         // Destructor
         ~PositionalConstraint();
+
+        /*
+        * Function that sets the value of the constriant.
+        * Note: The value of the constraint is given by a 3D vector that is the decomposed into 
+        * Its normal and its magnitude.
+        */
         void set_value(vec3 value);
+
         
         /*
         * Function that computest the delta lambda for the positional constraint
-        * @param c The magnitude of the constraint
-        * @param lambda The current value of the constraint lagrange multiplier
-        * @param alpha The compliance of the constraint
         * @param w_1 The first body's generalized inverse mass
         * @param w_2 The second body's generalized inverse mass
         * @param inverse_time_step The inverse of the time step
         */
-        scalar compute_positional_delta_lambda(scalar c, scalar lambda, scalar alpha, scalar w_1, scalar w_2, scalar inverse_time_step);
+        scalar compute_positional_delta_lambda(scalar w_1, scalar w_2, scalar inverse_time_step);
+
+        /*
+        * Function that computes (and applies) the positional constraint. 
+        * @param inverse_time_step The inverse of the time step (specifically the sub step h)
+        */
+        void apply_constraint(scalar inverse_time_step);
 
 };

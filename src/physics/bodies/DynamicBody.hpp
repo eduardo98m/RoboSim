@@ -46,6 +46,8 @@ class DynamicBody : public Body
         
         ~DynamicBody();
         scalar get_positional_generalized_inverse_mass(vec3 r, vec3 n);
+
+        scalar get_rotational_generalized_inverse_mass(vec3 n);
         
         void update_inertia_tensor_world();
         void update_inverse_inertia_tensor_world();
@@ -66,8 +68,14 @@ class DynamicBody : public Body
 
         /*
         * Applies a force to the body (TODO: FIX THIS// make it work with local and world coordinates)
+        * @param force The force that will be applied onto the body (In world coordinates)
         */
         void apply_force(vec3 force);
+
+        /*
+        * Applies a torque over the body
+        * @param torque The torque vector (In world coordinates).
+        */
         void apply_torque(vec3 torque);
 
         /*
@@ -76,5 +84,11 @@ class DynamicBody : public Body
         * @param r The position of the constraint relative to the body center (In world coordinates i.e rotated by the orientation of the body)
         */
        void apply_positional_constraint_impulse(vec3 impulse, vec3 r);
+
+       /*
+        * Applies a rotational constraint impulse to the body
+        * @param impulse The impulse to apply
+        */
+       void apply_rotational_constraint_impulse(vec3 impulse);
         
 };

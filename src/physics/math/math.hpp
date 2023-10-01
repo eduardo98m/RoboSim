@@ -4,6 +4,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#define EPSILON 1e-7
+
 #ifdef SINGLE_PRECISION
 typedef float scalar;
 #elif DOUBLE_PRECISION
@@ -11,6 +13,8 @@ typedef double scalar;
 #else
 typedef double scalar;
 #endif
+
+
 
 // Create a 3d vector type with scalar components that we will use as our base vector type
 typedef glm::vec<3, scalar> vec3;

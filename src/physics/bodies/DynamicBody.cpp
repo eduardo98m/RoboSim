@@ -51,6 +51,10 @@ scalar DynamicBody::get_positional_generalized_inverse_mass(vec3 r, vec3 n)
     return this->inverse_mass + ti::dot(cross_r_n, this->inverse_inertia_tensor_world * cross_r_n);
 }
 
+scalar DynamicBody::get_rotational_generalized_inverse_mass(vec3 n){
+    return ti::dot(n, this->inverse_inertia_tensor_world * n);
+}
+
 void DynamicBody::update_inertia_tensor_world()
 {
     mat3 rotation_matrix = ti::mat3_cast(this->orientation);
@@ -110,4 +114,18 @@ void DynamicBody::apply_positional_constraint_impulse(vec3 impulse, vec3 r){
     this->orientation += rot_quat * this->orientation;
     // Normalize the orientation
     this->orientation = ti::normalize(this->orientation);
+}
+
+void DynamicBody::apply_rotational_constraint_impulse(vec3 impulse){
+
+    vec3 rot = this->inverse_inertia_tensor_world * impulse * 0.5;
+
+    // Calculate the scaled quaternion
+    quat rot_quat = quat(0.0, rot.x, rot.y, rot.z);
+
+    // Update the orientation
+    this->orientation += rot_quat * this->orientation;
+    // Normalize the orientation
+    this->orientation = ti::normalize(this->orientation);
+
 }

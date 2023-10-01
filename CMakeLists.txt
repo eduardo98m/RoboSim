@@ -18,6 +18,12 @@ set(PHYSICS_SOURCES
     )
 
 set(
+    VIEWER_SOURCES
+    "src/viewer/Camera.cpp"
+    "src/viewer/Shader.cpp"
+)
+
+set(
     PHYSICS_INCLUDE_DIRS
     "src"
 )
@@ -31,6 +37,8 @@ set(IMGUI_SOURCES
     "thirdParty/imgui/backends/imgui_impl_opengl3.cpp" 
     "thirdParty/imgui/backends/imgui_impl_glfw.cpp")
 
+# GLEW
+find_package(GLEW REQUIRED) # Im using GLEW 2.2.0
 
 # Add ImPlot source files
 set(IMPLOT_SOURCES 
@@ -63,12 +71,12 @@ if(WIN32)
     list(APPEND IMGUI_SOURCES "thirdParty/imgui/backends/imgui_impl_dx11.cpp" "thirdParty/imgui/backends/imgui_impl_win32.cpp")
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${PHYSICS_SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${PHYSICS_SOURCES} ${VIEWER_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE "thirdParty/imgui" "thirdParty/implot" "thirdParty/qvm" ${PHYSICS_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE "thirdParty/imgui" "thirdParty/implot" "thirdParty/qvm"  ${PHYSICS_INCLUDE_DIRS})
 
 if(UNIX AND NOT APPLE)
-    target_link_libraries(${PROJECT_NAME} glfw ${OPENGL_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} glfw ${OPENGL_LIBRARIES} GLEW::GLEW)
 endif()
 
 if(APPLE)

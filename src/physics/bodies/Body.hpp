@@ -18,7 +18,7 @@ public:
 
     /*Methods for get the generalized inverse mass*/
     scalar get_positional_generalized_inverse_mass(vec3 r, vec3 n);
-    scalar get_rotational_generalized_inverse_mass();
+    scalar get_rotational_generalized_inverse_mass(vec3 n);
 
     /*
     * Applies a positional constraint impulse to the body
@@ -26,5 +26,11 @@ public:
     * @param r The position of the constraint relative to the body center (In world coordinates i.e rotated by the orientation of the body)
     */
     void apply_positional_constraint_impulse(vec3 impulse, vec3 r);
-    
+
+    /*
+    * Applies a rotational constraint impulse to the body
+    * @param impulse The impulse to apply
+    */
+    void apply_rotational_constraint_impulse(vec3 impulse);
+
 };

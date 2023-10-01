@@ -1,6 +1,6 @@
 #include "imgui.h"
 #include "implot.h"
-
+#include <GL/glew.h>
 #include "physics/math/math.hpp" 
 #include "physics/bodies/DynamicBody.hpp"
 // If you're on Linux or Mac, use the OpenGL and GLFW backends

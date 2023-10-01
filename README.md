@@ -30,6 +30,12 @@ If not already installed you should install OpenGL libraries
 sudo apt-get install libgl1-mesa-dev
 ```
 
+Also install glew:
+
+```bash
+sudo apt-get install libglew-dev
+```
+
 ###  Optional dependencies
 
 Optionally you can install the following packages if you want to generate the documentation:
