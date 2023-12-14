@@ -1,5 +1,6 @@
 #include <PositionalConstraint.hpp>
 
+
 PositionalConstraint::PositionalConstraint(Body *body_1,
                                            Body *body_2,
                                            vec3 r_1,
@@ -23,6 +24,9 @@ PositionalConstraint::PositionalConstraint(Body *body_1,
     // zero vector
     this->force = vec3(0.0, 0.0, 0.0);
 }
+
+PositionalConstraint::~PositionalConstraint(){}
+
 void PositionalConstraint::set_value(vec3 value){
     this->magnitude = ti::magnitude(value);
 

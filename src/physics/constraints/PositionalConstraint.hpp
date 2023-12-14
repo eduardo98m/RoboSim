@@ -8,9 +8,9 @@
 class PositionalConstraint{
     private:
         // Reference to the first body
-        Body * body_1;
+        Body *body_1;
         // Reference to the second body
-        Body * body_2;
+        Body *body_2;
         // Constraint position relative to the first body
         vec3 r_1;
         // Constraint position relative to the second body

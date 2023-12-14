@@ -23,6 +23,9 @@ RotationalConstraint::RotationalConstraint(Body *body_1,
     // zero vector
     this->torque = vec3(0.0, 0.0, 0.0);
 }
+
+RotationalConstraint::~RotationalConstraint(){}
+
 void RotationalConstraint::set_value(vec3 value){
     this->magnitude = ti::magnitude(value);
 
@@ -34,6 +37,8 @@ void RotationalConstraint::set_value(vec3 value){
     }
 
 }
+
+
 
 scalar RotationalConstraint::compute_rotational_delta_lambda(scalar w_1, scalar w_2, scalar inverse_time_step){
     
