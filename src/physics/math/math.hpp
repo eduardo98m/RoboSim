@@ -18,20 +18,20 @@ typedef double scalar;
 #endif
 
 typedef glm::vec<3, scalar> vec3;
-std::string ToString(const vec3& v, int precision  = 4);
-std::ostream& operator<<(std::ostream& os, const vec3& v);
+std::string ToString(const vec3 &v, int precision = 4);
+std::ostream &operator<<(std::ostream &os, const vec3 &v);
 
 typedef glm::qua<scalar> quat;
-std::string ToString(const quat& v, int precision  = 4);
-std::ostream& operator<<(std::ostream& os, const quat& q);
+std::string ToString(const quat &v, int precision = 4);
+std::ostream &operator<<(std::ostream &os, const quat &q);
 
-typedef  glm::mat<3, 3, scalar> mat3;
-std::string ToString(const mat3& m, int precision = 4);
-std::ostream& operator<<(std::ostream& os, const mat3& m);
+typedef glm::mat<3, 3, scalar> mat3;
+std::string ToString(const mat3 &m, int precision = 4);
+std::ostream &operator<<(std::ostream &os, const mat3 &m);
 
 typedef glm::mat<4, 4, scalar> mat4;
-std::string ToString(const mat4& m, int precision = 4);
-std::ostream& operator<<(std::ostream& os, const mat4& m);
+std::string ToString(const mat4 &m, int precision = 4);
+std::ostream &operator<<(std::ostream &os, const mat4 &m);
 
 namespace ti
 {

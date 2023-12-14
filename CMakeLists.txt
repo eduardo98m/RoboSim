@@ -16,11 +16,8 @@ set(PHYSICS_SOURCES
     # Constraints
     "src/physics/constraints/PositionalConstraint.cpp"
     "src/physics/constraints/RotationalConstraint.cpp"
-    #World
-    # MAth
-    "src/physics/math/math.cpp"
-    #"src/math
-    
+    # Math
+    "src/physics/math/math.cpp"    
     )
 
 
@@ -30,30 +27,12 @@ set(
     "src/physics/constraints"
 )
 
-# # Add ImGui source files
-# set(IMGUI_SOURCES 
-#     "thirdParty/imgui/imgui.cpp" 
-#     "thirdParty/imgui/imgui_draw.cpp" 
-#     "thirdParty/imgui/imgui_widgets.cpp" 
-#     "thirdParty/imgui/imgui_tables.cpp"
-#     "thirdParty/imgui/backends/imgui_impl_opengl3.cpp" 
-#     "thirdParty/imgui/backends/imgui_impl_glfw.cpp")
 
 # GLEW
 find_package(GLEW REQUIRED) # Im using GLEW 2.2.0
 
-# # Add ImPlot source files
-# set(IMPLOT_SOURCES 
-#     "thirdParty/implot/implot.cpp" 
-#     "thirdParty/implot/implot_items.cpp")
-
-# Add Assimp
 include_directories("thirdParty/assimp/include/")
 add_subdirectory("thirdParty/assimp")
 
-
-
-
 add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${PHYSICS_SOURCES})
-
-target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} glm::glm glfw3)
+target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS})

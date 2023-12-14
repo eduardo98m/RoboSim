@@ -1,8 +1,5 @@
 #include "math.hpp"
 
-
-
-
 namespace ti
 {
     scalar magnitude(vec3 v)
@@ -11,8 +8,7 @@ namespace ti
     }
 };
 
-
-std::string ToString(const vec3& v, int precision)
+std::string ToString(const vec3 &v, int precision)
 {
     std::stringstream ss;
     ss << "[ ";
@@ -23,13 +19,13 @@ std::string ToString(const vec3& v, int precision)
     return ss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const vec3& v)
+std::ostream &operator<<(std::ostream &os, const vec3 &v)
 {
     os << ToString(v, 4);
     return os;
 }
 
-std::string ToString(const quat& q, int precision) 
+std::string ToString(const quat &q, int precision)
 {
     std::stringstream ss;
     ss << "[ ";
@@ -41,15 +37,13 @@ std::string ToString(const quat& q, int precision)
     return ss.str();
 }
 
-
-std::ostream& operator<<(std::ostream& os, const quat& q)
+std::ostream &operator<<(std::ostream &os, const quat &q)
 {
     os << ToString(q, 4);
     return os;
 }
 
-
-std::string ToString(const mat3& m, int precision) 
+std::string ToString(const mat3 &m, int precision)
 {
     std::stringstream ss;
     ss << "[\n";
@@ -78,15 +72,13 @@ std::string ToString(const mat3& m, int precision)
     return ss.str();
 }
 
-
-std::ostream& operator<<(std::ostream& os, const mat3& m)
+std::ostream &operator<<(std::ostream &os, const mat3 &m)
 {
     os << ToString(m, 4);
     return os;
 }
 
-
-std::string ToString(const mat4& m, int precision) 
+std::string ToString(const mat4 &m, int precision)
 {
     std::stringstream ss;
     ss << "[\n";
@@ -115,11 +107,8 @@ std::string ToString(const mat4& m, int precision)
     return ss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const mat4& m)
+std::ostream &operator<<(std::ostream &os, const mat4 &m)
 {
     os << ToString(m, 4);
     return os;
 }
-
-
-
