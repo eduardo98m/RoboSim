@@ -1,3 +1,4 @@
+#pragma once
 
 #include "physics/math/math.hpp"
 #include "physics/bodies/Body.hpp"

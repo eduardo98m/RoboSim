@@ -1,6 +1,12 @@
 #pragma once
 #include "physics/math/math.hpp"
 
+
+enum BodyType {
+    STATIC,
+    DYNAMIC
+};
+
 class Body
 {
 private:
@@ -9,6 +15,8 @@ private:
 public:
     vec3 position;
     quat orientation;
+    /* Add the type */
+    BodyType type;
 
     Body(
         vec3 position,

@@ -6,13 +6,10 @@ StaticBody::StaticBody(
     quat orientation) : 
     Body(position, orientation)
 {
+    // Set the type
+    this->type = BodyType::STATIC;
 }
 
 StaticBody::~StaticBody()
 {
-}
-
-void StaticBody::apply_positional_constraint_impulse(vec3 impulse, vec3 r)
-{
-    // Do nothing
 }

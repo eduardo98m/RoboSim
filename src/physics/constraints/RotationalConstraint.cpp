@@ -24,7 +24,7 @@ RotationalConstraint::RotationalConstraint(Body *body_1,
     this->torque = vec3(0.0, 0.0, 0.0);
 }
 void RotationalConstraint::set_value(vec3 value){
-    this->magnitude = ti::length(value);
+    this->magnitude = ti::magnitude(value);
 
     // Check if the magnitude is near an epsilon
     if (magnitude > EPSILON){

@@ -7,5 +7,5 @@ cd thirdParty
 git clone https://github.com/ocornut/imgui.git
 git clone https://github.com/epezent/implot.git
 git clone https://github.com/glfw/glfw.git
-git clone https://github.com/assimp/assimp.git
- 
+
+sudo apt-get install libsdl2-dev

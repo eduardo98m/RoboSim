@@ -10,6 +10,8 @@ DynamicBody::DynamicBody(
     mat3 inertia_tensor) : 
     Body(position, orientation)
 {
+    // Set the type
+    this->type = BodyType::DYNAMIC;
     // Set the mass
     this->mass = mass;
     // Set the inverse mass
