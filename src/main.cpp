@@ -6,6 +6,7 @@
 // Import the sine function from the standard library
 #include <math.h>
 #include <iostream>
+#include "Visualizer.hpp"
 
 int main(int argc, char *argv[]){
 

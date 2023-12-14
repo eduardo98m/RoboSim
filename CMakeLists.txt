@@ -34,5 +34,10 @@ find_package(GLEW REQUIRED) # Im using GLEW 2.2.0
 include_directories("thirdParty/assimp/include/")
 add_subdirectory("thirdParty/assimp")
 
+
+include_directories("src/RoboVis/src" "src/RoboVis/thirdParty/rlImGui" "src/RoboVis/thirdParty/imgui" "src/RoboVis/thirdParty/rlights")
+add_subdirectory("src/RoboVis")
+
 add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${PHYSICS_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PRIVATE RoboVis)
+target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} "src/RoboVis/src")
