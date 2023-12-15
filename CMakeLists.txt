@@ -11,7 +11,6 @@ set(SOURCES
 
 set(PHYSICS_SOURCES
     # Bodies
-    "src/physics/bodies/DynamicBody.cpp"
     "src/physics/bodies/Body.cpp"
     # Constraints
     "src/physics/constraints/PositionalConstraint.cpp"

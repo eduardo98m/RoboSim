@@ -24,8 +24,8 @@ class Body
         vec3 angular_velocity;
 
         /* linear and angular force */
-        vec3 force;
-        vec3 torque;
+        vec3 force = {0.0, 0.0, 0.0};
+        vec3 torque= {0.0, 0.0, 0.0};
 
         /* Mass properties */
         scalar mass;

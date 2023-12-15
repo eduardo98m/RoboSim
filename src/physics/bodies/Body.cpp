@@ -51,11 +51,13 @@ void Body::set_gravity(vec3 gravity)
 
 scalar Body::get_positional_generalized_inverse_mass(vec3 r, vec3 n)
 {
+    this->update_inertia_tensor_world();
     vec3 cross_r_n = ti::cross(r, n);
     return this->inverse_mass + ti::dot(cross_r_n, this->inverse_inertia_tensor_world * cross_r_n);
 }
 
 scalar Body::get_rotational_generalized_inverse_mass(vec3 n){
+    this->update_inertia_tensor_world();
     return ti::dot(n, this->inverse_inertia_tensor_world * n);
 }
 
@@ -68,9 +70,13 @@ void Body::update_inertia_tensor_world()
 
 void Body::update_position_and_orientation(scalar time_step)
 {
+    if (this->type == STATIC) return;
+    
     // Save the previous position and orientation
     this->prev_position = this->position;
     this->prev_orientation = this->orientation;
+
+    this->update_inertia_tensor_world();
 
     // Update the velocity
     this->linear_velocity += this->force * this->inverse_mass * time_step;
@@ -90,16 +96,19 @@ void Body::update_position_and_orientation(scalar time_step)
     // Update the orientation
     this->orientation += rot * this->orientation;
     // Normalize the orientation
-    this->orientation = ti::normalize(this->orientation);
+    this->orientation = ti::normalize(this->orientation);   
 }
 
 void Body::update_velocities(scalar inverse_time_step)
 {
+
+    if (this->type == STATIC) return;
+
     // Save the previous linear and angular velocities
     this->prev_linear_velocity = this->linear_velocity;
     this->prev_angular_velocity = this->angular_velocity;
     // Update the linear velocity
-    this->linear_velocity += (this->position - this->prev_position) * inverse_time_step;
+    this->linear_velocity = (this->position - this->prev_position) * inverse_time_step;
     // Update the angular velocity || dq : delta orientation
     quat dq = this->orientation * ti::conjugate(this->prev_orientation);
     // Calculate the scaled angular velocity
@@ -109,8 +118,10 @@ void Body::update_velocities(scalar inverse_time_step)
 }
 
 void Body::apply_positional_constraint_impulse(vec3 impulse, vec3 r){
+
+    if (this->type == STATIC) return;
+
     this->position += impulse * this->inverse_mass;
-    
     vec3 rot = this->inverse_inertia_tensor_world * ti::cross(r, impulse) * 0.5;
     // Calculate the scaled quaternion
     quat rot_quat = quat(0.0, rot.x, rot.y, rot.z);
@@ -121,6 +132,8 @@ void Body::apply_positional_constraint_impulse(vec3 impulse, vec3 r){
 }
 
 void Body::apply_rotational_constraint_impulse(vec3 impulse){
+
+    if (this->type == STATIC) return;
 
     vec3 rot = this->inverse_inertia_tensor_world * impulse * 0.5;
 

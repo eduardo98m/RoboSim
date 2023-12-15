@@ -39,6 +39,11 @@ namespace robosim{
             vec3 get_body_position(uint id);
             quat get_body_orientation(uint id);
 
+            // 
+            uint create_positional_constraint(uint body_1_id, uint body_2_id, vec3 r_1, vec3 r_2, scalar compliance = 0.0, scalar damping = 0.0);
+
+            uint add_rotational_constraint(RotationalConstraint cosntraint);
+
             void step();      
     };
 } // namespace robosim

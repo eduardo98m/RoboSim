@@ -3,7 +3,7 @@
 using namespace robosim;
 
 World::World(scalar timestep, uint substeps){
-    this->timestep;
+    this->timestep = timestep;
     this->substeps = substeps;
 } ;
 
@@ -11,13 +11,13 @@ World::World(scalar timestep, uint substeps){
 void World::step(){
     scalar h =  this->timestep/ this->substeps;
     scalar inv_h = 1/h;
-
+    
     for (int i=0; i<this->substeps; i++){
         // this->.narrow_phase_collision()
         this->update_bodies_position_and_orientation(h);
         this->solve_positions(inv_h);
         this->update_bodies_velocities(inv_h);
-        this->solve_velocities(h);
+        //this->solve_velocities(h);
     }
 }
 
@@ -57,6 +57,24 @@ uint World::add_body(Body body){
     this->bodies.push_back(body);
 
     return (uint)(this->bodies.size() - 1);
+}
+
+uint World::create_positional_constraint(uint body_1_id, uint body_2_id, vec3 r_1, vec3 r_2, scalar compliance, scalar damping){
+
+    PositionalConstraint constraint = PositionalConstraint(&this->bodies[body_1_id], 
+                                                &this->bodies[body_2_id], 
+                                                r_1, 
+                                                r_2, 
+                                                compliance,
+                                                damping);
+    
+    this->positional_constraints.push_back(constraint);
+    return (uint)(this->positional_constraints.size() - 1);
+}
+
+uint World::add_rotational_constraint(RotationalConstraint constraint){
+    this->rotational_constraints.push_back(constraint);
+    return (uint)(this->rotational_constraints.size() - 1);
 }
 
 vec3 World::get_body_position(uint id){

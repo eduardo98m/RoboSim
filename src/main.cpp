@@ -1,7 +1,6 @@
 
 #include "physics/math/math.hpp" 
-#include "physics/bodies/DynamicBody.hpp"
-
+#include "physics/constraints/PositionalConstraint.hpp"
 
 // Import the sine function from the standard library
 #include <math.h>
@@ -10,15 +9,23 @@
 #include <raylib.h>
 #include "physics/World.hpp"
 
+
+Vector3 vec3ToVector3(vec3 v){
+    return {(float)v.x, (float)v.y, (float)v.z};
+    }  
+Quaternion quatToQuaternion(quat q){
+    return {(float)q.x, (float)q.y, (float)q.z, (float)q.w};
+    } 
+
 int main(int argc, char *argv[]){
 
 
 
     // Define a vector 3
-    vec3 v = vec3{1.0, 2.1, 69.0};
+    vec3 v = vec3{0.0, 0.0, 0.0};
 
     // Create a dynamic body
-    vec3 pos = vec3{0.6, 9.4, 2.0};
+    vec3 pos = vec3{0.0, 0.0, 12.0};
     quat ori = quat{1.0, 0.0, 0.0, 0.0};
     vec3 lin_vel = vec3{0.0, 0.0, 0.0};
     vec3 ang_vel = vec3{0.0, 0.0, 0.0};
@@ -26,64 +33,65 @@ int main(int argc, char *argv[]){
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
                                0.0, 1.0, 0.0,
                                0.0, 0.0, 1.0};
-    Body body = Body(pos, ori);
+    
 
     // Print the vector
     std::cout << "The vector is: " << v << std::endl;
     // Print the properties of the body
-    std::cout << "The position of the body is: " << body.position << std::endl;
 
     std::cout << "inertia_tensor" << inertia_tensor << std::endl;
 
-    std::cout << "holar" << body.get_rotational_generalized_inverse_mass(v) << "\n";
+    //std::cout << "holar" << body.get_rotational_generalized_inverse_mass(v) << "\n";
 
     robosim::World world = robosim::World(); 
 
-    uint body_id = world.add_body(body);
 
-    std::cout << "Getting the cube position = " << world.get_body_position(body_id) << "\n";
-    std::cout << "Getting the cube orientation = " << world.get_body_orientation(body_id) << "\n";
-    world.set_gravity({0.0, 0.0, -9.8});
-    world.step();
-    world.step();
-    world.step();
-    std::cout << "Getting the cube position = " << world.get_body_position(body_id) << "\n";
-    std::cout << "Getting the cube orientation = " << world.get_body_orientation(body_id) << "\n";
+    Body ball_1 = Body({0.0, 2.0, 0.0}, ori, lin_vel, ang_vel, mass, inertia_tensor, DYNAMIC);
+    
+    Body ball_2 = Body({0.0, 2.0, 2.0}, ori, lin_vel, ang_vel, mass, inertia_tensor, DYNAMIC);
+    Body base = Body({0.0f, 2.0f, 0.0f}, ori, lin_vel, ang_vel, mass, inertia_tensor, STATIC);
+
+    uint ball_1_id = world.add_body(ball_1);
+    uint ball_2_id = world.add_body(ball_2);
+    uint base_id = world.add_body(base);
+
+    world.create_positional_constraint(base_id, ball_1_id, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0);
+    world.create_positional_constraint(ball_1_id, ball_2_id, {0.0, 0.0, -2.0}, {0.0, 0.0, 0.0}, 0,  0);
+    world.set_gravity({0.0, -90.8, 0.0});
+
+    
+
 
     Visualizer visualizer(1208, 720, "RoboVis");
 
+    uint sphere_2_id = visualizer.add_sphere(vec3ToVector3(world.get_body_position(ball_1_id)), 
+                                             quatToQuaternion(world.get_body_orientation(ball_2_id)), BLUE, 0.2f);
+    
+    uint sphere_1_id = visualizer.add_sphere(vec3ToVector3(world.get_body_position(ball_2_id)), 
+                                                quatToQuaternion(world.get_body_orientation(ball_2_id)), RED, 0.2f);
+
+    uint cyllinder_id = visualizer.add_cylinder({0.0f, 2.0f, 0.0f}, QuaternionIdentity(), GREEN, 0.2f, 0.1f);
+    //uint plane = visualizer.add_plane({0.0f, -1.0f, 0.0f}, QuaternionIdentity(), WHITE, 10.0f, 10.0f); 
+
     // Set up the camera
     visualizer.set_up_camera();
-    
-
-    uint sphere_id = visualizer.add_sphere({0.0f, 2.0f, 0.0f}, QuaternionIdentity(), BLUE, 1.0f);
-    uint cylinder_id = visualizer.add_cylinder({1.0f, 0.0f, 0.0f}, QuaternionIdentity(), GREEN, 1.0f, 2.0f);
-    uint cone_id = visualizer.add_cone({-1.0f, 0.0f, 0.0f}, QuaternionIdentity(), YELLOW, 1.0f, 2.0f);
-    uint plane = visualizer.add_plane({0.0f, -1.0f, 0.0f}, QuaternionIdentity(), WHITE, 10.0f, 10.0f); 
-
-    // uint monkey_id = visualizer.add_mesh("../resources/models/monkey.obj", {0.0f, 1.0f, 1.0f}, QuaternionIdentity(), RED, 1.0f);
-
-    //visualizer.load_shader("../resources/shaders/lighting.vs" , "../resources/shaders/lighting.fs");
-    //visualizer.set_up_lighting();
-    
-    // Define the sphere
-    Vector3 new_pos = {0.0f, 0.0f, 0.0f};
-    Quaternion new_orientation = QuaternionIdentity();
-    uint cube_id = visualizer.add_cube(new_pos, QuaternionIdentity(), RED, 1.0, 1.0, 1.0);
-    SetTargetFPS(60);
     // Main game loop
     while (!WindowShouldClose()) {
+        
+        world.step();
 
         // Update the visualizer
         visualizer.update();
 
-        float floatHeight = 2.0f;
-        float rotationSpeed = 2.0f;
-
-        new_pos.y = floatHeight * sinf(GetTime());
-        new_orientation = QuaternionFromEuler(0.0f, GetTime() * rotationSpeed, 0.0f);
-
-        visualizer.update_visual_object_position_orientation(cube_id, new_pos, new_orientation);
+        std::cout << "pos = " << world.get_body_position(ball_2_id) << std::endl;
+        visualizer.update_visual_object_position_orientation(sphere_1_id, 
+                                                            vec3ToVector3(world.get_body_position(ball_1_id)), 
+                                                            quatToQuaternion(world.get_body_orientation(ball_1_id))
+                                                            );
+        visualizer.update_visual_object_position_orientation(sphere_2_id, 
+                                                            vec3ToVector3(world.get_body_position(ball_2_id)), 
+                                                            quatToQuaternion(world.get_body_orientation(ball_2_id))
+                                                            );
 
     }
 
