@@ -8,7 +8,54 @@ RoboSim (ROBOtics + SIMulator) is a projects that aims to create an easy to use 
 
 ## Instalation
 
-First you have to get the imgui, implot and glfw repositories. You can do this by clonning the 
+```
+
+```
+
+# TODO:
+* [ ] Build intructions/Tutorial
+* [ ] Documentation
+* [ ] Interface Simulator <-> Visualizer
+* [ ] **Collisions**
+    * [ ] Add collision shapes
+        * [ ] Sphere
+        * [ ] Box
+        * [ ] Capsule
+        * [ ] Plane
+        * [ ] Heightmap
+    * [ ] Add collision detection and response:
+        * [ ] Sphere <-> Sphere
+        * [ ] Sphere <-> Box
+        * [ ] Sphere <-> Capsule
+        * [ ] Sphere <-> Plane
+        * [ ] Sphere <-> Heightmap
+        * [ ] Box <-> Box
+        * [ ] Box <-> Capsule
+        * [ ] Box <-> Plane
+        * [ ] Box <-> Heightmap
+        * [ ] Capsule <-> Capsule
+        * [ ] Capsule <-> Plane
+        * [ ] Capsule <-> Heightmap
+    * [ ] Add collision manifolds
+* [ ] **Constraints**
+    * [ ] Contact constraints.
+    * [ ] Prismatic joint constraint
+        * [ ] Limited
+        * [ ] Driven
+        * [ ] Damped
+    * [ ] Revolute joint constraint
+        * [ ] Limited
+        * [ ] Driven
+        * [ ] Damped
+    * [ ] Spherica joint
+        * [ ] Limited
+        * [ ] Damped
+* [ ] URDF importer
+* [ ] Paralelization with OpenMP
+
+    
+
+
 
 
 ###  Optional dependencies

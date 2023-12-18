@@ -42,8 +42,6 @@ class RotationalConstraint{
                              vec3 r_2 = vec3{0.0, 0.0, 0.0}, 
                              scalar compliance = 0.0, 
                              scalar damping = 0.0);
-        // Destructor
-        ~RotationalConstraint();
 
         /*
         * Function that sets the value of the constriant.

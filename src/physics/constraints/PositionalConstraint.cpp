@@ -48,25 +48,10 @@ scalar PositionalConstraint::compute_positional_delta_lambda(scalar w_1, scalar 
 
 void PositionalConstraint::apply_constraint(scalar inverse_time_step){
 
-    // TODO : Change this (Testing only)
-    this->set_value(this->body_1->position - this->body_2->position);
-
-    // # Compute the attachment constraint
-    // r_1_wc = quaternion.rotate_vector(body_1.orientation, self.r_1)
-    // r_2_wc = quaternion.rotate_vector(body_2.orientation, self.r_2)
-
-    // p_1 = body_1.position + r_1_wc
-    // p_2 = body_2.position + r_2_wc
-
-    // delta_x = p_1 - p_2
- 
+    
     // Get the world coordinates of r vectors of the two constriant bodies
     vec3 r_1_wc = ti::rotate(this->body_1->orientation, this->r_1);
     vec3 r_2_wc = ti::rotate(this->body_2->orientation, this->r_2);
-
-    vec3 p_1 = body_1->position + r_1_wc;
-    vec3 p_2 = body_2->position + r_2_wc;
-    this->set_value(p_1 - p_2);
 
     // Calculte the generalized inverse mass of the bodies
     scalar w_1 = this->body_1->get_positional_generalized_inverse_mass(r_1_wc, this->n);

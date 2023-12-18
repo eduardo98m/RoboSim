@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -54,6 +55,18 @@ namespace ti
     // Get the glm to convert a rotation matrix to a quaternion
     using glm::quat_cast;
 
+    using glm::clamp;
+    
+    using glm::cos;
+    using glm::sin;
+
     /*l2 norm of the vector i.e: sqrt(x^2 + y^2 + z^2)*/
     scalar magnitude(vec3 v);
+
+    quat quat_from_axis_angle(vec3 axis, scalar angle);
+
+    /*
+    *   Arctan 2 function. Calculates the arctan of the y/x fraction for the correspoding quadrant
+    */
+    scalar atan2(scalar y, scalar x);
 };

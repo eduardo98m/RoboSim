@@ -15,6 +15,8 @@ set(PHYSICS_SOURCES
     # Constraints
     "src/physics/constraints/PositionalConstraint.cpp"
     "src/physics/constraints/RotationalConstraint.cpp"
+    "src/physics/constraints/RevoluteJointConstraint.cpp"
+    "src/physics/constraints/Utils.cpp"
     # Math
     "src/physics/math/math.cpp"    
     # World

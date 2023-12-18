@@ -1,10 +1,19 @@
 #include "math.hpp"
 
+
 namespace ti
 {
     scalar magnitude(vec3 v)
     {
         return glm::l2Norm(v);
+    }
+
+    quat quat_from_axis_angle(vec3 axis, scalar angle){
+        return glm::angleAxis(angle, axis);
+    }
+
+    scalar atan2(scalar y, scalar x){
+        return std::atan2(y, x);
     }
 };
 
