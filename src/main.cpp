@@ -63,7 +63,7 @@ int main(int argc, char *argv[]){
     Body ball_7 = Body({0.0, 9.0, 0.0}, ori, lin_vel, ang_vel, mass, ( 1.0/12) * inertia_tensor, DYNAMIC);
     Body ball_8 = Body({0.0, 10.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
     Body ball_9 = Body({0.0, 11.0, 0.0}, ori, lin_vel, ang_vel, 0.1 * mass, ( 00.1/12) * inertia_tensor, DYNAMIC);
-    Body ball_10 = Body({0.0, 12.0, 0.0}, ori, lin_vel, ang_vel, 1*mass, ( 10.0/12) * inertia_tensor, DYNAMIC);
+    Body ball_10 = Body({0.0, 12.0, 0.1}, ori, lin_vel, ang_vel, 1*mass, ( 10.0/12) * inertia_tensor, DYNAMIC);
     
     
     
@@ -85,20 +85,20 @@ int main(int argc, char *argv[]){
     uint base_id = world.add_body(base);
 
     vec3 axis = {0.0, 0.0, 1.0};
-    world.create_revolute_constraint(base_id, ball_1_id, {0.5, 0.0, 1.0} ,{0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0, FREE, false, -0.8, 0.8);
-    world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 0.0, 1.0}, {0.0, 2.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.5, 0.5);
-    world.create_revolute_constraint(ball_2_id, ball_3_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(base_id, ball_1_id, {0.5, 0.0, 1.0} ,{0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,    10, FREE, false, -0.8, 0.8);
+    world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 0.0, 1.0}, {0.0, 2.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.5, 0.5);
+    world.create_revolute_constraint(ball_2_id, ball_3_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
 
-    world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_5_id, ball_6_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_6_id, ball_7_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_7_id, ball_8_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_8_id, ball_9_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_9_id, ball_10_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  0,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(ball_5_id, ball_6_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(ball_6_id, ball_7_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(ball_7_id, ball_8_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(ball_8_id, ball_9_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
+    world.create_revolute_constraint(ball_9_id, ball_10_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0, 10,  FREE, false, -0.0, 0.0);
     
     
-    world.set_gravity({-1.0, -9.8, -1.1});
+    world.set_gravity({0.0, -9.8, 0.0});
 
     
     Visualizer visualizer(1208, 720, "RoboVis");

@@ -40,10 +40,10 @@ void RevoluteJointConstraint::apply_constraint(scalar inverse_time_step)
 {
 
     // Get the axes:
-    vec3 a_1 = ti::rotate(this->body_1->orientation, this->aligned_axis ) ;//body_1_ax[0];
-    vec3 a_2 = ti::rotate(this->body_2->orientation, this->aligned_axis ) ;//body_2_ax[0];
+    vec3 a_1 = ti::rotate(this->body_1->orientation, this->aligned_axis );
+    vec3 a_2 = ti::rotate(this->body_2->orientation, this->aligned_axis );
 
-    vec3 delta_q = - ti::cross(a_1, a_2); // It is a_2 x a_1 (This differs from the paper, but if flipped the simulation becomes unstable)
+    vec3 delta_q = - ti::cross(a_1, a_2); 
 
     // Aligned constraint (It is of upmost importance to apply the constraints as soon as possible !!!)
     this->aligned_constraint->set_value(delta_q);
@@ -89,8 +89,8 @@ void RevoluteJointConstraint::apply_constraint(scalar inverse_time_step)
         }
         if(this->limited){// Recalculate the axes if a previous correction was applied
             a_1 = ti::rotate(this->body_1->orientation, this->aligned_axis ) ;
-            b_1 = ti::rotate(this->body_1->orientation, secondary_axis ) ;//body_1_ax[1];
-            b_2 = ti::rotate(this->body_2->orientation, secondary_axis ) ;//body_2_ax[1];
+            b_1 = ti::rotate(this->body_1->orientation, secondary_axis);
+            b_2 = ti::rotate(this->body_2->orientation, secondary_axis);
             this->current_angle = ti::atan2(ti::dot(ti::cross(b_1, b_2), a_1), ti::dot(b_1, b_2));
         }
             
@@ -104,4 +104,13 @@ void RevoluteJointConstraint::apply_constraint(scalar inverse_time_step)
 
         this->drive_joint_constraint->apply_constraint(inverse_time_step);
     }
+}
+
+void RevoluteJointConstraint::apply_joint_damping(scalar time_step){
+    
+    vec3 delta_omega = (this->body_2->angular_velocity - this->body_1->angular_velocity) * std::min(this->damping * time_step, 1.0);
+
+    this->body_1->angular_velocity += delta_omega;
+    this->body_2->angular_velocity -= delta_omega;
+    
 }

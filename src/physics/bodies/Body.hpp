@@ -19,9 +19,7 @@ class Body
         quat prev_orientation;
         vec3 prev_linear_velocity;
         vec3 prev_angular_velocity;
-        /* linear and angular velocity */
-        vec3 linear_velocity;
-        vec3 angular_velocity;
+        
 
         /* linear and angular force */
         vec3 force = {0.0, 0.0, 0.0};
@@ -43,6 +41,10 @@ class Body
     public:
         vec3 position;
         quat orientation;
+
+        /* linear and angular velocity */
+        vec3 linear_velocity;
+        vec3 angular_velocity;
         /*
         * 
         */
@@ -102,5 +104,8 @@ class Body
         * @param impulse The impulse to apply
         */
        void apply_rotational_constraint_impulse(vec3 impulse);
+
+
+       void apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r);
         
 };

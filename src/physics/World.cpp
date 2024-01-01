@@ -19,7 +19,7 @@ void World::step()
         this->update_bodies_position_and_orientation(h);
         this->solve_positions(inv_h);
         this->update_bodies_velocities(inv_h);
-        // this->solve_velocities(h);
+        this->solve_velocities(h);
     }
 }
 
@@ -55,7 +55,12 @@ void World::solve_positions(scalar inv_h)
         constraint.apply_constraint(inv_h);
     }
 }
-void World::solve_velocities(scalar h) {}
+void World::solve_velocities(scalar h) {
+    for (RevoluteJointConstraint constraint : this->revolute_joint_constraints)
+    {
+        constraint.apply_joint_damping(h);
+    }
+}
 
 scalar World::get_time_step()
 {

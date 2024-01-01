@@ -74,4 +74,6 @@ class RevoluteJointConstraint{
 
         void apply_constraint(scalar inverse_time_step);
 
+        void apply_joint_damping(scalar time_step);
+
 };

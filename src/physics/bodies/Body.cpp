@@ -146,3 +146,13 @@ void Body::apply_rotational_constraint_impulse(vec3 impulse){
     this->orientation = ti::normalize(this->orientation);
 
 }
+
+void Body::apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r){
+
+    if (this->type == STATIC) return;
+    // Update the orientation
+    this->position += impulse * this->inverse_mass;
+
+    this->angular_velocity += this->inverse_inertia_tensor_world  * ti::cross(r, impulse);
+
+}
