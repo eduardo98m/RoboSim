@@ -50,10 +50,6 @@ scalar RotationalConstraint::compute_rotational_delta_lambda(scalar w_1, scalar 
 void RotationalConstraint::apply_constraint(scalar inverse_time_step)
 {
 
-    // Get the world coordinates of r vectors of the two constriant bodies
-    vec3 r_1_wc = ti::rotate(this->body_1->orientation, this->r_1);
-    vec3 r_2_wc = ti::rotate(this->body_2->orientation, this->r_2);
-
     // Calculte the generalized inverse mass of the bodies
     scalar w_1 = this->body_1->get_rotational_generalized_inverse_mass(this->n);
     scalar w_2 = this->body_2->get_rotational_generalized_inverse_mass(this->n);
