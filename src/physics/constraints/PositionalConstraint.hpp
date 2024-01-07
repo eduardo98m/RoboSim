@@ -69,4 +69,9 @@ class PositionalConstraint{
         */
         void apply_constraint(scalar inverse_time_step);
 
+        /*
+        * Function that sets the lagrange multiplier 'lambda' to zero. (Should be called every full iteration (NOT every substep))
+        */
+        void reset_lagrange_multiplier(void);
+
 };

@@ -73,3 +73,6 @@ void PositionalConstraint::apply_constraint(scalar inverse_time_step){
 
 }
 
+void PositionalConstraint::reset_lagrange_multiplier(void){
+    this->lambda = 0;
+}

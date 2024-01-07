@@ -65,4 +65,5 @@ class RotationalConstraint{
         */
         void apply_constraint(scalar inverse_time_step);
 
+        void reset_lagrange_multiplier(void);
 };

@@ -68,3 +68,8 @@ void RotationalConstraint::apply_constraint(scalar inverse_time_step)
     this->body_1->apply_rotational_constraint_impulse(impulse);
     this->body_2->apply_rotational_constraint_impulse(-impulse); // Note the negative sign at the impulse!
 }
+
+void RotationalConstraint::reset_lagrange_multiplier(void){
+    // The lagrange multiplier lambda is initialized as zero
+    this->lambda = 0;
+}
