@@ -25,3 +25,15 @@ angle_limit_constraint_response compute_angle_limit_constraint_value(scalar phi,
 
     return {phi , delta_q};
 }
+
+// NOT REALLY USED (WE PREFFER TO USE ARCTAN2)
+// scalar calculate_angle(vec3 n, vec3 n_1, vec3 n_2){
+
+//     scalar phi = asin(ti::dot(ti::cross(n_1, n_2), n));
+    
+//     if (ti::dot(n_1, n_2)) phi = PI - phi;
+//     if (phi > PI) phi = phi - 2 * PI;
+//     if (phi < - PI) phi = phi + 2 * PI;
+
+//     return phi;
+// }

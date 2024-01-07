@@ -23,3 +23,5 @@ angle_limit_constraint_response compute_angle_limit_constraint_value(scalar phi,
                                vec3 n_2,
                                scalar lower_limit,
                                scalar upper_limit);
+
+//scalar calculate_angle(vec3 n, vec3 n_1, vec3 n_2);

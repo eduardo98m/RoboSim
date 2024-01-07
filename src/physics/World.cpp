@@ -17,9 +17,10 @@ void World::step()
     {
         // this->.narrow_phase_collision()
         this->update_bodies_position_and_orientation(h);
-        this->solve_positions(inv_h);
+        this->solve_positions(inv_h, h);
         this->update_bodies_velocities(inv_h);
         this->solve_velocities(h);
+
     }
 }
 
@@ -39,24 +40,24 @@ void World::update_bodies_velocities(scalar inv_h)
     }
 }
 
-void World::solve_positions(scalar inv_h)
+void World::solve_positions(scalar inv_h, scalar h)
 {
-    for (PositionalConstraint constraint : this->positional_constraints)
+    for (PositionalConstraint & constraint : this->positional_constraints)
     {
         constraint.apply_constraint(inv_h);
     }
-    for (RotationalConstraint constraint : this->rotational_constraints)
+    for (RotationalConstraint & constraint : this->rotational_constraints)
     {
         constraint.apply_constraint(inv_h);
     }
 
-    for (RevoluteJointConstraint constraint : this->revolute_joint_constraints)
+    for (RevoluteJointConstraint & constraint : this->revolute_joint_constraints)
     {
-        constraint.apply_constraint(inv_h);
+        constraint.apply_constraint(inv_h, h);
     }
 }
 void World::solve_velocities(scalar h) {
-    for (RevoluteJointConstraint constraint : this->revolute_joint_constraints)
+    for (RevoluteJointConstraint & constraint : this->revolute_joint_constraints)
     {
         constraint.apply_joint_damping(h);
     }
@@ -120,12 +121,26 @@ int World::create_revolute_constraint(int body_1_id,
                                        RevoluteJointType type,
                                        bool limited,
                                        scalar lower_limit,
-                                       scalar upper_limit)
+                                       scalar upper_limit,
+                                       bool set_limit_axis,
+                                       vec3 limit_axis)
 {
+    if (!set_limit_axis){
+        limit_axis = aligned_axis;
+        limit_axis.x += 1.0;
+        limit_axis = ti::normalize(ti::cross(aligned_axis, limit_axis));
+        if (ti::magnitude(limit_axis) < EPSILON){
+            limit_axis = aligned_axis;
+            limit_axis.y += 1.0;
+            limit_axis = ti::normalize(ti::cross(aligned_axis, limit_axis));
+        }
+    }
+    assert(ti::magnitude(limit_axis) > EPSILON && "Invalid limit axis `limit_axis` must be perpendicular to the `aligned_axis`");
 
     RevoluteJointConstraint constraint = RevoluteJointConstraint(&this->bodies[body_1_id],
                                                                  &this->bodies[body_2_id],
                                                                  ti::normalize(aligned_axis),
+                                                                 limit_axis,
                                                                  r_1,
                                                                  r_2,
                                                                  compliance,
@@ -154,4 +169,13 @@ vec3 World::get_body_position(int id)
 quat World::get_body_orientation(int id)
 {
     return this->bodies[id].orientation;
+}
+
+vec3 World::get_body_angular_velocity(int id)
+{
+    return this->bodies[id].angular_velocity;
+}
+
+RevoluteJointInfo World::get_revolute_joint_info(int id){
+    return this->revolute_joint_constraints[id].get_info();
 }

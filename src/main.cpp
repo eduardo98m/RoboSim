@@ -53,13 +53,13 @@ int main(int argc, char *argv[]){
 
     Body base = Body({0.0f, 2.0f, 0.0f}, ori, lin_vel, ang_vel, mass, inertia_tensor, STATIC);
 
-    Body ball_1 = Body({0.0, 3.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
-    Body ball_2 = Body({0.0, 5.0, 0.0}, ori, lin_vel, ang_vel, 3.0 * mass, ( 1.0/12) * inertia_tensor, DYNAMIC);
-    Body ball_3 = Body({0.0, 6.0, 0.0}, ori, lin_vel, ang_vel, mass, ( 1.0/12) * inertia_tensor, DYNAMIC);
+    Body ball_1 = Body({0.0, 3.0, 0.0}, ori, lin_vel, ang_vel, mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
+    Body ball_2 = Body({0.0, 5.0, 0.0}, ori, lin_vel, ang_vel, .7 * mass, ( .7 * mass/12) * inertia_tensor, DYNAMIC);
+    Body ball_3 = Body({0.0, 6.0, 0.0}, ori, lin_vel, ang_vel, .6* mass, ( .6* mass/12) * inertia_tensor, DYNAMIC);
 
-    Body ball_4 = Body({0.0, 6.5, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
-    Body ball_5 = Body({0.0, 7.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
-    Body ball_6 = Body({0.0, 8.0, 0.0}, ori, lin_vel, ang_vel, 3.0 * mass, ( 1.0/12) * inertia_tensor, DYNAMIC);
+    Body ball_4 = Body({0.0, 6.5, 0.0}, ori, lin_vel, ang_vel,  0.5* mass,  (0.5* mass/12) *  inertia_tensor, DYNAMIC);
+    Body ball_5 = Body({0.0, 7.0, 0.0}, ori, lin_vel, ang_vel,  0.2*mass,  ( 0.2*mass/12) *  inertia_tensor, DYNAMIC);
+    Body ball_6 = Body({0.0, 8.0, 0.0}, ori, lin_vel, ang_vel,  0.3*mass, ( 0.3*mass/12) * inertia_tensor, DYNAMIC);
     Body ball_7 = Body({0.0, 9.0, 0.0}, ori, lin_vel, ang_vel, mass, ( 1.0/12) * inertia_tensor, DYNAMIC);
     Body ball_8 = Body({0.0, 10.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
     Body ball_9 = Body({0.0, 11.0, 0.0}, ori, lin_vel, ang_vel, 0.1 * mass, ( 00.1/12) * inertia_tensor, DYNAMIC);
@@ -84,18 +84,18 @@ int main(int argc, char *argv[]){
     
     uint base_id = world.add_body(base);
 
-    vec3 axis = {0.0, 0.0, 1.0};
-    world.create_revolute_constraint(base_id, ball_1_id, {0.5, 0.0, 1.0} ,{0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,    10, FREE, false, -0.8, 0.8);
-    world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 0.0, 1.0}, {0.0, 2.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.5, 0.5);
-    world.create_revolute_constraint(ball_2_id, ball_3_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
+    //vec3 axis = {0.0, 0.0, 1.0};
+    int joint_id  = world.create_revolute_constraint(base_id, ball_1_id, {1.0, 1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  10.0,  DRIVEN_BY_POSITION, false, -0.8, 0.8);
+    world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  0.0,  10.0,  DRIVEN_BY_POSITION, false, -0.5, 0.5);
+    //world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-5,  1e-4,  DRIVEN_BY_POSITION, false, -0.0, 0.0);
 
-    world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_5_id, ball_6_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_6_id, ball_7_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_7_id, ball_8_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_8_id, ball_9_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  10,  FREE, false, -0.0, 0.0);
-    world.create_revolute_constraint(ball_9_id, ball_10_id, {1.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0, 10,  FREE, false, -0.0, 0.0);
+    //world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-6,  1e-4,  DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    // world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4,  1e-4,  FREE, false, -0.0, 0.0);
+    // world.create_revolute_constraint(ball_5_id, ball_6_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4, 1e-4,  FREE, false, -0.0, 0.0);
+    // //world.create_revolute_constraint(ball_6_id, ball_7_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e4,  FREE, false, -0.0, 0.0);
+    // world.create_revolute_constraint(ball_7_id, ball_8_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e4,  FREE, false, -0.0, 0.0);
+    // world.create_revolute_constraint(ball_8_id, ball_9_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e4,  FREE, false, -0.0, 0.0);
+    // world.create_revolute_constraint(ball_9_id, ball_10_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0, 1e4,  FREE, false, -0.0, 0.0);
     
     
     world.set_gravity({0.0, -9.8, 0.0});
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]){
     Visualizer visualizer(1208, 720, "RoboVis");
 
     uint sphere_1_id = visualizer.add_box(vec3ToVector3(world.get_body_position(ball_1_id)), 
-                                             quatToQuaternion(world.get_body_orientation(ball_1_id)), BLUE, 0.2f, 0.1f, 4.0f);
+                                             quatToQuaternion(world.get_body_orientation(ball_1_id)), BLUE, 0.2f, 1.0f, 0.2f);
     
     uint sphere_2_id = visualizer.add_box(vec3ToVector3(world.get_body_position(ball_2_id)), 
                                                 quatToQuaternion(world.get_body_orientation(ball_2_id)), RED, 0.2f, 2.0f, 0.2f);
@@ -112,8 +112,8 @@ int main(int argc, char *argv[]){
     uint sphere_3_id = visualizer.add_box(vec3ToVector3(world.get_body_position(ball_3_id)), 
                                              quatToQuaternion(world.get_body_orientation(ball_3_id)), YELLOW, 0.2f, 1.5f, 0.2f);
     
-    uint sphere_4_id = visualizer.add_sphere(vec3ToVector3(world.get_body_position(ball_3_id)), 
-                                             quatToQuaternion(world.get_body_orientation(ball_3_id)), RED, 0.2f);
+    uint sphere_4_id = visualizer.add_box(vec3ToVector3(world.get_body_position(ball_3_id)), 
+                                             quatToQuaternion(world.get_body_orientation(ball_3_id)), RED, 0.2f, 1.5f, 0.2f);
     
     uint sphere_5_id = visualizer.add_sphere(vec3ToVector3(world.get_body_position(ball_3_id)), 
                                              quatToQuaternion(world.get_body_orientation(ball_3_id)), YELLOW, 0.2f);
@@ -145,8 +145,15 @@ int main(int argc, char *argv[]){
     
     //world.step();
     //world.step();
+
+    scalar time_step = world.get_time_step();
+    scalar prev_angle = 0;
     while (!WindowShouldClose()) {
         
+        auto info = world.get_revolute_joint_info(joint_id);
+        //std::cerr << (prev_angle - info.current_angle) / time_step << "\n";
+        //prev_angle = info.current_angle;
+        //std::cerr << info.current_angle << "\n";
         
 
         // Update the visualizer

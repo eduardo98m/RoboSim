@@ -21,7 +21,7 @@ namespace robosim
         std::vector<RevoluteJointConstraint> revolute_joint_constraints;
 
         void update_bodies_position_and_orientation(scalar h);
-        void solve_positions(scalar inv_h);
+        void solve_positions(scalar inv_h, scalar h);
         void update_bodies_velocities(scalar inv_h);
         void solve_velocities(scalar inv_h);
 
@@ -40,6 +40,7 @@ namespace robosim
 
         vec3 get_body_position(int id);
         quat get_body_orientation(int id);
+        vec3 get_body_angular_velocity(int id);
 
         //
         int create_positional_constraint(int body_1_id,
@@ -59,7 +60,9 @@ namespace robosim
                                         RevoluteJointType type = FREE,
                                         bool limited = false,
                                         scalar lower_limit = 0.0,
-                                        scalar upper_limit = 0.0);
+                                        scalar upper_limit = 0.0,
+                                        bool set_limit_axis = false,
+                                        vec3 limit_axis = {1.0, 0.0, 0.0});
 
         int create_rotational_constraint(int body_1_id,
                                           int body_2_id,
@@ -71,5 +74,7 @@ namespace robosim
         int add_rotational_constraint(RotationalConstraint cosntraint);
 
         void step();
+
+        RevoluteJointInfo get_revolute_joint_info(int id);
     };
 } // namespace robosim
