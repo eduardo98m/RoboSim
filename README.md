@@ -44,9 +44,11 @@ RoboSim (ROBOtics + SIMulator) is a projects that aims to create an easy to use 
         * [ ] Driven
         * [ ] Damped
     * [ ] Revolute joint constraint
-        * [ ] Limited
-        * [ ] Driven
-        * [ ] Damped
+        * [x] Limited
+        * [x] Driven
+            * [x] Position driven
+            * [-] Speed driven (It is implemented but there are errors on the implementation: target speed doesnt mathc actual speed). 
+        * [x] Damped
     * [ ] Spherica joint
         * [ ] Limited
         * [ ] Damped

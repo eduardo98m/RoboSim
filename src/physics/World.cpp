@@ -20,7 +20,6 @@ void World::step()
         this->solve_positions(inv_h, h);
         this->update_bodies_velocities(inv_h);
         this->solve_velocities(h);
-
     }
 }
 
@@ -42,22 +41,23 @@ void World::update_bodies_velocities(scalar inv_h)
 
 void World::solve_positions(scalar inv_h, scalar h)
 {
-    for (PositionalConstraint & constraint : this->positional_constraints)
+    for (PositionalConstraint &constraint : this->positional_constraints)
     {
         constraint.apply_constraint(inv_h);
     }
-    for (RotationalConstraint & constraint : this->rotational_constraints)
+    for (RotationalConstraint &constraint : this->rotational_constraints)
     {
         constraint.apply_constraint(inv_h);
     }
 
-    for (RevoluteJointConstraint & constraint : this->revolute_joint_constraints)
+    for (RevoluteJointConstraint &constraint : this->revolute_joint_constraints)
     {
         constraint.apply_constraint(inv_h, h);
     }
 }
-void World::solve_velocities(scalar h) {
-    for (RevoluteJointConstraint & constraint : this->revolute_joint_constraints)
+void World::solve_velocities(scalar h)
+{
+    for (RevoluteJointConstraint &constraint : this->revolute_joint_constraints)
     {
         constraint.apply_joint_damping(h);
     }
@@ -82,6 +82,38 @@ int World::add_body(Body body)
 
     return (int)(this->bodies.size() - 1);
 }
+
+int World::create_body(vec3 position,
+                       quat orientation,
+                       vec3 linear_velocity,
+                       vec3 angular_velocity,
+                       scalar mass,
+                       mat3 inertia_tensor,
+                       BodyType type)
+{
+    Body body = Body(position,
+                     orientation,
+                     linear_velocity,
+                     angular_velocity,
+                     mass,
+                     inertia_tensor,
+                     type);
+
+    return World::add_body(body);
+}
+
+void World::set_body_box_collider(int id, vec3 half_extents){
+    this->bodies[id].set_box_collider(half_extents);
+}
+
+void World::set_body_sphere_collider(int id, scalar radius){
+    this->bodies[id].set_sphere_collider(radius);
+}
+
+void World::set_body_capsule_collider(int id, scalar radius, scalar height){
+    this->bodies[id].set_capsule_collider(radius, height);
+}
+
 
 int World::create_positional_constraint(int body_1_id, int body_2_id, vec3 r_1, vec3 r_2, scalar compliance, scalar damping)
 {
@@ -112,28 +144,31 @@ int World::create_rotational_constraint(int body_1_id, int body_2_id, vec3 r_1, 
 }
 
 int World::create_revolute_constraint(int body_1_id,
-                                       int body_2_id,
-                                       vec3 aligned_axis,
-                                       vec3 r_1,
-                                       vec3 r_2,
-                                       scalar compliance,
-                                       scalar damping,
-                                       RevoluteJointType type,
-                                       bool limited,
-                                       scalar lower_limit,
-                                       scalar upper_limit,
-                                       bool set_limit_axis,
-                                       vec3 limit_axis)
+                                      int body_2_id,
+                                      vec3 aligned_axis,
+                                      vec3 r_1,
+                                      vec3 r_2,
+                                      scalar compliance,
+                                      scalar damping,
+                                      RevoluteJointType type,
+                                      bool limited,
+                                      scalar lower_limit,
+                                      scalar upper_limit,
+                                      bool set_limit_axis,
+                                      vec3 limit_axis)
 {
-    if (!set_limit_axis){
+    if (!set_limit_axis)
+    {
         limit_axis = aligned_axis;
         limit_axis.x += 1.0;
-        limit_axis = ti::normalize(ti::cross(aligned_axis, limit_axis));
-        if (ti::magnitude(limit_axis) < EPSILON){
+        limit_axis = ti::cross(aligned_axis, limit_axis);
+        if (ti::magnitude(limit_axis) < EPSILON)
+        {
             limit_axis = aligned_axis;
             limit_axis.y += 1.0;
-            limit_axis = ti::normalize(ti::cross(aligned_axis, limit_axis));
+            limit_axis = ti::cross(aligned_axis, limit_axis);
         }
+        limit_axis = ti::normalize(limit_axis);
     }
     assert(ti::magnitude(limit_axis) > EPSILON && "Invalid limit axis `limit_axis` must be perpendicular to the `aligned_axis`");
 
@@ -149,7 +184,6 @@ int World::create_revolute_constraint(int body_1_id,
                                                                  limited,
                                                                  lower_limit,
                                                                  upper_limit);
-                                                                 
 
     this->revolute_joint_constraints.push_back(constraint);
     return (int)(this->revolute_joint_constraints.size() - 1);
@@ -176,6 +210,33 @@ vec3 World::get_body_angular_velocity(int id)
     return this->bodies[id].angular_velocity;
 }
 
-RevoluteJointInfo World::get_revolute_joint_info(int id){
+ShapeInfo World::get_collider_info(int id)
+{
+    return this->bodies[id].collider_info;
+}
+
+// Revolute joints
+RevoluteJointInfo World::get_revolute_joint_info(int id)
+{
     return this->revolute_joint_constraints[id].get_info();
+}
+
+void World::set_revolute_joint_target_angle(int id, scalar angle)
+{
+    this->revolute_joint_constraints[id].set_traget_angle(angle);
+}
+
+void World::set_revolute_joint_target_speed(int id, scalar speed) 
+{
+    this->revolute_joint_constraints[id].set_target_speed(speed);
+}
+
+int World::get_number_of_bodies()
+{
+    return this->bodies.size();
+}
+
+int World::get_number_of_revolute_joints(void)
+{
+    return this->revolute_joint_constraints.size();
 }

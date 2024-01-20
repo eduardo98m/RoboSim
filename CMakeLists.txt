@@ -9,6 +9,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(SOURCES 
     "src/main.cpp")
 
+set(COLLISION_SOURCES
+    "src/physics/collisions/sphere_v_sphere.cpp"
+    "src/physics/collisions/sphere_v_plane.cpp"
+    )
+
 set(PHYSICS_SOURCES
     # Bodies
     "src/physics/bodies/Body.cpp"
@@ -17,17 +22,28 @@ set(PHYSICS_SOURCES
     "src/physics/constraints/RotationalConstraint.cpp"
     "src/physics/constraints/RevoluteJointConstraint.cpp"
     "src/physics/constraints/Utils.cpp"
+    # Collisions
+    ${COLLISION_SOURCES}
     # Math
     "src/physics/math/math.cpp"    
     # World
     "src/physics/World.cpp"
+    #Interface
+    "src/visInterface/Interface.cpp"
     )
 
 
 set(
     PHYSICS_INCLUDE_DIRS
     "src"
+    "src/physics/collisions"
+    "src/physics/shapes"
     "src/physics/constraints"
+)
+
+set(
+    INTERFACE_INCLUDE_DIRS
+    "src/visInterface"
 )
 
 
@@ -46,5 +62,5 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${P
 
 
 
-target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} "src/RoboVis/src")
+target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} "src/RoboVis/src" ${INTERFACE_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE RoboVis raylib )

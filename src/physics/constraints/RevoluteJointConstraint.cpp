@@ -92,7 +92,7 @@ void RevoluteJointConstraint::apply_constraint(scalar inverse_time_step, scalar 
             
         }
         if (this->type == DRIVEN_BY_SPEED){
-            this->target_angle = this->current_angle + this->target_speed * time_step;
+            this->target_angle = this->current_angle + this->target_speed* time_step;
         }
 
         vec3 b_target = b_1 * ti::cos(this->target_angle + PI) +
@@ -101,16 +101,10 @@ void RevoluteJointConstraint::apply_constraint(scalar inverse_time_step, scalar 
 
         vec3 delta_q_target = ti::cross(b_target, b_2);
 
-        //std::cerr << ti::magnitude(delta_q_target) << ", " << this->target_angle << ", " << this->current_angle << "\n";
-
         this->drive_joint_constraint->set_value(delta_q_target);
 
         this->drive_joint_constraint->apply_constraint(inverse_time_step);
 
-        // if (this->type == DRIVEN_BY_SPEED){
-        //     std::cerr << "SPEED " << (this->current_angle - this->previous_angle)* inverse_time_step << "\n";
-        //     this->previous_angle = this->target_angle;
-        // }
     }
 }
 
@@ -139,10 +133,14 @@ void RevoluteJointConstraint::reset_lagrange_multipliers(){
 }
 
 RevoluteJointInfo RevoluteJointConstraint::get_info(void){
-    RevoluteJointInfo info = {
-        this->force,
-        this->torque,
-        this->current_angle};
+    RevoluteJointInfo info= RevoluteJointInfo{
+        .position = this->body_1->position + ti::rotate(this->body_1->orientation, this->r_1),
+        .rotation_axis = ti::rotate(this->body_1->orientation, this->aligned_axis),
+        .body_1_limit_axis = ti::rotate(this->body_1->orientation, this->limit_axis),
+        .body_2_limit_axis = ti::rotate(this->body_2->orientation, this->limit_axis),
+        .force = this->force,
+        .torque = this->torque,
+        .current_angle = this->current_angle};
 
     return info;
 }

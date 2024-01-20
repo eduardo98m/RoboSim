@@ -1,11 +1,18 @@
 #pragma once
 #include "physics/math/math.hpp"
-
+#include "Shapes.hpp"
 
 
 enum BodyType {
     STATIC,
     DYNAMIC
+};
+
+struct ShapeInfo{
+    ShapeType type;
+    Box *box;
+    Sphere *sphere;
+    Capsule *capsule;
 };
 
 
@@ -42,6 +49,8 @@ class Body
         vec3 position;
         quat orientation;
 
+        ShapeInfo collider_info;
+        
         /* linear and angular velocity */
         vec3 linear_velocity;
         vec3 angular_velocity;
@@ -107,5 +116,11 @@ class Body
 
 
        void apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r);
+
+       void set_box_collider(vec3 half_extents);
+
+       void set_sphere_collider(scalar radius);
+
+       void set_capsule_collider(scalar radius, scalar height);
         
 };

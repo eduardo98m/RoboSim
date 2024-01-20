@@ -70,7 +70,7 @@ void Body::update_inertia_tensor_world()
 
 void Body::update_position_and_orientation(scalar time_step)
 {
-    if (this->type == STATIC) return;
+    if (this->type == BodyType::STATIC) return;
     
     // Save the previous position and orientation
     this->prev_position = this->position;
@@ -102,7 +102,7 @@ void Body::update_position_and_orientation(scalar time_step)
 void Body::update_velocities(scalar inverse_time_step)
 {
 
-    if (this->type == STATIC) return;
+    if (this->type == BodyType::STATIC) return;
 
     // Save the previous linear and angular velocities
     this->prev_linear_velocity = this->linear_velocity;
@@ -119,7 +119,7 @@ void Body::update_velocities(scalar inverse_time_step)
 
 void Body::apply_positional_constraint_impulse(vec3 impulse, vec3 r){
 
-    if (this->type == STATIC) return;
+    if (this->type == BodyType::STATIC) return;
 
     this->position += impulse * this->inverse_mass;
     vec3 rot = this->inverse_inertia_tensor_world * ti::cross(r, impulse) * 0.5;
@@ -133,7 +133,7 @@ void Body::apply_positional_constraint_impulse(vec3 impulse, vec3 r){
 
 void Body::apply_rotational_constraint_impulse(vec3 impulse){
 
-    if (this->type == STATIC) return;
+    if (this->type == BodyType::STATIC) return;
 
     vec3 rot = this->inverse_inertia_tensor_world * impulse * 0.5;
 
@@ -149,10 +149,26 @@ void Body::apply_rotational_constraint_impulse(vec3 impulse){
 
 void Body::apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r){
 
-    if (this->type == STATIC) return;
+    if (this->type == BodyType::STATIC) return;
     // Update the orientation
     this->position += impulse * this->inverse_mass;
 
     this->angular_velocity += this->inverse_inertia_tensor_world  * ti::cross(r, impulse);
 
+}
+
+
+void Body::set_box_collider(vec3 half_extents){
+    this->collider_info.type = ShapeType::BOX;
+    this->collider_info.box = new Box{half_extents = half_extents};
+}
+
+void Body::set_sphere_collider(scalar radius){
+    this->collider_info.type  = ShapeType::SPHERE;
+    this->collider_info.sphere = new Sphere{radius = radius};
+}
+
+void Body::set_capsule_collider(scalar radius, scalar height){
+    this->collider_info.type  = ShapeType::CAPSULE;
+    this->collider_info.capsule = new Capsule{radius = radius, height = height};
 }
