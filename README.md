@@ -1,21 +1,59 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+<p align="center">
+  <img src="RoboSimWhiteLogo.svg" alt="RoboSim Logo" width="20%"/>
+</p>
+
+
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://GitHub.com/eduardo98m/RoboSim/issues/"><img src="https://img.shields.io/github/issues/eduardo98m/RoboSim.svg" alt="GitHub issues"></a>
+  <a href="https://GitHub.com/eduardo98m/RoboSim/pulls/"><img src="https://img.shields.io/github/issues-pr/eduardo98m/RoboSim.svg" alt="GitHub pull-requests"></a>
+</p>
 
 # RoboSim
 
-RoboSim (ROBOtics + SIMulator) is a projects that aims to create an easy to use and easy to customize rigid body physics simulator for robotics applications. The project is currently in development.
+RoboSim (ROBOtics + SIMulator) is a projects that aims to create an easy to use and easy to customize rigid body physics simulator for robotics applications. The project is currently under early development.
 
-## Description
+![RoboSim](Image2.png)
+
+## Current State of the Simulator
+
+You can see the current state of the simulator in the following video:
+
+[![RoboSim Demo](http://img.youtube.com/vi/cLKrVKXZ3UE/0.jpg)](http://www.youtube.com/watch?v=cLKrVKXZ3UE "RoboSim Demo")
 
 
+## Installation
 
-## Instalation
+**Note:** These instructions have been tested on Linux, but there should be no problems following them on Windows (or Mac) as well.
 
+### Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+* You have installed the latest version of [raylib](https://www.raylib.com/) and [CMake](https://cmake.org/).
+
+### Installing RoboSim
+
+To install RoboSim, follow these steps:
+
+1. Clone this repository recursively:
+
+```bash
+git clone --recursive https://github.com/your_username/RoboSim.git
 ```
 
+2. Navigate to the cloned repository:
+
+```bash
+cd RoboSim
+```
+3. Use CMake to build the project :
+
+```bash
+mkdir build
+cd build
+cmake ..
+make
 ```
 
 # TODO:
