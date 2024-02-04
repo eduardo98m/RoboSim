@@ -92,7 +92,7 @@ make
         * [x] Limited
         * [x] Driven
             * [x] Position driven
-            * [-] Speed driven (It is implemented but there are errors on the implementation: target speed doesnt mathc actual speed). 
+            * [-] Speed driven (It is implemented but there are errors on the implementation: target speed doesnt match the actual speed). 
         * [x] Damped
     * [ ] Spherica joint
         * [ ] Limited
@@ -101,13 +101,6 @@ make
 * [ ] Paralelization with OpenMP
 
     
-
-
-
-
-###  Optional dependencies
-
-
-Please modify this template as needed to fit your project’s specific requirements and details. If you have any more questions or need further assistance, feel free to ask! 😊
+## Screenshots
 
 ![Alt text](image.png)
