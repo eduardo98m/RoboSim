@@ -1,3 +1,9 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
 # RoboSim
 
 RoboSim (ROBOtics + SIMulator) is a projects that aims to create an easy to use and easy to customize rigid body physics simulator for robotics applications. The project is currently in development.
