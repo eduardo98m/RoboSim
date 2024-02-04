@@ -215,6 +215,60 @@ ShapeInfo World::get_collider_info(int id)
     return this->bodies[id].collider_info;
 }
 
+AABB World::get_aabb(int id)
+{
+    ShapeInfo info = this->bodies[id].collider_info;
+
+    if (info.type ==  ShapeType::CAPSULE){
+        return compute_AABB(*info.capsule, this->bodies[id].position, this->bodies[id].orientation);
+    }
+
+    if (info.type ==  ShapeType::SPHERE){
+        return compute_AABB(*info.sphere, this->bodies[id].position, this->bodies[id].orientation);
+    }
+
+    if (info.type ==  ShapeType::BOX){
+        return compute_AABB(*info.box, this->bodies[id].position, this->bodies[id].orientation);
+    }
+
+    return AABB {.min = vec3{0.0, 0.0, 0.0}, .max = vec3{0.0, 0.0, 0.0} };
+}
+
+void World::collisions_detection_preparations(void) {
+    
+    int n_bodies = this->get_number_of_bodies();
+    for (int i = 0; i < n_bodies; i++){
+        bodies_aabbs.push_back(get_aabb(i));
+        
+    };
+
+    for (int i = 0; i < (n_bodies - 1); i++){
+        for (int j = i+1; j < n_bodies; j++){
+            broad_phase_detections.push_back(std::make_tuple(i, j, false));
+    }
+    }
+}
+
+void World::broad_pahse_collision_detection(void){
+    
+    int n_bodies = this->get_number_of_bodies();
+
+    for (int i = 0; i < n_bodies; i++){
+        bodies_aabbs[i] = get_aabb(i);
+    };
+
+    for (int i = 0; i < broad_phase_detections.size(); i++){
+        auto elem = broad_phase_detections[i];
+        int idx_1 = std::get<0>(elem);
+        int idx_2 = std::get<1>(elem);
+
+        broad_phase_detections[i] = std::make_tuple(idx_1, idx_2, 
+            check_broad_phase_collision(bodies_aabbs[idx_1], bodies_aabbs[idx_2])
+        );
+    }
+
+}
+
 // Revolute joints
 RevoluteJointInfo World::get_revolute_joint_info(int id)
 {

@@ -15,11 +15,11 @@ RoboSim (ROBOtics + SIMulator) is a projects that aims to create an easy to use 
 # TODO:
 * [ ] Build intructions/Tutorial
 * [ ] Documentation
-* [ ] Interface Simulator <-> Visualizer
+* [-] Interface Simulator <-> Visualizer (WIP)
 * [ ] **Collisions**
-    * [ ] Add collision shapes
-        * [ ] Sphere
-        * [ ] Box
+    * [-] Add collision shapes
+        * [x] Sphere
+        * [x] Box
         * [ ] Capsule
         * [ ] Plane
         * [ ] Heightmap
@@ -36,7 +36,8 @@ RoboSim (ROBOtics + SIMulator) is a projects that aims to create an easy to use 
         * [ ] Capsule <-> Capsule
         * [ ] Capsule <-> Plane
         * [ ] Capsule <-> Heightmap
-    * [ ] Add collision manifolds
+    * [ ] Add collision manifolds.
+    * [ ] Implement the Sutherland–Hodgman algorithm.
 * [ ] **Constraints**
     * [ ] Contact constraints.
     * [ ] Prismatic joint constraint

@@ -2,6 +2,7 @@
 #include "physics/bodies/Body.hpp"
 #include "Visualizer.hpp"
 #include "physics/World.hpp"
+#include "broad_phase.hpp"
 
 // External libs
 #include <raylib.h>
@@ -14,6 +15,7 @@
 
 struct VisualizationSettings{
     bool show_revolute_joints = false;
+    bool show_bounding_boxes = false;
     int size = 50;
     std::vector<std::pair<int, bool>> enabled_rev_joints;
 };

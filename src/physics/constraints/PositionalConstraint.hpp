@@ -74,4 +74,13 @@ class PositionalConstraint{
         */
         void reset_lagrange_multiplier(void);
 
+        /*
+        * Sets the local constraint positions relative to the bodies 1 and 2.
+        * @param r_1 The constraint position relative to the first body (in the local coordinates of the first body)
+        * @param r_2 The constraint position relative to the second body (in the local coordinates of the second body)
+        */
+        void set_constraint_positions(const vec3 &r_1, const vec3 &r_2);
+
+        scalar get_lagrange_multiplier(void);
+
 };

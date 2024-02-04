@@ -4,8 +4,9 @@
 #include "constraints/PositionalConstraint.hpp"
 #include "constraints/RotationalConstraint.hpp"
 #include "constraints/RevoluteJointConstraint.hpp"
+#include "collisions/broad_phase.hpp"
 #include <vector>
-
+#include <tuple>
 // Create a blank class called World
 namespace robosim
 {
@@ -19,6 +20,10 @@ namespace robosim
         std::vector<PositionalConstraint> positional_constraints;
         std::vector<RotationalConstraint> rotational_constraints;
         std::vector<RevoluteJointConstraint> revolute_joint_constraints;
+
+        // Collision 
+        std::vector<AABB> bodies_aabbs;
+        std::vector<std::tuple<int, int, bool>> broad_phase_detections;
 
         void update_bodies_position_and_orientation(scalar h);
         void solve_positions(scalar inv_h, scalar h);
@@ -56,6 +61,11 @@ namespace robosim
         quat get_body_orientation(int id);
         vec3 get_body_angular_velocity(int id);
         ShapeInfo get_collider_info(int id);
+        AABB get_aabb(int id);
+
+        // Collisions
+        void collisions_detection_preparations(void);
+        void broad_pahse_collision_detection(void);
 
         //
         int create_positional_constraint(int body_1_id,

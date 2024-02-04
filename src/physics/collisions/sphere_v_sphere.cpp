@@ -12,14 +12,13 @@ CollisionResponseData compute_collision_response(vec3 position_1, quat orientati
         return response;
     }
 
-
     response.penetration_depth = penetration;
 
     response.normal = ti::normalize(position_2 - position_1);
 
-    response.collision_manifold[0] = position_1 + response.normal * sphere_1.radius;
+    response.contact_point_1 = position_1 + response.normal * sphere_1.radius;
 
-    response.collision_points = 1;
+    response.contact_point_2 = position_2 - response.normal * sphere_2.radius;
 
     return response;
 

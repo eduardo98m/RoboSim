@@ -31,7 +31,7 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
         if (collider_info.type == ShapeType::BOX)
         {
             Box *box = collider_info.box;
-            int vis_shape_id = visualizer->add_box(position, orientation, RED, box->half_extents.x, box->half_extents.y, box->half_extents.z);
+            int vis_shape_id = visualizer->add_box(position, orientation, RED, box->half_extents.x * 2.0, box->half_extents.y* 2.0, box->half_extents.z* 2.0);
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
         else if (collider_info.type == ShapeType::SPHERE)
@@ -44,7 +44,7 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
         {
             Capsule *capsule = collider_info.capsule;
             // TODO: Create the function to add capsules in the visualizer
-            int vis_shape_id = visualizer->add_cylinder(position, orientation, GREEN, capsule->radius, capsule->height);
+            int vis_shape_id = visualizer->add_cylinder(position, orientation, ORANGE, capsule->radius, capsule->height);
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
     }
@@ -58,6 +58,7 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
     [this, n_revolue_joints](void)
     {
         ImGui::Begin("Visualization Settings");
+        ImGui::Checkbox("Show bounding boxes", &this->settings.show_bounding_boxes);
         ImGui::Text("Revolute Joints");
         ImGui::Separator();
         ImGui::Checkbox("Show Info", &this->settings.show_revolute_joints);
@@ -88,6 +89,11 @@ void Interface::update(void)
             pair.second,
             vec3ToVector3(this->world_->get_body_position(pair.first)),
             quatToQuaternion(this->world_->get_body_orientation(pair.first)));
+        
+        if (this->settings.show_bounding_boxes){
+            AABB aabb = world_->get_aabb(pair.first);
+            this->visualizer_->draw_aabb(vec3ToVector3(aabb.min), vec3ToVector3(aabb.max), GREEN);
+        }
     }
 
     // Revolute Joints

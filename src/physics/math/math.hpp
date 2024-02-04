@@ -62,6 +62,11 @@ namespace ti
     using glm::cos;
     using glm::sin;
 
+    using glm::sqrt;
+
+    using glm::min;
+    using glm::max;
+
     /*l2 norm of the vector i.e: sqrt(x^2 + y^2 + z^2)*/
     scalar magnitude(vec3 v);
 

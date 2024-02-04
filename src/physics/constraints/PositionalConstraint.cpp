@@ -76,3 +76,12 @@ void PositionalConstraint::apply_constraint(scalar inverse_time_step){
 void PositionalConstraint::reset_lagrange_multiplier(void){
     this->lambda = 0;
 }
+
+void PositionalConstraint::set_constraint_positions(const vec3 &r_1, const vec3 &r_2){
+    this->r_1 = r_1;
+    this->r_2 = r_2;
+}
+
+scalar PositionalConstraint::get_lagrange_multiplier(void){
+    return this->lambda;
+}

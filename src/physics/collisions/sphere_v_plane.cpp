@@ -19,9 +19,9 @@ CollisionResponseData compute_collision_response(vec3 position_1, quat orientati
 
     response.normal = plane.normal;
 
-    response.collision_manifold[0] = position_1 - response.normal * distance;
+    // response.collision_manifold[0] = position_1 - response.normal * distance;
 
-    response.collision_points = 1;
+    // response.contact_point_2 = 1;
 
     return response;
 
