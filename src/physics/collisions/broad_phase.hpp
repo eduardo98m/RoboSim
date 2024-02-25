@@ -7,11 +7,13 @@ struct AABB
     vec3 max;
 };
 
-AABB expandAABB(scalar factor);
+AABB expandAABB(AABB aabb, vec3 factor);
 
 AABB compute_AABB(const Sphere &sphere, const vec3 &position, const quat &orientation);
 AABB compute_AABB(const Box &box, const vec3 &position, const quat &orientation);
 AABB compute_AABB(const Capsule &capsule, const vec3 &position, const quat &orientation);
+
+AABB merge_aabb(const AABB& aabb1, const AABB& aabb2);
 
 bool check_broad_phase_collision(const AABB &aabb_1, const AABB &aabb_2);
 

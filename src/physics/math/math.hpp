@@ -67,6 +67,9 @@ namespace ti
     using glm::min;
     using glm::max;
 
+    using glm::abs;
+    using glm::sign;
+
     /*l2 norm of the vector i.e: sqrt(x^2 + y^2 + z^2)*/
     scalar magnitude(vec3 v);
 

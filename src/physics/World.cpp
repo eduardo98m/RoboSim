@@ -13,9 +13,14 @@ void World::step()
     scalar h = this->timestep / this->substeps;
     scalar inv_h = 1 / h;
 
+    this->broad_phase_collision_detection();
+    for (ContactConstraint &constraint : this->contact_contraints)
+    {
+        constraint.reset_lagrange_multipliers();
+    }
     for (int i = 0; i < this->substeps; i++)
     {
-        // this->.narrow_phase_collision()
+
         this->update_bodies_position_and_orientation(h);
         this->solve_positions(inv_h, h);
         this->update_bodies_velocities(inv_h);
@@ -41,6 +46,10 @@ void World::update_bodies_velocities(scalar inv_h)
 
 void World::solve_positions(scalar inv_h, scalar h)
 {
+    for (ContactConstraint &constraint : this->contact_contraints)
+    {
+        constraint.apply_constraint(inv_h);
+    }
     for (PositionalConstraint &constraint : this->positional_constraints)
     {
         constraint.apply_constraint(inv_h);
@@ -57,6 +66,11 @@ void World::solve_positions(scalar inv_h, scalar h)
 }
 void World::solve_velocities(scalar h)
 {
+    for (ContactConstraint &constraint : this->contact_contraints)
+    {
+        constraint.apply_constraint_velocity_level(h);
+    }
+
     for (RevoluteJointConstraint &constraint : this->revolute_joint_constraints)
     {
         constraint.apply_joint_damping(h);
@@ -102,18 +116,25 @@ int World::create_body(vec3 position,
     return World::add_body(body);
 }
 
-void World::set_body_box_collider(int id, vec3 half_extents){
+void World::set_body_plane_collider(int id, vec3 normal, scalar offset)
+{
+    this->bodies[id].set_plane_collider(normal, offset);
+}
+
+void World::set_body_box_collider(int id, vec3 half_extents)
+{
     this->bodies[id].set_box_collider(half_extents);
 }
 
-void World::set_body_sphere_collider(int id, scalar radius){
+void World::set_body_sphere_collider(int id, scalar radius)
+{
     this->bodies[id].set_sphere_collider(radius);
 }
 
-void World::set_body_capsule_collider(int id, scalar radius, scalar height){
+void World::set_body_capsule_collider(int id, scalar radius, scalar height)
+{
     this->bodies[id].set_capsule_collider(radius, height);
 }
-
 
 int World::create_positional_constraint(int body_1_id, int body_2_id, vec3 r_1, vec3 r_2, scalar compliance, scalar damping)
 {
@@ -189,6 +210,17 @@ int World::create_revolute_constraint(int body_1_id,
     return (int)(this->revolute_joint_constraints.size() - 1);
 }
 
+int World::create_contact_constraint(int body_1_id,
+                                     int body_2_id)
+{
+
+    ContactConstraint constraint = ContactConstraint(&this->bodies[body_1_id],
+                                                     &this->bodies[body_2_id]);
+
+    this->contact_contraints.push_back(constraint);
+    return (int)(this->contact_contraints.size() - 1);
+}
+
 int World::add_rotational_constraint(RotationalConstraint constraint)
 {
     this->rotational_constraints.push_back(constraint);
@@ -219,54 +251,143 @@ AABB World::get_aabb(int id)
 {
     ShapeInfo info = this->bodies[id].collider_info;
 
-    if (info.type ==  ShapeType::CAPSULE){
-        return compute_AABB(*info.capsule, this->bodies[id].position, this->bodies[id].orientation);
+    AABB aabb = AABB{.min = vec3{0.0, 0.0, 0.0}, .max = vec3{0.0, 0.0, 0.0}};
+
+    if (info.type == ShapeType::CAPSULE)
+    {
+        aabb = compute_AABB(*info.capsule, this->bodies[id].position, this->bodies[id].orientation);
     }
 
-    if (info.type ==  ShapeType::SPHERE){
-        return compute_AABB(*info.sphere, this->bodies[id].position, this->bodies[id].orientation);
+    if (info.type == ShapeType::SPHERE)
+    {
+        aabb = compute_AABB(*info.sphere, this->bodies[id].position, this->bodies[id].orientation);
     }
 
-    if (info.type ==  ShapeType::BOX){
-        return compute_AABB(*info.box, this->bodies[id].position, this->bodies[id].orientation);
+    if (info.type == ShapeType::BOX)
+    {
+        aabb =  compute_AABB(*info.box, this->bodies[id].position, this->bodies[id].orientation);
     }
 
-    return AABB {.min = vec3{0.0, 0.0, 0.0}, .max = vec3{0.0, 0.0, 0.0} };
+    // vec3 expansion_factor = ti::abs(2.0 * this->bodies[id].linear_velocity * this->timestep);
+    // aabb = AABB{
+    //     .min = aabb.min - expansion_factor,
+    //     .max = aabb.max + expansion_factor,
+    // };
+    
+
+    return aabb;
 }
 
-void World::collisions_detection_preparations(void) {
-    
+void World::collisions_detection_preparations(void)
+{
+
     int n_bodies = this->get_number_of_bodies();
-    for (int i = 0; i < n_bodies; i++){
-        bodies_aabbs.push_back(get_aabb(i));
+
+    for (int i = 0; i < (n_bodies - 1); i++)
+    {
+        for (int j = i + 1; j < n_bodies; j++)
+        {
+            int  id = this->create_contact_constraint(i, j);
+            body_pair_to_contact_constraint_map.insert({{i,j}, id});
+        }
+    }
+}
+
+// Collisions
+void World::broad_phase_collision_detection(void)
+{
+
+    // static int frames = 0;
+    // frames ++;
+    // if (frames%1 == 0){
+    //     std::vector<AABB> batch_aabbs;
+    //     batch_aabbs.reserve(bodies.size());
+
+    //     for (int i = 0; i < bodies.size(); i++)
+    //     {   
+    //         AABB aabb = get_aabb(i);
+
+    //         vec3 expansion_factor = ti::abs(2.0 * this->bodies[i].linear_velocity * timestep);
+    //         aabb = AABB{
+    //             .min = aabb.min - expansion_factor,
+    //             .max = aabb.max + expansion_factor,
+    //         };
+
+    //         batch_aabbs.push_back(aabb);
+    //     }
+
+    //     this->aabb_tree.build(batch_aabbs);
+    // }
+
+    
+    // for (int i = 0; i < bodies.size(); i++)
+    // {
+    //     if (bodies[i].type == BodyType::STATIC) continue;
+    //     AABB aabb = get_aabb(i);
+
+    //     vec3 expansion_factor = ti::abs(2.0 * this->bodies[i].linear_velocity * timestep);
+    //     aabb = AABB{
+    //         .min = aabb.min - expansion_factor,
+    //         .max = aabb.max + expansion_factor,
+    //     };
+
+    //     std::vector<int> results = this->aabb_tree.query(aabb);
         
-    };
+    //     for (int id : results)
+    //     {
+    //         if (id <= i) continue;
+            
+    //         int constraint_index = body_pair_to_contact_constraint_map[{i, id}];
+    //         this->contact_contraints[constraint_index].broad_phase_detection = true;
+    //     }
+    // }
 
-    for (int i = 0; i < (n_bodies - 1); i++){
-        for (int j = i+1; j < n_bodies; j++){
-            broad_phase_detections.push_back(std::make_tuple(i, j, false));
+    //  // Check plane collisions
+    // int plane_id = this->plane_body_idx;
+    // for (int i = 0; i < bodies.size(); i++) {
+    //     if (bodies[i].type == STATIC) continue;
+
+    //     AABB aabb = get_aabb(i);
+
+    //     vec3 expansion_factor = ti::abs(2.0 * this->bodies[i].linear_velocity * timestep);
+    //     aabb = AABB{
+    //         .min = aabb.min - expansion_factor,
+    //         .max = aabb.max + expansion_factor,
+    //     };
+
+
+    //     // Check plane vs body AABB
+    //     if (check_broad_phase_collision(aabb, *bodies[plane_id].collider_info.plane)) {
+    //         std::pair<int, int> key = (plane_id < i) ? std::make_pair(plane_id, i) : std::make_pair(i, plane_id);
+    //         int constraint_index = body_pair_to_contact_constraint_map[key];
+    //         this->contact_contraints[constraint_index].broad_phase_detection = true; 
+    //     }
+    // };
+
+    for (ContactConstraint &constraint : this->contact_contraints)
+    {
+        constraint.check_broad_phase(timestep);
     }
-    }
+      
 }
 
-void World::broad_pahse_collision_detection(void){
-    
-    int n_bodies = this->get_number_of_bodies();
+// Adding plane:
+int World::add_plane(vec3 normal, scalar offset)
+{
+    normal = ti::normalize(normal);
+    this->plane_body_idx = this->create_body(vec3(0.0, 0.0, 0.0),
+                                             quat(1.0, 0.0, 0.0, 0.0),
+                                             vec3(0.0, 0.0, 0.0),
+                                             vec3(0.0, 0.0, 0.0),
+                                             1.0,
+                                             1.0 * mat3(1.0, 0.0, 0.0,
+                                                        0.0, 1.0, 0.0,
+                                                        0.0, 0.0, 1.0),
+                                             BodyType::STATIC);
 
-    for (int i = 0; i < n_bodies; i++){
-        bodies_aabbs[i] = get_aabb(i);
-    };
+    this->set_body_plane_collider(this->plane_body_idx, normal, offset);
 
-    for (int i = 0; i < broad_phase_detections.size(); i++){
-        auto elem = broad_phase_detections[i];
-        int idx_1 = std::get<0>(elem);
-        int idx_2 = std::get<1>(elem);
-
-        broad_phase_detections[i] = std::make_tuple(idx_1, idx_2, 
-            check_broad_phase_collision(bodies_aabbs[idx_1], bodies_aabbs[idx_2])
-        );
-    }
-
+    return this->plane_body_idx;
 }
 
 // Revolute joints
@@ -280,7 +401,7 @@ void World::set_revolute_joint_target_angle(int id, scalar angle)
     this->revolute_joint_constraints[id].set_traget_angle(angle);
 }
 
-void World::set_revolute_joint_target_speed(int id, scalar speed) 
+void World::set_revolute_joint_target_speed(int id, scalar speed)
 {
     this->revolute_joint_constraints[id].set_target_speed(speed);
 }

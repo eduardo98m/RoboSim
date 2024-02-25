@@ -1,18 +1,8 @@
 #include "collisions.hpp"
 
-CollisionResponseData compute_collision_response(vec3 position_1, quat orientation_1, vec3 position_2, quat orientation_2, Sphere sphere_1, Sphere sphere_2){
+CollisionResponse compute_collision_response(const vec3& position_1, const vec3&  position_2, const Sphere &sphere_1, const Sphere & sphere_2){
 
-    CollisionResponseData response = CollisionResponseData();
-
-    // Calculate the penetration
-    scalar penetration = sphere_1.radius + sphere_2.radius - ti::magnitude(position_2 - position_1);
-
-    if (penetration < 0){
-        response.collision = false;
-        return response;
-    }
-
-    response.penetration_depth = penetration;
+    CollisionResponse response = CollisionResponse();
 
     response.normal = ti::normalize(position_2 - position_1);
 

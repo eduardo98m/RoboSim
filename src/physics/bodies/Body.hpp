@@ -10,23 +10,20 @@ enum BodyType
 
 struct ShapeInfo
 {
-    ShapeType type;
+    ShapeType type = ShapeType::NONE;
     union
     {
         Box *box;
         Sphere *sphere;
         Capsule *capsule;
+        Plane *plane;
     };
 };
 
 class Body
 {
 private:
-    BodyType type;
-    /* Vectors for storing the previous positions, orientations and velocities*/
-    vec3 prev_linear_velocity;
-    vec3 prev_angular_velocity;
-
+    
     /* linear and angular force */
     vec3 force = {0.0, 0.0, 0.0};
     vec3 torque = {0.0, 0.0, 0.0};
@@ -45,10 +42,14 @@ private:
     // Collider * collider;
 
 public:
+    BodyType type;
     vec3 position;
     quat orientation;
     vec3 prev_position;
     quat prev_orientation;
+    /* Vectors for storing the previous positions, orientations and velocities*/
+    vec3 prev_linear_velocity;
+    vec3 prev_angular_velocity;
 
     ShapeInfo collider_info;
 
@@ -126,4 +127,6 @@ public:
     void set_sphere_collider(scalar radius);
 
     void set_capsule_collider(scalar radius, scalar height);
+
+    void set_plane_collider(vec3 normal, scalar offset);
 };

@@ -47,7 +47,19 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
             int vis_shape_id = visualizer->add_cylinder(position, orientation, ORANGE, capsule->radius, capsule->height);
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
+        else if (collider_info.type == ShapeType::PLANE){
+            Plane *plane = collider_info.plane;
+            
+            float offset  = plane->offset;
+            position = vec3ToVector3(plane->normal * plane->offset);
+            orientation = QuaternionFromVector3ToVector3({0.0, 1.0, 0.0}, vec3ToVector3(plane->normal));
+            int vis_shape_id = visualizer->add_plane(position, orientation, LIGHTGRAY, 100.0, 100.0);
+            this->body_to_visual_shape.push_back({body_id, vis_shape_id});
+        }
     }
+    // Add the plane if there is any:
+    
+
 
     int n_revolue_joints = this->world_->get_number_of_revolute_joints();
     for (int i=0; i<n_revolue_joints; i++){
@@ -85,6 +97,8 @@ void Interface::update(void)
     // Bodies
     for (auto pair : this->body_to_visual_shape)
     {
+        if (pair.first == plane_idx) {continue;}
+
         this->visualizer_->update_visual_object_position_orientation(
             pair.second,
             vec3ToVector3(this->world_->get_body_position(pair.first)),

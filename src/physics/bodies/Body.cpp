@@ -51,6 +51,7 @@ void Body::set_gravity(vec3 gravity)
 
 scalar Body::get_positional_generalized_inverse_mass(vec3 r, vec3 n)
 {
+    if (this->type == BodyType::STATIC) return 0.0;
     this->update_inertia_tensor_world();
     vec3 cross_r_n = ti::cross(r, n);
     return this->inverse_mass + ti::dot(cross_r_n, this->inverse_inertia_tensor_world * cross_r_n);
@@ -151,7 +152,7 @@ void Body::apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r){
 
     if (this->type == BodyType::STATIC) return;
     // Update the orientation
-    this->position += impulse * this->inverse_mass;
+    this->linear_velocity += impulse * this->inverse_mass;
 
     this->angular_velocity += this->inverse_inertia_tensor_world  * ti::cross(r, impulse);
 
@@ -171,4 +172,9 @@ void Body::set_sphere_collider(scalar radius){
 void Body::set_capsule_collider(scalar radius, scalar height){
     this->collider_info.type  = ShapeType::CAPSULE;
     this->collider_info.capsule = new Capsule{radius = radius, height = height};
+}
+
+void Body::set_plane_collider(vec3 normal, scalar offset){
+    this->collider_info.type  = ShapeType::PLANE;
+    this->collider_info.plane = new Plane{normal = normal, offset = offset};
 }

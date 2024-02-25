@@ -4,9 +4,13 @@
 #include "constraints/PositionalConstraint.hpp"
 #include "constraints/RotationalConstraint.hpp"
 #include "constraints/RevoluteJointConstraint.hpp"
+#include "constraints/ContactConstraint.hpp"
 #include "collisions/broad_phase.hpp"
+#include "collisions/collisions.hpp"
 #include <vector>
 #include <tuple>
+#include <map>
+#include "aabb_tree.hpp"
 // Create a blank class called World
 namespace robosim
 {
@@ -20,10 +24,19 @@ namespace robosim
         std::vector<PositionalConstraint> positional_constraints;
         std::vector<RotationalConstraint> rotational_constraints;
         std::vector<RevoluteJointConstraint> revolute_joint_constraints;
+        std::vector<ContactConstraint> contact_contraints;
+
+        std::map<std::pair<int, int>, int> body_pair_to_contact_constraint_map;
 
         // Collision 
         std::vector<AABB> bodies_aabbs;
         std::vector<std::tuple<int, int, bool>> broad_phase_detections;
+        AABBTree aabb_tree = AABBTree();
+
+        // Planes
+        // Static body used to solve the plane contact constraints
+        int plane_body_idx = -1; // Default (-1) (you wont get anything!)
+
 
         void update_bodies_position_and_orientation(scalar h);
         void solve_positions(scalar inv_h, scalar h);
@@ -50,10 +63,11 @@ namespace robosim
                         mat3 inertia_tensor = mat3(1.0, 0.0, 0.0,
                                                    0.0, 1.0, 0.0,
                                                    0.0, 0.0, 1.0),
-                        BodyType type = DYNAMIC);
+                        BodyType type = BodyType::DYNAMIC);
         void set_body_box_collider(int id, vec3 half_extents);
         void set_body_sphere_collider(int id, scalar radius);
         void set_body_capsule_collider(int id, scalar radius, scalar height);
+        void set_body_plane_collider(int id, vec3 normal, scalar offset);
         int get_number_of_bodies();
 
         // Body info
@@ -65,7 +79,14 @@ namespace robosim
 
         // Collisions
         void collisions_detection_preparations(void);
-        void broad_pahse_collision_detection(void);
+        void broad_phase_collision_detection(void);
+        void narrow_phase_collisions(scalar inverse_timestep);
+        void narrow_phase_collisions_velocity_level(scalar timestep);
+
+        /*
+        * Creates a contact contraint between two bodies
+        */
+        int create_contact_constraint(int body_1_id, int body_2_id);
 
         //
         int create_positional_constraint(int body_1_id,
@@ -108,5 +129,10 @@ namespace robosim
         void set_revolute_joint_target_speed(int id, scalar speed);
 
         // Getting Body info
+
+
+        // Functions for adding planes and heightmaps (These should be process separately)
+        int add_plane(vec3 normal, scalar offset);
+        std::tuple<bool,int, Plane> get_plane_info(void);
     };
 } // namespace robosim

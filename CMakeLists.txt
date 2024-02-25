@@ -11,6 +11,7 @@ set(SOURCES
 
 set(COLLISION_SOURCES
     "src/physics/collisions/broad_phase.cpp"
+    "src/physics/collisions/aabb_tree.cpp"
     "src/physics/collisions/sphere_v_sphere.cpp"
     "src/physics/collisions/sphere_v_plane.cpp"
     )

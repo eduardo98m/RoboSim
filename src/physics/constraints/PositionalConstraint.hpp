@@ -25,9 +25,10 @@ class PositionalConstraint{
         scalar compliance;
         // Damping
         scalar damping;
+        
+    public:
         // Force value of the constraint
         vec3 force;
-    public:
         // Constructor
         /*
         * Class constructor

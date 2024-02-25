@@ -52,6 +52,23 @@ AABB compute_AABB(const Capsule &capsule, const vec3 &position, const quat &orie
     return aabb;
 }
 
+AABB merge_aabb(const AABB& aabb1, const AABB& aabb2) {
+
+  vec3 min_point = vec3(
+    std::min(aabb1.min.x, aabb2.min.x),
+    std::min(aabb1.min.y, aabb2.min.y),
+    std::min(aabb1.min.z, aabb2.min.z)
+  );
+
+  vec3 max_point = vec3(
+    std::max(aabb1.max.x, aabb2.max.x),
+    std::max(aabb1.max.y, aabb2.max.y), 
+    std::max(aabb1.max.z, aabb2.max.z)
+  );
+
+  return AABB{min_point, max_point};
+}
+
 // AABB collision dectection using the separating axes theorem
 bool check_broad_phase_collision(const AABB &aabb_1, const AABB &aabb_2)
 {

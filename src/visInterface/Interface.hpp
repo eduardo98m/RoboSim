@@ -6,6 +6,7 @@
 
 // External libs
 #include <raylib.h>
+#include <raymath.h>
 #include <memory>
 #include "imgui.h"
 
@@ -27,6 +28,7 @@ private:
 
     std::shared_ptr<robosim::World> world_;
     std::shared_ptr<Visualizer> visualizer_;
+    int plane_idx;
 
     VisualizationSettings settings;
 public:

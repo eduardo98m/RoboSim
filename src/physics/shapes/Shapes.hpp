@@ -14,6 +14,7 @@
  */
 enum class ShapeType
 {
+    NONE,       ///< Empty shape type (Used fo bodies that do not have a collision shape )
     BOX,        ///< Box shape.
     SPHERE,     ///< Sphere shape.
     CAPSULE,    ///< Capsule shape.
