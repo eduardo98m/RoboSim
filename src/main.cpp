@@ -30,7 +30,8 @@ int main(int argc, char *argv[]){
     // Create a dynamic body
     vec3 pos = vec3{0.0, 0.0, 12.0};
     
-    vec3 lin_vel = vec3{0.0, 0.0, 0.0};
+    vec3 lin_vel = vec3{0.01
+    , 0.0, 0.0};
     vec3 ang_vel = vec3{0.0, 1.1, 0.0};
     scalar mass = 1.0;
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
@@ -51,7 +52,7 @@ int main(int argc, char *argv[]){
 
     robosim::World world = robosim::World(0.01, 60); 
 
-    quat ori = quat({ 0.0, 0.0, 0.0, });//ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0);
+    quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 2.0);
     std::cout << "ori" << ori << "\n"; 
 
 
@@ -69,8 +70,8 @@ int main(int argc, char *argv[]){
     // uint floor = world.create_body({0.0, -2000.0, 0.0}, ori, lin_vel, ang_vel, mass, inertia_tensor, BodyType::STATIC);
     // world.set_body_sphere_collider(floor, 2000.0);
 
-    uint base_id = world.create_body({0.0, 2.0, 0.0}, ori, lin_vel, ang_vel, mass, inertia_tensor, DYNAMIC);
-    //world.set_body_capsule_collider(base_id, 0.5, 0.1);
+    uint base_id = world.create_body({0.0, 2.0, 0.0}, ori, lin_vel, ang_vel, mass, inertia_tensor, STATIC);
+    //world.set_body_box_collider(base_id, vec3(0.1, 0.5, 0.1));
     world.set_body_sphere_collider(base_id, 0.3);
 
     uint ball_1_id = world.create_body({0.0, 5.0, 0.0}, ori, lin_vel, ang_vel, 12.0 * mass, ( .7 * mass/12) * inertia_tensor, DYNAMIC);
@@ -89,31 +90,31 @@ int main(int argc, char *argv[]){
     //world.set_body_box_collider(ball_4_id, vec3(0.1, 0.75, 0.1));
     world.set_body_sphere_collider(ball_4_id, 0.2);
 
-    uint ball_5_id = world.create_body({0.0, 7.0, 0.0}, ori, lin_vel, ang_vel,  0.2*mass,  ( 0.2*mass/12) *  inertia_tensor, DYNAMIC);
-    world.set_body_sphere_collider(ball_5_id, 0.2);
+    // uint ball_5_id = world.create_body({0.0, 7.0, 0.0}, ori, lin_vel, ang_vel,  0.2*mass,  ( 0.2*mass/12) *  inertia_tensor, DYNAMIC);
+    // world.set_body_sphere_collider(ball_5_id, 0.2);
     
-    uint ball_6_id = world.create_body({0.0, 8.0, 0.0}, ori, lin_vel, ang_vel,  0.3*mass, ( 0.3*mass/12) * inertia_tensor, DYNAMIC);
-    world.set_body_sphere_collider(ball_6_id, 0.2);
+    // uint ball_6_id = world.create_body({0.0, 8.0, 0.0}, ori, lin_vel, ang_vel,  0.3*mass, ( 0.3*mass/12) * inertia_tensor, DYNAMIC);
+    // world.set_body_sphere_collider(ball_6_id, 0.2);
 
-    uint ball_7_id = world.create_body({0.0, 9.0, 0.0}, ori, lin_vel, ang_vel, mass, ( 1.0/12) * inertia_tensor, DYNAMIC);
-    world.set_body_sphere_collider(ball_7_id, 0.2);
+    // uint ball_7_id = world.create_body({0.0, 9.0, 0.0}, ori, lin_vel, ang_vel, mass, ( 1.0/12) * inertia_tensor, DYNAMIC);
+    // world.set_body_sphere_collider(ball_7_id, 0.2);
 
-    uint ball_8_id = world.create_body({0.0, 10.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
-    world.set_body_sphere_collider(ball_8_id, 0.2);
+    // uint ball_8_id = world.create_body({0.0, 10.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass,  ( 1.0/12) *  inertia_tensor, DYNAMIC);
+    // world.set_body_sphere_collider(ball_8_id, 0.2);
 
-    uint ball_9_id = world.create_body({0.0, 11.0, 0.0}, ori, lin_vel, ang_vel, 0.1 * mass, ( 00.1/12) * inertia_tensor, DYNAMIC);
-    world.set_body_sphere_collider(ball_9_id, 0.2);
+    // uint ball_9_id = world.create_body({0.0, 11.0, 0.0}, ori, lin_vel, ang_vel, 0.1 * mass, ( 00.1/12) * inertia_tensor, DYNAMIC);
+    // world.set_body_sphere_collider(ball_9_id, 0.2);
 
-    uint ball_10_id = world.create_body({0.0, 12.0, 0.1}, ori, lin_vel, ang_vel, 1*mass, ( 10.0/12) * inertia_tensor, DYNAMIC);
-    world.set_body_sphere_collider(ball_10_id, 0.2);
+    // uint ball_10_id = world.create_body({0.0, 12.0, 0.1}, ori, lin_vel, ang_vel, 1*mass, ( 10.0/12) * inertia_tensor, DYNAMIC);
+    // world.set_body_sphere_collider(ball_10_id, 0.2);
 
 
     const int s = 1000; // 10x10x10 grid
     const float X_MIN = -1.5f, X_MAX = 1.5f;
-    const float Y_MIN = 0.1f, Y_MAX = 3.1f;
+    const float Y_MIN = 1.1f, Y_MAX = 3.1f;
     const float Z_MIN = -1.5f, Z_MAX = 1.5f;
     const float RADIUS = 0.2f;
-    const int GRID_SIZE = 5;
+    const int GRID_SIZE = 4;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -137,9 +138,10 @@ int main(int argc, char *argv[]){
         }
     }
 
-    // Now you can use these positions to create the balls programmatically
+    //Now you can use these positions to create the balls programmatically
     for (const auto& position : ball_positions) {
         int ball_id = world.create_body(position, ori, vec3{1.1, 0.0, 0.0}, ang_vel, 1*mass, ( 10.0/12) * inertia_tensor, DYNAMIC);
+        //world.set_body_box_collider(ball_id, {RADIUS,RADIUS,RADIUS});
         world.set_body_sphere_collider(ball_id, RADIUS);
     }
     
@@ -147,13 +149,13 @@ int main(int argc, char *argv[]){
 
 
     vec3 axis = {0.0, 0.0, 1.0};
-    // int joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-9,  1e9,  FREE, false, -0.8, 0.8);
-    // int joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  0,  150,  FREE, false, -0.5, 0.5);
-    // int joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-5,  1e-4,  FREE, false, -0.0, 0.0);
-    // int joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-6,  1e-4,  FREE, false, -0.0, 0.0);
-    // int joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4,  1e-4,  FREE, false, -0.0, 0.0);
-    // world.create_revolute_constraint(ball_5_id, ball_6_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4, 1e-4,  FREE, false, -0.0, 0.0);
-    //world.create_revolute_constraint(ball_6_id, ball_7_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e4,  FREE, false, -0.0, 0.0);
+    // int joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 10,  1e9,  FREE, false, -0.8, 0.8);
+    // int joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  10,  150,  FREE, false, -0.5, 0.5);
+    // int joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  1e-4,  FREE, false, -0.0, 0.0);
+    // int joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 10,  1e-4,  FREE, false, -0.0, 0.0);
+    // int joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 10,  1e-4,  FREE, false, -0.0, 0.0);
+    // world.create_revolute_constraint(ball_5_id, ball_6_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 10, 1e-4,  FREE, false, -0.0, 0.0);
+    // world.create_revolute_constraint(ball_6_id, ball_7_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e4,  FREE, false, -0.0, 0.0);
     // world.create_revolute_constraint(ball_7_id, ball_8_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e4,  FREE, false, -0.0, 0.0);
     // world.create_revolute_constraint(ball_8_id, ball_9_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e4,  FREE, false, -0.0, 0.0);
     // world.create_revolute_constraint(ball_9_id, ball_10_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0, 1e4,  FREE, false, -0.0, 0.0);

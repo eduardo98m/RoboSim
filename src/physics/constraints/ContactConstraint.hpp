@@ -20,7 +20,7 @@ class ContactConstraint{
         // Positional Constraints (Normal and tangencial)
         PositionalConstraint *normal_constraint;
         PositionalConstraint *tangencial_constraint;
-        CollisionResponse collision_response;
+        
         scalar relative_velocity;
 
         vec3 previous_p1;
@@ -31,7 +31,10 @@ class ContactConstraint{
         
     
     public:
+        // Collision points and normal vector.
+        CollisionResponse collision_response;
         bool broad_phase_detection;
+        bool collision;
         ContactConstraint(Body *body_1, Body *body_2);
         void check_broad_phase(scalar time_step);
         void calculate_narrow_phase_collision_response(void);

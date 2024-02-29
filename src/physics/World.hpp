@@ -24,7 +24,7 @@ namespace robosim
         std::vector<PositionalConstraint> positional_constraints;
         std::vector<RotationalConstraint> rotational_constraints;
         std::vector<RevoluteJointConstraint> revolute_joint_constraints;
-        std::vector<ContactConstraint> contact_contraints;
+        
 
         std::map<std::pair<int, int>, int> body_pair_to_contact_constraint_map;
 
@@ -44,6 +44,7 @@ namespace robosim
         void solve_velocities(scalar inv_h);
 
     public:
+        std::vector<ContactConstraint> contact_contraints;
         // Constructor
         World(scalar timestep = 0.01, int substeps = 20);
         // Destructor
@@ -82,6 +83,7 @@ namespace robosim
         void broad_phase_collision_detection(void);
         void narrow_phase_collisions(scalar inverse_timestep);
         void narrow_phase_collisions_velocity_level(scalar timestep);
+        void get_contact_info();
 
         /*
         * Creates a contact contraint between two bodies

@@ -14,6 +14,10 @@ set(COLLISION_SOURCES
     "src/physics/collisions/aabb_tree.cpp"
     "src/physics/collisions/sphere_v_sphere.cpp"
     "src/physics/collisions/sphere_v_plane.cpp"
+    "src/physics/collisions/sphere_v_box.cpp"
+    "src/physics/collisions/box_v_box.cpp"
+    "src/physics/collisions/plane_v_box.cpp"
+    "src/physics/collisions/collision_utils.cpp"
     )
 
 set(PHYSICS_SOURCES

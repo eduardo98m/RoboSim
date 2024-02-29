@@ -9,16 +9,17 @@ ContactConstraint::ContactConstraint(Body *body_1,
     vec3 r_1(0.0, 0.0, 0.0);
     vec3 r_2(0.0, 0.0, 0.0);
 
-    this->tangencial_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0, 0);
-    this->normal_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0, 0);
+    this->tangencial_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
+    this->normal_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
 
-    this->static_fricction_coeff = 0.5;
+    this->static_fricction_coeff = 12.5;
 }
 
 void ContactConstraint::apply_constraint(scalar inverse_time_step)
 {
     if (!this->broad_phase_detection)
     {
+        this->collision = false;
         return;
     }
 
@@ -29,8 +30,10 @@ void ContactConstraint::apply_constraint(scalar inverse_time_step)
 
     if (d <= 0)
     {
+        this->collision = false;
         return;
     }
+    this->collision = true;
 
     vec3 r_1_wc = this->collision_response.contact_point_1 - this->body_1->position;
     vec3 r_2_wc = this->collision_response.contact_point_2 - this->body_2->position;
@@ -219,7 +222,7 @@ void ContactConstraint::calculate_narrow_phase_collision_response(void)
             *body_2->collider_info.sphere);
     }
 
-    if (body_1->collider_info.type == ShapeType::PLANE &&
+    else if (body_1->collider_info.type == ShapeType::PLANE &&
         body_2->collider_info.type == ShapeType::SPHERE)
     {
         this->collision_response = compute_collision_response(
@@ -231,12 +234,78 @@ void ContactConstraint::calculate_narrow_phase_collision_response(void)
                   this->collision_response.contact_point_2);
     }
 
-    if (body_1->collider_info.type == ShapeType::SPHERE &&
+    else if (body_1->collider_info.type == ShapeType::SPHERE &&
         body_2->collider_info.type == ShapeType::PLANE)
     {
         this->collision_response = compute_collision_response(
             body_1->position,
             *body_1->collider_info.sphere,
             *body_2->collider_info.plane);
+    }
+
+    else if (body_1->collider_info.type == ShapeType::BOX &&
+        body_2->collider_info.type == ShapeType::BOX)
+    {
+        // this->collision_response = compute_collision_response(
+        //     body_1->position,
+        //     body_1->orientation,
+        //     body_2->position,
+        //     body_2->orientation,
+        //     *body_1->collider_info.box,
+        //     *body_2->collider_info.box);
+    }
+
+    else if (body_1->collider_info.type == ShapeType::PLANE &&
+        body_2->collider_info.type == ShapeType::BOX)
+    {
+        this->collision_response = compute_collision_response(
+            body_2->position,
+            body_2->orientation,
+            *body_2->collider_info.box,
+            *body_1->collider_info.plane);
+        
+        std::swap(this->collision_response.contact_point_1,
+                  this->collision_response.contact_point_2);
+
+        
+    }
+
+    else if (body_1->collider_info.type == ShapeType::BOX &&
+        body_2->collider_info.type == ShapeType::PLANE)
+    {
+        this->collision_response = compute_collision_response(
+            body_1->position,
+            body_1->orientation,
+            *body_1->collider_info.box,
+            *body_2->collider_info.plane);
+        std::cerr << "Hola\n";
+        
+        
+    }
+
+    else if (body_1->collider_info.type == ShapeType::SPHERE &&
+        body_2->collider_info.type == ShapeType::BOX)
+    {
+        this->collision_response = compute_collision_response(
+            body_2->position,
+            body_2->orientation,
+            body_1->position,
+            *body_2->collider_info.box,
+            *body_1->collider_info.sphere);
+        
+        std::swap(this->collision_response.contact_point_1,
+                  this->collision_response.contact_point_2);
+        
+    }
+
+    else if (body_1->collider_info.type == ShapeType::BOX &&
+        body_2->collider_info.type == ShapeType::SPHERE)
+    {        
+        this->collision_response = compute_collision_response(
+            body_1->position,
+            body_1->orientation,
+            body_2->position,
+            *body_1->collider_info.box,
+            *body_2->collider_info.sphere);
     }
 }

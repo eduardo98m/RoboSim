@@ -17,6 +17,7 @@
 struct VisualizationSettings{
     bool show_revolute_joints = false;
     bool show_bounding_boxes = false;
+    bool show_contact_points = true;
     int size = 50;
     std::vector<std::pair<int, bool>> enabled_rev_joints;
 };
