@@ -18,6 +18,11 @@ set(COLLISION_SOURCES
     "src/physics/collisions/box_v_box.cpp"
     "src/physics/collisions/plane_v_box.cpp"
     "src/physics/collisions/collision_utils.cpp"
+    "src/physics/collisions/support_function.cpp"
+    "src/physics/collisions/simplex.cpp"
+    "src/physics/collisions/collider.cpp"
+    "src/physics/collisions/gjk.cpp"
+    "src/physics/collisions/epa.cpp"
     )
 
 set(PHYSICS_SOURCES
@@ -54,6 +59,11 @@ set(
 )
 
 
+set(
+    DEMOS_INCLUDE_DIRS
+    "scenarios"
+)
+
 # GLEW
 find_package(GLEW REQUIRED) # Im using GLEW 2.2.0
 find_package(raylib REQUIRED)
@@ -69,5 +79,5 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${P
 
 
 
-target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} "src/RoboVis/src" ${INTERFACE_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} "src/RoboVis/src" ${INTERFACE_INCLUDE_DIRS} ${DEMOS_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE RoboVis raylib )
