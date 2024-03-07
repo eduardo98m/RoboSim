@@ -20,6 +20,10 @@ typedef double scalar;
 typedef double scalar;
 #endif
 
+typedef glm::vec<2, scalar> vec2;
+std::string ToString(const vec2 &v, int precision = 4);
+std::ostream &operator<<(std::ostream &os, const vec2 &v);
+
 typedef glm::vec<3, scalar> vec3;
 std::string ToString(const vec3 &v, int precision = 4);
 std::ostream &operator<<(std::ostream &os, const vec3 &v);

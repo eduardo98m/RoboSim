@@ -17,6 +17,22 @@ namespace ti
     }
 };
 
+std::string ToString(const vec2 &v, int precision)
+{
+    std::stringstream ss;
+    ss << "[ ";
+    ss << std::fixed << std::setprecision(precision) << v.x << ", ";
+    ss << std::fixed << std::setprecision(precision) << v.y;
+    ss << " ]";
+    return ss.str();
+}
+
+std::ostream &operator<<(std::ostream &os, const vec2 &v)
+{
+    os << ToString(v, 4);
+    return os;
+}
+
 std::string ToString(const vec3 &v, int precision)
 {
     std::stringstream ss;
