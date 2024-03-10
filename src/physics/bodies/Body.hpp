@@ -8,17 +8,6 @@ enum BodyType
     DYNAMIC
 };
 
-struct ShapeInfo
-{
-    ShapeType type = ShapeType::NONE;
-    union
-    {
-        Box *box;
-        Sphere *sphere;
-        Capsule *capsule;
-        Plane *plane;
-    };
-};
 
 class Body
 {

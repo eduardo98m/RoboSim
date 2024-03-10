@@ -9,6 +9,8 @@ struct AABB
 
 AABB expandAABB(AABB aabb, vec3 factor);
 
+AABB compute_AABB(const ShapeInfo &shape, const vec3 &position, const quat &orientation);
+
 AABB compute_AABB(const Sphere &sphere, const vec3 &position, const quat &orientation);
 AABB compute_AABB(const Box &box, const vec3 &position, const quat &orientation);
 AABB compute_AABB(const Capsule &capsule, const vec3 &position, const quat &orientation);

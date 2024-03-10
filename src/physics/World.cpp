@@ -251,22 +251,7 @@ AABB World::get_aabb(int id)
 {
     ShapeInfo info = this->bodies[id].collider_info;
 
-    AABB aabb = AABB{.min = vec3{0.0, 0.0, 0.0}, .max = vec3{0.0, 0.0, 0.0}};
-
-    if (info.type == ShapeType::CAPSULE)
-    {
-        aabb = compute_AABB(*info.capsule, this->bodies[id].position, this->bodies[id].orientation);
-    }
-
-    if (info.type == ShapeType::SPHERE)
-    {
-        aabb = compute_AABB(*info.sphere, this->bodies[id].position, this->bodies[id].orientation);
-    }
-
-    if (info.type == ShapeType::BOX)
-    {
-        aabb =  compute_AABB(*info.box, this->bodies[id].position, this->bodies[id].orientation);
-    }
+    AABB aabb = compute_AABB(info, this->bodies[id].position, this->bodies[id].orientation);
 
     // vec3 expansion_factor = ti::abs(2.0 * this->bodies[id].linear_velocity * this->timestep);
     // aabb = AABB{
@@ -274,7 +259,6 @@ AABB World::get_aabb(int id)
     //     .max = aabb.max + expansion_factor,
     // };
     
-
     return aabb;
 }
 
@@ -296,73 +280,6 @@ void World::collisions_detection_preparations(void)
 // Collisions
 void World::broad_phase_collision_detection(void)
 {
-
-    // static int frames = 0;
-    // frames ++;
-    // if (frames%1 == 0){
-    //     std::vector<AABB> batch_aabbs;
-    //     batch_aabbs.reserve(bodies.size());
-
-    //     for (int i = 0; i < bodies.size(); i++)
-    //     {   
-    //         AABB aabb = get_aabb(i);
-
-    //         vec3 expansion_factor = ti::abs(2.0 * this->bodies[i].linear_velocity * timestep);
-    //         aabb = AABB{
-    //             .min = aabb.min - expansion_factor,
-    //             .max = aabb.max + expansion_factor,
-    //         };
-
-    //         batch_aabbs.push_back(aabb);
-    //     }
-
-    //     this->aabb_tree.build(batch_aabbs);
-    // }
-
-    
-    // for (int i = 0; i < bodies.size(); i++)
-    // {
-    //     if (bodies[i].type == BodyType::STATIC) continue;
-    //     AABB aabb = get_aabb(i);
-
-    //     vec3 expansion_factor = ti::abs(2.0 * this->bodies[i].linear_velocity * timestep);
-    //     aabb = AABB{
-    //         .min = aabb.min - expansion_factor,
-    //         .max = aabb.max + expansion_factor,
-    //     };
-
-    //     std::vector<int> results = this->aabb_tree.query(aabb);
-        
-    //     for (int id : results)
-    //     {
-    //         if (id <= i) continue;
-            
-    //         int constraint_index = body_pair_to_contact_constraint_map[{i, id}];
-    //         this->contact_contraints[constraint_index].broad_phase_detection = true;
-    //     }
-    // }
-
-    //  // Check plane collisions
-    // int plane_id = this->plane_body_idx;
-    // for (int i = 0; i < bodies.size(); i++) {
-    //     if (bodies[i].type == STATIC) continue;
-
-    //     AABB aabb = get_aabb(i);
-
-    //     vec3 expansion_factor = ti::abs(2.0 * this->bodies[i].linear_velocity * timestep);
-    //     aabb = AABB{
-    //         .min = aabb.min - expansion_factor,
-    //         .max = aabb.max + expansion_factor,
-    //     };
-
-
-    //     // Check plane vs body AABB
-    //     if (check_broad_phase_collision(aabb, *bodies[plane_id].collider_info.plane)) {
-    //         std::pair<int, int> key = (plane_id < i) ? std::make_pair(plane_id, i) : std::make_pair(i, plane_id);
-    //         int constraint_index = body_pair_to_contact_constraint_map[key];
-    //         this->contact_contraints[constraint_index].broad_phase_detection = true; 
-    //     }
-    // };
 
     for (ContactConstraint &constraint : this->contact_contraints)
     {

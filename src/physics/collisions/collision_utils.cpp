@@ -17,8 +17,6 @@ std::vector<vec3> get_box_vertices(const vec3 &half_extents, const vec3 &positio
         {-x, y, z},
         {x, y, z}};
 
-    //std::vector<vec3> vertices(8);
-
     for (int i = 0; i < 8; i++)
     {
         vertices[i] = ti::rotate(orientation, vertices[i]) + position;
@@ -27,19 +25,42 @@ std::vector<vec3> get_box_vertices(const vec3 &half_extents, const vec3 &positio
     return vertices;
 }
 
-std::pair<scalar, scalar> get_vertices_projection_max_and_min(const std::vector<vec3> &vertices, const vec3 &axis)
-{
-    scalar min_projection = -INFINITY;
-    scalar max_projection = INFINITY;
+std::vector<std::vector<size_t>> get_box_faces_indices() {
+    return {
+        {0, 1, 3, 2}, // Front face
+        {4, 6, 7, 5}, // Back face
+        {0, 4, 5, 1}, // Left face
+        {2, 3, 7, 6}, // Right face
+        {0, 2, 6, 4}, // Bottom face
+        {1, 5, 7, 3}  // Top face
+    };
+}
 
-    for (int i = 0; i++; i < 8)
+std::tuple<vec2, vec3, vec3> get_vertices_projection_max_and_min(const std::vector<vec3> &vertices, const vec3 &axis)
+{
+    scalar min_projection = INFINITY;
+    scalar max_projection = -INFINITY;
+    vec3 min_vertex = {0.0, 0.0, 0.0};
+    vec3 max_vertex = {0.0, 0.0, 0.0};
+
+    for (int i = 0; i < 8; i++)
     {
         scalar projection = ti::dot(vertices[i], axis);
-        min_projection = ti::min(min_projection, projection);
-        max_projection = ti::max(max_projection, projection);
+
+        
+        if (projection < min_projection) {
+            min_projection = projection;
+            min_vertex = vertices[i];
+        }
+
+        if (projection > max_projection) {
+            max_projection = projection;
+            max_vertex = vertices[i];
+        }
+        
     }
 
-    return {min_projection, max_projection};
+    return {(vec2){min_projection, max_projection}, min_vertex, max_vertex};
 }
 
 std::pair<scalar, scalar> get_projections_overlap(

@@ -69,6 +69,29 @@ AABB merge_aabb(const AABB& aabb1, const AABB& aabb2) {
   return AABB{min_point, max_point};
 }
 
+AABB compute_AABB(const ShapeInfo &shape, const vec3 &position, const quat &orientation){
+    AABB aabb = AABB{.min = vec3{0.0, 0.0, 0.0}, .max = vec3{0.0, 0.0, 0.0}};
+
+    if (shape.type == ShapeType::CAPSULE)
+    {
+        aabb = compute_AABB(*shape.capsule, position, orientation);
+    }
+
+    else if (shape.type == ShapeType::SPHERE)
+    {
+        aabb = compute_AABB(*shape.sphere, position, orientation);
+    }
+
+    else if (shape.type == ShapeType::BOX)
+    {
+        aabb =  compute_AABB(*shape.box, position, orientation);
+    }
+
+    return aabb;
+}
+
+
+
 // AABB collision dectection using the separating axes theorem
 bool check_broad_phase_collision(const AABB &aabb_1, const AABB &aabb_2)
 {

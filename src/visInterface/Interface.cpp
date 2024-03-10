@@ -158,14 +158,22 @@ void Interface::update(void)
             this->visualizer_->draw_text(angleStream.str(), vec3ToVector3(info.position), text_size);
         }
     }
-    // Contact points:
+    //Contact points:
     if (this->settings.show_contact_points)
     {
         for (const ContactConstraint &contact : this->world_->contact_contraints)
         {
             if (contact.broad_phase_detection){
-                this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_1), 0.05, GREEN);
+                this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_1), 0.05, RED);
                 this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_2), 0.05, BLUE);
+
+                this->visualizer_->draw_arrow(
+                    vec3ToVector3(contact.collision_response.contact_point_1),
+                    vec3ToVector3(+ contact.collision_response.normal), 0.05, PURPLE);
+                
+                this->visualizer_->draw_arrow(
+                    vec3ToVector3(contact.collision_response.contact_point_2),
+                    vec3ToVector3(-contact.collision_response.normal), 0.05, GREEN);
             }
             
         }
