@@ -66,9 +66,9 @@ robosim::World robot_arm_scenario(){
 
     int joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e9,  DRIVEN_BY_POSITION, false, -0.8, 0.8);
     int joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  0.0,  150,  DRIVEN_BY_POSITION, false, -0.5, 0.5);
-    int joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  1e-4,  DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    int joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  1e-4,  FREE, false, -0.0, 0.0);
     int joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e-4,  DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    int joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e-4,  DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    int joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e-4,  FREE, false, -0.0, 0.0);
 
 
     world.set_revolute_joint_target_angle(joint_0, PI/4);

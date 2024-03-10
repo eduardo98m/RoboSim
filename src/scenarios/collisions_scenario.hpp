@@ -17,12 +17,11 @@
 robosim::World collisions_scenario(){
 
     
-    const int s = 1000; // 10x10x10 grid
     const float X_MIN = -1.5f, X_MAX = 1.5f;
     const float Y_MIN = 1.1f, Y_MAX = 3.1f;
     const float Z_MIN = -1.5f, Z_MAX = 1.5f;
     const float RADIUS = 0.2f;
-    const int GRID_SIZE = 4;
+    const int GRID_SIZE = 3;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> disX(X_MIN, X_MAX);
@@ -46,26 +45,34 @@ robosim::World collisions_scenario(){
         }
     }
 
-    robosim::World world = robosim::World(0.01, 60);
+    robosim::World world = robosim::World(0.01, 20);
     quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 2.0);
     scalar mass = 1.0;
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
                                0.0, 1.0, 0.0,
                                0.0, 0.0, 1.0};
     
-    vec3 ang_vel = vec3{0.0, 1.1, 0.0};
+    vec3 ang_vel = vec3{0.0, 0.0, 0.0};
 
-    uint plane_id = world.add_plane({0.0, 1.0, 0}, 0.0);
+    
+
+    //uint plane_id = world.add_plane({0.0, 1.0, 0}, 0.0);
+    //int plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{-2.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500*mass, 500 *  (10.0/12) * inertia_tensor, STATIC);
+    //world.set_body_box_collider(plane_id, {50.0,0.2, 50.0});
+
+    int ball_id = world.create_body({-6.0, 2.0, 0.0}, ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0), vec3{3.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500*mass, 500 *  (10.0/12) * inertia_tensor, DYNAMIC);
+    world.set_body_box_collider(ball_id, {1.0,1.0,1.0});
+    //world.set_body_sphere_collider(ball_id, 1.0);
+
     for (const auto& position : ball_positions) {
-        int ball_id = world.create_body(position, ori, vec3{0.0, 0.0, 0.01}, ang_vel, 1*mass, ( 10.0/12) * inertia_tensor, DYNAMIC);
-        //world.set_body_box_collider(ball_id, {RADIUS,RADIUS,RADIUS});
-        world.set_body_sphere_collider(ball_id, RADIUS);
+        int ball_id = world.create_body(position, ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0), vec3{0.0, 0.0, 0.0}, ang_vel, 1*mass, ( 10.0/12) * inertia_tensor, DYNAMIC);
+        world.set_body_box_collider(ball_id, {RADIUS,RADIUS,RADIUS});
+        //world.set_body_sphere_collider(ball_id, RADIUS);
     }
 
-    int ball_id = world.create_body({5.0, 2.0, 0.0}, ori, vec3{-12.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 4*mass, 4.0 *  (10.0/12) * inertia_tensor, DYNAMIC);
-    world.set_body_sphere_collider(ball_id, 1.0);
+    
 
-    world.set_gravity({0.0, -9.8, 0.0});
+    //world.set_gravity({0.0, -9.8, 0.0});
     world.collisions_detection_preparations();
 
 

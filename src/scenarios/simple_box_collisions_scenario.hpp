@@ -1,0 +1,41 @@
+#pragma once
+
+#include "physics/math/math.hpp" 
+#include "physics/constraints/RevoluteJointConstraint.hpp"
+
+// Import the sine function from the standard library
+#include <math.h>
+#include <iostream>
+#include "Visualizer.hpp"
+#include <raylib.h>
+#include "physics/World.hpp"
+#include "Interface.hpp"
+#include <memory>
+#include <random>
+
+
+robosim::World simple_box_collisions_scenario(){
+
+    
+
+
+    robosim::World world = robosim::World(0.01, 60);
+    quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 2.0);
+    scalar mass = 1.0;
+    mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
+                               0.0, 1.0, 0.0,
+                               0.0, 0.0, 1.0};
+    
+
+    world.add_plane({0.0, 1.0, 0.0}, 0.0);
+    int id = world.create_body({5.0, 2.0, 0.0}, ori, vec3{-0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 4*mass, 4.0 *  (10.0/12) * inertia_tensor, DYNAMIC);
+    world.set_body_box_collider(id, {1.0, 1.0, 1.0});
+
+    world.set_gravity({0.0, -9.8, 0.0});
+    world.collisions_detection_preparations();
+
+
+    return world;
+
+
+}

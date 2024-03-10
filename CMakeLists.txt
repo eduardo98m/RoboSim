@@ -18,11 +18,6 @@ set(COLLISION_SOURCES
     "src/physics/collisions/box_v_box.cpp"
     "src/physics/collisions/plane_v_box.cpp"
     "src/physics/collisions/collision_utils.cpp"
-    "src/physics/collisions/support_function.cpp"
-    "src/physics/collisions/simplex.cpp"
-    "src/physics/collisions/collider.cpp"
-    "src/physics/collisions/gjk.cpp"
-    "src/physics/collisions/epa.cpp"
     )
 
 set(PHYSICS_SOURCES

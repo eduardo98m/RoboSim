@@ -4,7 +4,7 @@
 
 #include "scenarios/collisions_scenario.hpp"
 #include "scenarios/robot_arm_scenario.hpp"
-
+#include "scenarios/simple_box_collisions_scenario.hpp"
 // Import the sine function from the standard library
 #include <math.h>
 #include <iostream>
@@ -20,24 +20,32 @@ int main(int argc, char *argv[])
 {
 
     bool reset_scenario = false;
+    bool pause_simulation = false;
 
     enum ScenarioType
     {
         COLLISIONS,
-        ROBOT
+        ROBOT,
+        BOX_COLLISIONS
     };
 
-    std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario"};
-    int selected_scenario = ScenarioType::ROBOT; // Default to collisions scenario
+    std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions"};
+    
+    
+    int selected_scenario = ScenarioType::COLLISIONS; // Default to collisions scenario
 
     auto gui_interface{
-        [&reset_scenario, &selected_scenario, scenario_names](void)
+        [&pause_simulation,&reset_scenario, &selected_scenario, scenario_names](void)
         {
             ImGui::Begin("Scenario controller");
             ImGui::Separator();
             if (ImGui::Button("Reset scenario"))
             {
                 reset_scenario = true; // Set the flag to indicate a reset is requested
+            }
+            if (ImGui::Button("Pause"))
+            {
+                pause_simulation = !pause_simulation; // Set the flag to indicate a reset is requested
             }
             ImGui::Separator();
             if (ImGui::BeginCombo("Select Scenario", scenario_names[selected_scenario].c_str()))
@@ -57,26 +65,51 @@ int main(int argc, char *argv[])
                 ImGui::EndCombo();
             }
             ImGui::End();
+
+             // Draw square and points
+            ImGui::Begin("2D Drawing Example");
+            
+            // Draw the box
+            ImVec2 canvasSize(200, 200);
+            ImVec2 canvasPos = ImGui::GetCursorScreenPos();
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            drawList->AddRect(canvasPos, ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y), IM_COL32(255, 0, 0, 255));
+
+            // Draw some points
+            drawList->AddCircleFilled(ImVec2(canvasPos.x + canvasSize.x / 2, canvasPos.y + canvasSize.y / 2), 5, IM_COL32(0, 255, 0, 255));
+            drawList->AddCircleFilled(ImVec2(canvasPos.x + canvasSize.x / 3, canvasPos.y + canvasSize.y / 3), 5, IM_COL32(0, 0, 255, 255));
+            drawList->AddCircleFilled(ImVec2(canvasPos.x + canvasSize.x / 2 + 50, canvasPos.y + canvasSize.y / 2 - 50), 5, IM_COL32(255, 165, 0, 255));
+
+            ImGui::End();
         }
     };
 
-    robosim::World world = collisions_scenario();
+    robosim::World world = collisions_scenario();;
 
-    Visualizer visualizer(1208, 720, "RoboVis");
+    Visualizer visualizer(1920, 1080, "RoboVis");
     visualizer.set_up_camera();
+
+    visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
+    //visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raster.fs", 0);
 
     visualizer.set_imgui_interfaces(gui_interface);
 
     std::shared_ptr<robosim::World> world_ptr(&world);
     std::shared_ptr<Visualizer> vis_ptr(&visualizer);
     Interface* interface = new Interface(world_ptr, vis_ptr);
+    //
     
-
     while (!WindowShouldClose())
     {
         visualizer.update();
-        world.step();
+
+        if (!pause_simulation){
+            world.step();
+        }
+
         interface->update();
+        
+        
 
         if (reset_scenario)
         {
@@ -93,12 +126,16 @@ int main(int argc, char *argv[])
                 world = robot_arm_scenario();
                 break;
             
+            case ScenarioType::BOX_COLLISIONS:
+                world = simple_box_collisions_scenario();
+                break;
             default:
                 break;
             }
             visualizer.clear_visual_objects();
             visualizer.clear_gui_interfaces();
             visualizer.set_imgui_interfaces(gui_interface);
+            world.step();
 
             delete interface; // This is to avoid a memory leak
             interface = new Interface(world_ptr, vis_ptr);
