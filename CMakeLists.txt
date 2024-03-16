@@ -62,6 +62,9 @@ set(
 # GLEW
 find_package(GLEW REQUIRED) # Im using GLEW 2.2.0
 find_package(raylib REQUIRED)
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(hpp-fcl REQUIRED)
+include_directories(${hpp-fcl_INCLUDE_DIRS})
 
 include_directories("thirdParty/assimp/include/")
 add_subdirectory("thirdParty/assimp")
@@ -75,4 +78,4 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${P
 
 
 target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} "src/RoboVis/src" ${INTERFACE_INCLUDE_DIRS} ${DEMOS_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE RoboVis raylib )
+target_link_libraries(${PROJECT_NAME} PRIVATE RoboVis raylib Eigen3::Eigen ${hpp-fcl_LIBRARIES})

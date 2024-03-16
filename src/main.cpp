@@ -30,12 +30,11 @@ int main(int argc, char *argv[])
     };
 
     std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions"};
-    
-    
+
     int selected_scenario = ScenarioType::COLLISIONS; // Default to collisions scenario
 
     auto gui_interface{
-        [&pause_simulation,&reset_scenario, &selected_scenario, scenario_names](void)
+        [&pause_simulation, &reset_scenario, &selected_scenario, scenario_names](void)
         {
             ImGui::Begin("Scenario controller");
             ImGui::Separator();
@@ -66,13 +65,13 @@ int main(int argc, char *argv[])
             }
             ImGui::End();
 
-             // Draw square and points
+            // Draw square and points
             ImGui::Begin("2D Drawing Example");
-            
+
             // Draw the box
             ImVec2 canvasSize(200, 200);
             ImVec2 canvasPos = ImGui::GetCursorScreenPos();
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            ImDrawList *drawList = ImGui::GetWindowDrawList();
             drawList->AddRect(canvasPos, ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y), IM_COL32(255, 0, 0, 255));
 
             // Draw some points
@@ -81,35 +80,34 @@ int main(int argc, char *argv[])
             drawList->AddCircleFilled(ImVec2(canvasPos.x + canvasSize.x / 2 + 50, canvasPos.y + canvasSize.y / 2 - 50), 5, IM_COL32(255, 165, 0, 255));
 
             ImGui::End();
-        }
-    };
+        }};
 
-    robosim::World world = collisions_scenario();;
+    robosim::World world = collisions_scenario();
+    ;
 
     Visualizer visualizer(1920, 1080, "RoboVis");
     visualizer.set_up_camera();
 
     visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
-    //visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raster.fs", 0);
+    // visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raster.fs", 0);
 
     visualizer.set_imgui_interfaces(gui_interface);
 
     std::shared_ptr<robosim::World> world_ptr(&world);
     std::shared_ptr<Visualizer> vis_ptr(&visualizer);
-    Interface* interface = new Interface(world_ptr, vis_ptr);
+    Interface *interface = new Interface(world_ptr, vis_ptr);
     //
-    
+
     while (!WindowShouldClose())
     {
         visualizer.update();
 
-        if (!pause_simulation){
+        if (!pause_simulation)
+        {
             world.step();
         }
 
         interface->update();
-        
-        
 
         if (reset_scenario)
         {
@@ -121,11 +119,11 @@ int main(int argc, char *argv[])
             case ScenarioType::COLLISIONS:
                 world = collisions_scenario();
                 break;
-            
+
             case ScenarioType::ROBOT:
                 world = robot_arm_scenario();
                 break;
-            
+
             case ScenarioType::BOX_COLLISIONS:
                 world = simple_box_collisions_scenario();
                 break;

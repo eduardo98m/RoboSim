@@ -23,34 +23,35 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
         Vector3 position = vec3ToVector3(this->world_->get_body_position(body_id));
         Quaternion orientation = quatToQuaternion(this->world_->get_body_orientation(body_id));
         int vis_shape_id;
-        ShapeInfo collider_info = this->world_->get_collider_info(body_id);
+        std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info = this->world_->get_collider_info(body_id);
 
-        if (collider_info.type == ShapeType::BOX)
+        if (auto box = std::dynamic_pointer_cast<hpp::fcl::Box>(collider_info))
         {
-            Box *box = collider_info.box;
-            int vis_shape_id = visualizer->add_box(position, orientation, RED, box->half_extents.x * 2.0, box->half_extents.y * 2.0, box->half_extents.z * 2.0);
+            int vis_shape_id = visualizer->add_box(position, orientation, RED, box->halfSide[0] * 2.0,  box->halfSide[1] * 2.0,  box->halfSide[2] * 2.0);
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
-        else if (collider_info.type == ShapeType::SPHERE)
+        else if (auto sphere = std::dynamic_pointer_cast<hpp::fcl::Sphere>(collider_info))
         {
-            Sphere *sphere = collider_info.sphere;
             int vis_shape_id = visualizer->add_sphere(position, orientation, BLUE, sphere->radius);
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
-        else if (collider_info.type == ShapeType::CAPSULE)
+        else if (auto capsule = std::dynamic_pointer_cast<hpp::fcl::Capsule>(collider_info))
         {
-            Capsule *capsule = collider_info.capsule;
             // TODO: Create the function to add capsules in the visualizer
-            int vis_shape_id = visualizer->add_cylinder(position, orientation, ORANGE, capsule->radius, capsule->height);
+            int vis_shape_id = visualizer->add_cylinder(position, orientation, ORANGE, capsule->radius, capsule->halfLength * 2.0);
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
-        else if (collider_info.type == ShapeType::PLANE)
+        else if (auto cylinder = std::dynamic_pointer_cast<hpp::fcl::Cylinder>(collider_info))
         {
-            Plane *plane = collider_info.plane;
+            int vis_shape_id = visualizer->add_cylinder(position, orientation, PURPLE, cylinder->radius, cylinder->halfLength*2.0 );
+            this->body_to_visual_shape.push_back({body_id, vis_shape_id});
+        }
+        else if (auto plane = std::dynamic_pointer_cast<hpp::fcl::Plane>(collider_info))
+        {
 
-            float offset = plane->offset;
-            position = vec3ToVector3(plane->normal * plane->offset);
-            orientation = QuaternionFromVector3ToVector3({0.0, 1.0, 0.0}, vec3ToVector3(plane->normal));
+            float offset = plane->d;
+            position = vec3ToVector3(ti::from_eigen(plane->n * plane->d));
+            orientation = QuaternionFromVector3ToVector3({0.0, 1.0, 0.0}, vec3ToVector3(ti::from_eigen(plane->n)));
             int vis_shape_id = visualizer->add_plane(position, orientation, LIGHTGRAY, 100.0, 100.0);
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
@@ -163,7 +164,7 @@ void Interface::update(void)
     {
         for (const ContactConstraint &contact : this->world_->contact_contraints)
         {
-            if (contact.broad_phase_detection){
+            if (contact.collision){
                 this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_1), 0.05, RED);
                 this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_2), 0.05, BLUE);
 

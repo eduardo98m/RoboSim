@@ -4,6 +4,7 @@
 #include "physics/bodies/Body.hpp"
 #include "PositionalConstraint.hpp"
 #include "collisions.hpp"
+#include "hpp/fcl/distance.h"
 #include "broad_phase.hpp"
 #include <utility>
 

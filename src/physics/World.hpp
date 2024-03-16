@@ -68,6 +68,7 @@ namespace robosim
         void set_body_box_collider(int id, vec3 half_extents);
         void set_body_sphere_collider(int id, scalar radius);
         void set_body_capsule_collider(int id, scalar radius, scalar height);
+        void set_body_cylinder_collider(int id, scalar radius, scalar height);
         void set_body_plane_collider(int id, vec3 normal, scalar offset);
         int get_number_of_bodies();
 
@@ -75,7 +76,7 @@ namespace robosim
         vec3 get_body_position(int id);
         quat get_body_orientation(int id);
         vec3 get_body_angular_velocity(int id);
-        ShapeInfo get_collider_info(int id);
+        std::shared_ptr<hpp::fcl::CollisionGeometry> get_collider_info(int id);
         AABB get_aabb(int id);
 
         // Collisions

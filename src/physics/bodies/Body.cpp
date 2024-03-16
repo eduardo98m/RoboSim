@@ -160,21 +160,24 @@ void Body::apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r){
 
 
 void Body::set_box_collider(vec3 half_extents){
-    this->collider_info.type = ShapeType::BOX;
-    this->collider_info.box = new Box{half_extents = half_extents};
+    this->collider_info = std::make_shared<hpp::fcl::Box>(
+         half_extents.x * 2.0, 
+         half_extents.y * 2.0, 
+        half_extents.z * 2.0);
 }
 
 void Body::set_sphere_collider(scalar radius){
-    this->collider_info.type  = ShapeType::SPHERE;
-    this->collider_info.sphere = new Sphere{radius = radius};
+    this->collider_info =  std::make_shared<hpp::fcl::Sphere>(radius);
 }
 
 void Body::set_capsule_collider(scalar radius, scalar height){
-    this->collider_info.type  = ShapeType::CAPSULE;
-    this->collider_info.capsule = new Capsule{radius = radius, height = height};
+    this->collider_info =  std::make_shared<hpp::fcl::Capsule>(  radius,  height);
+}
+
+void Body::set_cylinder_collider(scalar radius, scalar height){
+    this->collider_info =  std::make_shared<hpp::fcl::Cylinder>( radius,  height);
 }
 
 void Body::set_plane_collider(vec3 normal, scalar offset){
-    this->collider_info.type  = ShapeType::PLANE;
-    this->collider_info.plane = new Plane{normal = normal, offset = offset};
+    this->collider_info =  std::make_shared<hpp::fcl::Plane>(normal.x, normal.y, normal.z, offset);
 }

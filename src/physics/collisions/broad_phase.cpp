@@ -1,5 +1,19 @@
 #include "broad_phase.hpp"
 
+AABB compute_AABB(std::shared_ptr<hpp::fcl::CollisionGeometry> shape, const vec3 &position, const quat &orientation){
+    
+    hpp::fcl::CollisionObject obj = hpp::fcl::CollisionObject(shape, ti::get_eigen_transform(position, orientation));
+    
+    obj.computeAABB();
+    hpp::fcl::AABB aabb =  obj.getAABB();
+
+    AABB new_aabb = {
+        .min =  {aabb.min_[0],aabb.min_[1],aabb.min_[2]},
+        .max =  {aabb.max_[0],aabb.max_[1],aabb.max_[2]}};
+    
+    return new_aabb;
+}
+
 AABB compute_AABB(const Sphere &sphere, const vec3 &position, const quat &orientation)
 {
 
@@ -103,8 +117,17 @@ bool check_broad_phase_collision(const AABB &aabb_1, const AABB &aabb_2)
 
 bool check_broad_phase_collision(const Plane &plane, const AABB &aabb)
 {
-    double distance_min = ti::dot(plane.normal, aabb.min);
-    double distance_max = ti::dot(plane.normal, aabb.max);
+    scalar distance_min = ti::dot(plane.normal, aabb.min) + plane.offset;
+    scalar distance_max = ti::dot(plane.normal, aabb.max) + plane.offset;
+
+    return ((distance_min >= 0 && distance_max < 0) ||
+            (distance_min < 0 && distance_max >= 0));
+}
+
+bool check_broad_phase_collision(const hpp::fcl::Plane &plane, const AABB &aabb)
+{
+    scalar distance_min = ti::dot(ti::from_eigen(plane.n), aabb.min) + plane.d;
+    scalar distance_max = ti::dot(ti::from_eigen(plane.n), aabb.max) + plane.d;
 
     return ((distance_min >= 0 && distance_max < 0) ||
             (distance_min < 0 && distance_max >= 0));

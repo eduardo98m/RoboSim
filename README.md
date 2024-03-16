@@ -32,6 +32,32 @@ Before you begin, ensure you have met the following requirements:
 
 * You have installed the latest version of [raylib](https://www.raylib.com/) and [CMake](https://cmake.org/).
 
+For the collision detection and response we decided it was a better option to use an already available package (I could not take the burden of programming all of the collisions)
+
+* hpp-fcl (Human path planner fast collision library) : (We use the 2.4.4 version)
+    * For linux : 
+```bash
+    mkdir build
+    cd build
+    cmake .. -DBUILD_PYTHON_INTERFACE=OFF
+    make
+    sudo make install
+```
+
+* octomap : (We use the 1.9.6 version)
+```bash
+    mkdir build
+    cd build
+    cmake .. 
+    make
+    sudo make install
+```
+
+* You also need eigen :
+```bash
+sudo apt install libeigen3-dev
+```
+    
 ### Installing RoboSim
 
 To install RoboSim, follow these steps:

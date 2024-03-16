@@ -1,5 +1,7 @@
 #pragma once
 #include "physics/math/math.hpp"
+#include "hpp/fcl/collision_data.h"
+#include "hpp/fcl/BVH/BVH_model.h"
 #include "Shapes.hpp"
 
 struct ContactPoint{

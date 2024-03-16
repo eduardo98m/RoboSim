@@ -1,6 +1,5 @@
 #include "math.hpp"
 
-
 namespace ti
 {
     scalar magnitude(vec3 v)
@@ -8,12 +7,33 @@ namespace ti
         return glm::l2Norm(v);
     }
 
-    quat quat_from_axis_angle(vec3 axis, scalar angle){
+    quat quat_from_axis_angle(vec3 axis, scalar angle)
+    {
         return glm::angleAxis(angle, axis);
     }
 
-    scalar atan2(scalar y, scalar x){
+    scalar atan2(scalar y, scalar x)
+    {
         return std::atan2(y, x);
+    }
+
+    hpp::fcl::Transform3f get_eigen_transform(vec3 v, quat q)
+    {
+        hpp::fcl::Transform3f T;
+        T.setQuatRotation(hpp::fcl::Quaternion3f(q.w, q.x, q.y, q.z));
+        T.setTranslation(hpp::fcl::Vec3f(v.x, v.y, v.z));
+        return T;
+    }
+
+    vec3 from_eigen(hpp::fcl::Vec3f v)
+    {
+
+        return (vec3){v[0], v[1], v[2]};
+    }
+
+    quat from_eigen(hpp::fcl::Quaternion3f q)
+    {
+        return (quat){q.x(), q.y(), q.z(), q.w()};
     }
 };
 

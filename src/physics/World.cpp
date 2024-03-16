@@ -126,6 +126,11 @@ void World::set_body_box_collider(int id, vec3 half_extents)
     this->bodies[id].set_box_collider(half_extents);
 }
 
+void World::set_body_cylinder_collider(int id, scalar radius, scalar height)
+{
+    this->bodies[id].set_cylinder_collider(radius, height);
+}
+
 void World::set_body_sphere_collider(int id, scalar radius)
 {
     this->bodies[id].set_sphere_collider(radius);
@@ -242,14 +247,14 @@ vec3 World::get_body_angular_velocity(int id)
     return this->bodies[id].angular_velocity;
 }
 
-ShapeInfo World::get_collider_info(int id)
+std::shared_ptr<hpp::fcl::CollisionGeometry> World::get_collider_info(int id)
 {
     return this->bodies[id].collider_info;
 }
 
 AABB World::get_aabb(int id)
 {
-    ShapeInfo info = this->bodies[id].collider_info;
+    std::shared_ptr<hpp::fcl::CollisionGeometry> info = this->bodies[id].collider_info;
 
     AABB aabb = compute_AABB(info, this->bodies[id].position, this->bodies[id].orientation);
 

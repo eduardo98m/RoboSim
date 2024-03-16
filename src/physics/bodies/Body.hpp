@@ -2,6 +2,11 @@
 #include "physics/math/math.hpp"
 #include "Shapes.hpp"
 
+//#include "hpp/fcl/math/transform.h"
+#include "hpp/fcl/BVH/BVH_model.h"
+#include "hpp/fcl/collision.h"
+#include "hpp/fcl/collision_data.h"
+#include <memory>
 enum BodyType
 {
     STATIC,
@@ -40,7 +45,7 @@ public:
     vec3 prev_linear_velocity;
     vec3 prev_angular_velocity;
 
-    ShapeInfo collider_info;
+    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info;
 
     /* linear and angular velocity */
     vec3 linear_velocity;
@@ -116,6 +121,8 @@ public:
     void set_sphere_collider(scalar radius);
 
     void set_capsule_collider(scalar radius, scalar height);
+    
+    void set_cylinder_collider(scalar radius, scalar height);
 
     void set_plane_collider(vec3 normal, scalar offset);
 };
