@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "hpp/fcl/math/transform.h"
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -19,6 +20,10 @@ typedef double scalar;
 #else
 typedef double scalar;
 #endif
+
+typedef glm::vec<2, scalar> vec2;
+std::string ToString(const vec2 &v, int precision = 4);
+std::ostream &operator<<(std::ostream &os, const vec2 &v);
 
 typedef glm::vec<3, scalar> vec3;
 std::string ToString(const vec3 &v, int precision = 4);
@@ -79,4 +84,17 @@ namespace ti
     *   Arctan 2 function. Calculates the arctan of the y/x fraction for the correspoding quadrant
     */
     scalar atan2(scalar y, scalar x);
+
+    /*
+    *   
+    */
+    hpp::fcl::Transform3f get_eigen_transform(vec3 v, quat q);
+
+    vec3 from_eigen(hpp::fcl::Vec3f v);
+
+    mat3 mar3_from_eigen(const hpp::fcl::Matrix3f &mat);
+
+    hpp::fcl::Vec3f to_eigen(vec3 v);
+    
+    quat from_eigen(hpp::fcl::Quaternion3f q);
 };

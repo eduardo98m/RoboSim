@@ -23,6 +23,7 @@ enum class ShapeType
     HEIGHTMAP   ///< Heightmap shape.
 };
 
+
 /**
  * @struct Box
  * @brief Defines a box shape.
@@ -84,3 +85,18 @@ struct Heightmap
     int depth_segments;     ///< Number of depth segments in the heightmap.
     std::vector<scalar> heights; ///< Heights at each point on the heightmap.
 };
+
+
+struct ShapeInfo
+{
+    ShapeType type = ShapeType::NONE;
+    union
+    {
+        Box *box;
+        Sphere *sphere;
+        Capsule *capsule;
+        Plane *plane;
+    };
+};
+
+

@@ -9,54 +9,56 @@ ContactConstraint::ContactConstraint(Body *body_1,
     vec3 r_1(0.0, 0.0, 0.0);
     vec3 r_2(0.0, 0.0, 0.0);
 
-    this->tangencial_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0, 0);
-    this->normal_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0, 0);
+    this->tangencial_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
+    this->normal_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
 
-    this->static_fricction_coeff = 0.5;
+    this->static_fricction_coeff = 0.70;
+    this->dynamic_fricction_coeff = 0.75;
 }
 
 void ContactConstraint::apply_constraint(scalar inverse_time_step)
 {
     if (!this->broad_phase_detection)
     {
+        this->collision = false;
         return;
     }
-
     this->calculate_narrow_phase_collision_response();
 
     vec3 n = this->collision_response.normal;
-    scalar d = ti::dot((this->collision_response.contact_point_1 - this->collision_response.contact_point_2), n);
+    vec3 p_1 = this->collision_response.contact_point_1;
+    vec3 p_2 = this->collision_response.contact_point_2;
+    scalar d = ti::dot((p_1 - p_2), n);
 
-    if (d <= 0)
+    if (d <= 0 )
     {
+        this->collision = false;
         return;
     }
+    this->collision = true;
 
-    vec3 r_1_wc = this->collision_response.contact_point_1 - this->body_1->position;
-    vec3 r_2_wc = this->collision_response.contact_point_2 - this->body_2->position;
+    vec3 r_1_wc = p_1 - this->body_1->position;
+    vec3 r_2_wc = p_2 - this->body_2->position;
 
     vec3 r_1 = ti::rotate(ti::inverse(this->body_1->orientation), r_1_wc);
     vec3 r_2 = ti::rotate(ti::inverse(this->body_2->orientation), r_2_wc);
-
-    vec3 p_1 = this->body_1->position + ti::rotate(this->body_1->orientation, r_1);
-    vec3 p_2 = this->body_2->position + ti::rotate(this->body_2->orientation, r_2);
 
     this->normal_constraint->set_constraint_positions(r_1, r_2);
     this->normal_constraint->set_value(n * d);
     this->normal_constraint->apply_constraint(inverse_time_step);
 
     // We calculate the relative velocity:
-    vec3 v_n = (this->body_1->linear_velocity + ti::cross(this->body_1->angular_velocity, r_1)) -
-               (this->body_2->linear_velocity + ti::cross(this->body_2->angular_velocity, r_2));
+    vec3 v_n = (this->body_1->linear_velocity + ti::cross(this->body_1->angular_velocity, r_1_wc)) -
+               (this->body_2->linear_velocity + ti::cross(this->body_2->angular_velocity, r_2_wc));
 
     this->relative_velocity = ti::dot(v_n, n);
 
-    scalar lambda_t = this->normal_constraint->get_lagrange_multiplier();
+    scalar lambda_t = this->tangencial_constraint->get_lagrange_multiplier();
     scalar lambda_n = this->normal_constraint->get_lagrange_multiplier();
 
     // Note this are recalculated for the previous positions
-    r_1_wc = this->collision_response.contact_point_1 - this->body_1->prev_position;
-    r_2_wc = this->collision_response.contact_point_2 - this->body_2->prev_position;
+    r_1_wc = p_1 - this->body_1->prev_position;
+    r_2_wc = p_2 - this->body_2->prev_position;
 
     r_1 = ti::rotate(ti::inverse(this->body_1->prev_orientation), r_1_wc);
     r_2 = ti::rotate(ti::inverse(this->body_2->prev_orientation), r_2_wc);
@@ -68,8 +70,9 @@ void ContactConstraint::apply_constraint(scalar inverse_time_step)
 
     vec3 delta_p_tangencial = delta_p - (ti::dot(delta_p, n)) * n;
 
-    if (lambda_t < lambda_n * this->static_fricction_coeff)
-    {
+    if (lambda_t > lambda_n * this->static_fricction_coeff)
+    {   
+        this->tangencial_constraint->set_constraint_positions(r_1, r_2);
         this->tangencial_constraint->set_value(delta_p_tangencial);
         this->tangencial_constraint->apply_constraint(inverse_time_step);
     }
@@ -79,94 +82,78 @@ void ContactConstraint::apply_constraint(scalar inverse_time_step)
 
 void ContactConstraint::apply_constraint_velocity_level(scalar time_step)
 {
-    if (!this->broad_phase_detection)
+    if (!this->broad_phase_detection )
     {
+        this->collision = false;
         return;
     }
+
     vec3 n = this->collision_response.normal;
-    scalar d = ti::dot((this->collision_response.contact_point_1 - this->collision_response.contact_point_2), n);
-    if (d <= 0)
+    vec3 p_1 = this->collision_response.contact_point_1;
+    vec3 p_2 = this->collision_response.contact_point_2;
+    scalar d = ti::dot((p_1 - p_2), n);
+
+    if (d <= 0 )
     {
+        this->collision = false;
         return;
     }
 
-    vec3 r_1_wc = this->collision_response.contact_point_1 - this->body_1->position;
-    vec3 r_2_wc = this->collision_response.contact_point_2 - this->body_2->position;
 
-    vec3 r_1 = ti::rotate(ti::inverse(this->body_1->orientation), r_1_wc);
-    vec3 r_2 = ti::rotate(ti::inverse(this->body_2->orientation), r_2_wc);
+    vec3 delta_v = {0.0, 0.0, 0.0};
+
+    vec3 r_1_wc = p_1 - this->body_1->position;
+    vec3 r_2_wc = p_2 - this->body_2->position;
+    
     // Recalculate the new velocity
-    vec3 v = this->body_1->linear_velocity + ti::cross(this->body_1->angular_velocity, r_1) -
-             this->body_2->linear_velocity + ti::cross(this->body_2->angular_velocity, r_2);
+    vec3 v = (this->body_1->linear_velocity + ti::cross(this->body_1->angular_velocity, r_1_wc)) - \
+            (this->body_2->linear_velocity + ti::cross(this->body_2->angular_velocity, r_2_wc));
 
     scalar v_n = ti::dot(v, n);
     vec3 v_t = v - n * v_n;
-    vec3 tangencial_direction = (ti::magnitude(v_t) > EPSILON) ? ti::normalize(v_t) : (v_t * 0.0);
-    vec3 tangencial_correction = -tangencial_direction * ti::min(time_step * this->dynamic_fricction_coeff * ti::magnitude(this->normal_force),
-                                                              ti::magnitude(v_t));
 
-                                                
-    if (ti::magnitude(tangencial_correction) > EPSILON)
-    {   
-        scalar w_1 = this->body_1->get_positional_generalized_inverse_mass(r_1_wc, tangencial_direction);
-        scalar w_2 = this->body_2->get_positional_generalized_inverse_mass(r_2_wc, tangencial_direction);
-        vec3 tangencial_impulse = tangencial_correction/(w_1 + w_2);
-        this->body_1->apply_positional_velocity_constraint_impulse(tangencial_impulse, r_1_wc);
-        this->body_2->apply_positional_velocity_constraint_impulse(-tangencial_impulse, r_2_wc);
-    };
-    // Restitution
+    if (ti::magnitude(v_t) > EPSILON){
+        scalar friction  = ti::min(-this->dynamic_fricction_coeff * this->normal_constraint->get_lagrange_multiplier()/time_step,
+                                                                 ti::magnitude(v_t));
+        
+        delta_v += -ti::normalize(v_t) * friction;
 
-    scalar restitution = 0.75;
-    // if (v_n < EPSILON){restitution = 0.0;}
-    // TODO : Change this so we use the simulator gravity
+    }
+    
+
+    scalar restitution = 0.70;
     if (ti::abs(v_n) <= 2.0 * 9.8 * time_step)
     {
         restitution = 0.0;
     }
-    vec3 delta_v = n * (-v_n + ti::min(-restitution * this->relative_velocity, 0.0));
-    // Calculte the generalized inverse mass of the bodies
-    if (ti::magnitude(delta_v) > EPSILON)
-    {   
-        scalar w_1 = this->body_1->get_positional_generalized_inverse_mass(r_1_wc, n);
-        scalar w_2 = this->body_2->get_positional_generalized_inverse_mass(r_2_wc, n);
-        vec3 restitution_impulse = delta_v / (w_1 + w_2);
-        this->body_1->apply_positional_velocity_constraint_impulse(restitution_impulse, r_1_wc);
-        this->body_2->apply_positional_velocity_constraint_impulse(-restitution_impulse, r_2_wc);
-    }
+
+    delta_v += n * (-v_n + ti::min(-restitution * this->relative_velocity, 0.0));
+
+    scalar w_1 = this->body_1->get_positional_generalized_inverse_mass(r_1_wc, n);
+    scalar w_2 = this->body_2->get_positional_generalized_inverse_mass(r_2_wc, n);
+
+    vec3 impulse =  delta_v / (w_1 + w_2);
+
+    this->body_1->apply_positional_velocity_constraint_impulse(impulse, r_1_wc);
+    this->body_2->apply_positional_velocity_constraint_impulse(-impulse, r_2_wc);
+
 }
 
 void ContactConstraint::reset_lagrange_multipliers(void)
 {
     this->tangencial_constraint->reset_lagrange_multiplier();
-    this->normal_constraint->reset_lagrange_multiplier();
+    this->normal_constraint->reset_lagrange_multiplier(); 
 }
 
 AABB ContactConstraint::get_aabb(Body *body)
 {
-    ShapeInfo info = body->collider_info;
-
-    if (info.type == ShapeType::CAPSULE)
-    {
-        return compute_AABB(*info.capsule, body->position, body->orientation);
-    }
-
-    if (info.type == ShapeType::SPHERE)
-    {
-        return compute_AABB(*info.sphere, body->position, body->orientation);
-    }
-
-    if (info.type == ShapeType::BOX)
-    {
-        return compute_AABB(*info.box, body->position, body->orientation);
-    }
-
-    return AABB{.min = vec3{0.0, 0.0, 0.0}, .max = vec3{0.0, 0.0, 0.0}};
+    return compute_AABB(body->collider_info, body->position, body->orientation);
 }
 
 void ContactConstraint::check_broad_phase(scalar timestep)
 {
 
-    if (this->body_1->collider_info.type == ShapeType::PLANE)
+    if (auto plane = std::dynamic_pointer_cast<hpp::fcl::Plane>(this->body_1->collider_info))
     {
         AABB body_2_aabb = this->get_aabb(this->body_2);
 
@@ -175,10 +162,10 @@ void ContactConstraint::check_broad_phase(scalar timestep)
             .min = body_2_aabb.min - expand_factor,
             .max = body_2_aabb.max + expand_factor,
         };
-        this->broad_phase_detection = check_broad_phase_collision(*body_1->collider_info.plane, body_2_aabb);
+        this->broad_phase_detection = check_broad_phase_collision(*plane, body_2_aabb);
         return;
     }
-    else if (this->body_2->collider_info.type == ShapeType::PLANE)
+    else if (auto plane = std::dynamic_pointer_cast<hpp::fcl::Plane>(this->body_2->collider_info))
     {
         AABB body_1_aabb = this->get_aabb(this->body_1);
         vec3 expand_factor = ti::abs(2.0 * body_1->linear_velocity * timestep);
@@ -186,7 +173,7 @@ void ContactConstraint::check_broad_phase(scalar timestep)
             .min = body_1_aabb.min - expand_factor,
             .max = body_1_aabb.max + expand_factor,
         };
-        this->broad_phase_detection = check_broad_phase_collision(body_1_aabb, *body_2->collider_info.plane);
+        this->broad_phase_detection = check_broad_phase_collision(*plane, body_1_aabb);
         return;
     }
     AABB body_1_aabb = this->get_aabb(this->body_1);
@@ -209,34 +196,46 @@ void ContactConstraint::check_broad_phase(scalar timestep)
 
 void ContactConstraint::calculate_narrow_phase_collision_response(void)
 {
-    if (body_1->collider_info.type == ShapeType::SPHERE &&
-        body_2->collider_info.type == ShapeType::SPHERE)
-    {
-        this->collision_response = compute_collision_response(
-            body_1->position,
-            body_2->position,
-            *body_1->collider_info.sphere,
-            *body_2->collider_info.sphere);
+
+    hpp::fcl::CollisionResult col_res;
+    hpp::fcl::CollisionRequest col_req;
+
+    hpp::fcl::collide(this->body_1->collider_info.get(), 
+                      ti::get_eigen_transform(this->body_1->position, 
+                                              this->body_1->orientation), 
+                      this->body_2->collider_info.get(), 
+                      ti::get_eigen_transform(this->body_2->position, 
+                                              this->body_2->orientation), 
+                      col_req, 
+                      col_res);
+    
+    
+    
+    if (col_res.isCollision()){
+        vec3 normal = {0.0, 0.0, 0.0};
+        vec3 contrac_point_1 = {0.0, 0.0, 0.0};
+        vec3 contrac_point_2 = {0.0, 0.0, 0.0};
+        int n_contacts = col_res.numContacts();
+        for (int i = 0; i < n_contacts; i++){
+            hpp::fcl::Contact contact = col_res.getContact(i);
+            normal+= ti::from_eigen(contact.normal);
+            contrac_point_1 += ti::from_eigen(contact.pos) + ti::from_eigen(contact.normal) * contact.penetration_depth *0.5;
+            contrac_point_2 += ti::from_eigen(contact.pos) - ti::from_eigen(contact.normal) * contact.penetration_depth *0.5;
+
+        }
+        
+
+        scalar num = n_contacts;
+        this->collision_response = ContactPoint{ 
+        .normal = ti::normalize(normal/num),
+        .contact_point_1 = contrac_point_1/num,
+        .contact_point_2 = contrac_point_2/num  
+    };
+    }
+    else{
+        this->collision_response = ContactPoint();
     }
 
-    if (body_1->collider_info.type == ShapeType::PLANE &&
-        body_2->collider_info.type == ShapeType::SPHERE)
-    {
-        this->collision_response = compute_collision_response(
-            body_2->position,
-            *body_2->collider_info.sphere,
-            *body_1->collider_info.plane);
-
-        std::swap(this->collision_response.contact_point_1,
-                  this->collision_response.contact_point_2);
-    }
-
-    if (body_1->collider_info.type == ShapeType::SPHERE &&
-        body_2->collider_info.type == ShapeType::PLANE)
-    {
-        this->collision_response = compute_collision_response(
-            body_1->position,
-            *body_1->collider_info.sphere,
-            *body_2->collider_info.plane);
-    }
+    col_res.clear();
+    
 }

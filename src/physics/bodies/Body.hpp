@@ -2,23 +2,17 @@
 #include "physics/math/math.hpp"
 #include "Shapes.hpp"
 
+//#include "hpp/fcl/math/transform.h"
+#include "hpp/fcl/BVH/BVH_model.h"
+#include "hpp/fcl/collision.h"
+#include "hpp/fcl/collision_data.h"
+#include <memory>
 enum BodyType
 {
     STATIC,
     DYNAMIC
 };
 
-struct ShapeInfo
-{
-    ShapeType type = ShapeType::NONE;
-    union
-    {
-        Box *box;
-        Sphere *sphere;
-        Capsule *capsule;
-        Plane *plane;
-    };
-};
 
 class Body
 {
@@ -51,7 +45,7 @@ public:
     vec3 prev_linear_velocity;
     vec3 prev_angular_velocity;
 
-    ShapeInfo collider_info;
+    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info;
 
     /* linear and angular velocity */
     vec3 linear_velocity;
@@ -79,7 +73,7 @@ public:
     scalar get_rotational_generalized_inverse_mass(vec3 n);
 
     void update_inertia_tensor_world();
-    void update_inverse_inertia_tensor_world();
+    //void update_inverse_inertia_tensor_world();
 
     void update_position_and_orientation(scalar time_step);
 
@@ -122,11 +116,15 @@ public:
 
     void apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r);
 
-    void set_box_collider(vec3 half_extents);
+    void set_box_collider(vec3 half_extents, bool recompute_inertia = true);
 
-    void set_sphere_collider(scalar radius);
+    void set_sphere_collider(scalar radius, bool recompute_inertia = true);
 
-    void set_capsule_collider(scalar radius, scalar height);
+    void set_capsule_collider(scalar radius, scalar height, bool recompute_inertia = true);
+    
+    void set_cylinder_collider(scalar radius, scalar height, bool recompute_inertia = true);
 
     void set_plane_collider(vec3 normal, scalar offset);
+
+    void set_intertia_tensor(const mat3 &intertia_tensor);
 };

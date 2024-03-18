@@ -158,23 +158,54 @@ void Body::apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r){
 
 }
 
-
-void Body::set_box_collider(vec3 half_extents){
-    this->collider_info.type = ShapeType::BOX;
-    this->collider_info.box = new Box{half_extents = half_extents};
+void Body::set_intertia_tensor(const mat3 &intertia_tensor){
+    
+    this->inertia_tensor = inertia_tensor;
+    this->inverse_inertia_tensor = ti::inverse(this->inertia_tensor);
+    this->update_inertia_tensor_world();
 }
 
-void Body::set_sphere_collider(scalar radius){
-    this->collider_info.type  = ShapeType::SPHERE;
-    this->collider_info.sphere = new Sphere{radius = radius};
+void Body::set_box_collider(vec3 half_extents, bool recompute_inertia){
+    this->collider_info = std::make_shared<hpp::fcl::Box>(
+         half_extents.x * 2.0, 
+         half_extents.y * 2.0, 
+        half_extents.z * 2.0);
+
+    if (recompute_inertia && this->type == BodyType::DYNAMIC){
+        scalar vol = this->collider_info->computeVolume();
+        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
+        set_intertia_tensor(inertia_tensor * this->mass);
+    }
+    
 }
 
-void Body::set_capsule_collider(scalar radius, scalar height){
-    this->collider_info.type  = ShapeType::CAPSULE;
-    this->collider_info.capsule = new Capsule{radius = radius, height = height};
+void Body::set_sphere_collider(scalar radius, bool recompute_inertia){
+    this->collider_info =  std::make_shared<hpp::fcl::Sphere>(radius);
+    if (recompute_inertia && this->type == BodyType::DYNAMIC){
+        scalar vol = this->collider_info->computeVolume();
+        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
+        set_intertia_tensor(inertia_tensor * this->mass);
+    }
+}
+
+void Body::set_capsule_collider(scalar radius, scalar height, bool recompute_inertia){
+    this->collider_info =  std::make_shared<hpp::fcl::Capsule>(  radius,  height);
+    if (recompute_inertia && this->type == BodyType::DYNAMIC){
+        scalar vol = this->collider_info->computeVolume();
+        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
+        set_intertia_tensor(inertia_tensor * this->mass);
+    }
+}
+
+void Body::set_cylinder_collider(scalar radius, scalar height, bool recompute_inertia){
+    this->collider_info =  std::make_shared<hpp::fcl::Cylinder>( radius,  height);
+    if (recompute_inertia && this->type == BodyType::DYNAMIC){
+        scalar vol = this->collider_info->computeVolume();
+        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
+        set_intertia_tensor(inertia_tensor * this->mass);
+    }
 }
 
 void Body::set_plane_collider(vec3 normal, scalar offset){
-    this->collider_info.type  = ShapeType::PLANE;
-    this->collider_info.plane = new Plane{normal = normal, offset = offset};
+    this->collider_info =  std::make_shared<hpp::fcl::Halfspace>(normal.x, normal.y, normal.z, offset);
 }

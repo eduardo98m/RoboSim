@@ -11,6 +11,10 @@
 #include <tuple>
 #include <map>
 #include "aabb_tree.hpp"
+#include "hpp/fcl/broadphase/broadphase_collision_manager.h"
+#include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree_array.h>
+#include <hpp/fcl/broadphase/default_broadphase_callbacks.h>
+
 // Create a blank class called World
 namespace robosim
 {
@@ -24,7 +28,7 @@ namespace robosim
         std::vector<PositionalConstraint> positional_constraints;
         std::vector<RotationalConstraint> rotational_constraints;
         std::vector<RevoluteJointConstraint> revolute_joint_constraints;
-        std::vector<ContactConstraint> contact_contraints;
+        
 
         std::map<std::pair<int, int>, int> body_pair_to_contact_constraint_map;
 
@@ -33,8 +37,7 @@ namespace robosim
         std::vector<std::tuple<int, int, bool>> broad_phase_detections;
         AABBTree aabb_tree = AABBTree();
 
-        // Planes
-        // Static body used to solve the plane contact constraints
+        // Plane (if used has a reserved attribute in the world class)
         int plane_body_idx = -1; // Default (-1) (you wont get anything!)
 
 
@@ -44,6 +47,7 @@ namespace robosim
         void solve_velocities(scalar inv_h);
 
     public:
+        std::vector<ContactConstraint> contact_constraints;
         // Constructor
         World(scalar timestep = 0.01, int substeps = 20);
         // Destructor
@@ -67,6 +71,7 @@ namespace robosim
         void set_body_box_collider(int id, vec3 half_extents);
         void set_body_sphere_collider(int id, scalar radius);
         void set_body_capsule_collider(int id, scalar radius, scalar height);
+        void set_body_cylinder_collider(int id, scalar radius, scalar height);
         void set_body_plane_collider(int id, vec3 normal, scalar offset);
         int get_number_of_bodies();
 
@@ -74,7 +79,7 @@ namespace robosim
         vec3 get_body_position(int id);
         quat get_body_orientation(int id);
         vec3 get_body_angular_velocity(int id);
-        ShapeInfo get_collider_info(int id);
+        std::shared_ptr<hpp::fcl::CollisionGeometry> get_collider_info(int id);
         AABB get_aabb(int id);
 
         // Collisions
@@ -82,6 +87,7 @@ namespace robosim
         void broad_phase_collision_detection(void);
         void narrow_phase_collisions(scalar inverse_timestep);
         void narrow_phase_collisions_velocity_level(scalar timestep);
+        void get_contact_info();
 
         /*
         * Creates a contact contraint between two bodies

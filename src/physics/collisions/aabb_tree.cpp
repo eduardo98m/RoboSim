@@ -34,7 +34,7 @@ void AABBTree::insert_recursive(Node* node, const AABB& aabb, int body_id) {
   }
 
   // Insert on left or right
-  if (volume < node->volume) {
+  if (aabb.min.x < node->aabb.min.x) {
     if (node->left == nullptr) {
       node->left = new Node({aabb, -1, nullptr, nullptr,  .volume = volume}); 
     }
