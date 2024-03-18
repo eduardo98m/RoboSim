@@ -11,6 +11,10 @@
 #include <tuple>
 #include <map>
 #include "aabb_tree.hpp"
+#include "hpp/fcl/broadphase/broadphase_collision_manager.h"
+#include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree_array.h>
+#include <hpp/fcl/broadphase/default_broadphase_callbacks.h>
+
 // Create a blank class called World
 namespace robosim
 {
@@ -33,8 +37,7 @@ namespace robosim
         std::vector<std::tuple<int, int, bool>> broad_phase_detections;
         AABBTree aabb_tree = AABBTree();
 
-        // Planes
-        // Static body used to solve the plane contact constraints
+        // Plane (if used has a reserved attribute in the world class)
         int plane_body_idx = -1; // Default (-1) (you wont get anything!)
 
 
@@ -44,7 +47,7 @@ namespace robosim
         void solve_velocities(scalar inv_h);
 
     public:
-        std::vector<ContactConstraint> contact_contraints;
+        std::vector<ContactConstraint> contact_constraints;
         // Constructor
         World(scalar timestep = 0.01, int substeps = 20);
         // Destructor

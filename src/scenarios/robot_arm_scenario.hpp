@@ -17,7 +17,7 @@
 robosim::World robot_arm_scenario(){
 
 
-    robosim::World world = robosim::World(0.01, 60);
+    robosim::World world = robosim::World(0.01, 20);
     quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 2.0);
     scalar mass = 1.0;
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
@@ -64,11 +64,11 @@ robosim::World robot_arm_scenario(){
     world.set_gravity({0.0, -9.8, 0.0});
     world.collisions_detection_preparations();
 
-    int joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e9,  DRIVEN_BY_POSITION, false, -0.8, 0.8);
-    int joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  0.0,  150,  DRIVEN_BY_POSITION, false, -0.5, 0.5);
-    int joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0,  1e-4,  FREE, false, -0.0, 0.0);
-    int joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e-4,  DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    int joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  1e-4,  FREE, false, -0.0, 0.0);
+    int joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0,  150,  DRIVEN_BY_POSITION, false, -0.8, 0.8);
+    int joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  1e-9,  150,  DRIVEN_BY_POSITION, false, -0.5, 0.5);
+    int joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4,  150,  FREE, false, -0.0, 0.0);
+    int joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-8,  150,  DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    int joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4,  150,  FREE, false, -0.0, 0.0);
 
 
     world.set_revolute_joint_target_angle(joint_0, PI/4);

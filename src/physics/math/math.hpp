@@ -92,5 +92,9 @@ namespace ti
 
     vec3 from_eigen(hpp::fcl::Vec3f v);
 
+    mat3 mar3_from_eigen(const hpp::fcl::Matrix3f &mat);
+
+    hpp::fcl::Vec3f to_eigen(vec3 v);
+    
     quat from_eigen(hpp::fcl::Quaternion3f q);
 };

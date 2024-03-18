@@ -46,7 +46,7 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
             int vis_shape_id = visualizer->add_cylinder(position, orientation, PURPLE, cylinder->radius, cylinder->halfLength*2.0 );
             this->body_to_visual_shape.push_back({body_id, vis_shape_id});
         }
-        else if (auto plane = std::dynamic_pointer_cast<hpp::fcl::Plane>(collider_info))
+        else if (auto plane = std::dynamic_pointer_cast<hpp::fcl::Halfspace>(collider_info))
         {
 
             float offset = plane->d;
@@ -162,7 +162,7 @@ void Interface::update(void)
     //Contact points:
     if (this->settings.show_contact_points)
     {
-        for (const ContactConstraint &contact : this->world_->contact_contraints)
+        for (const ContactConstraint &contact : this->world_->contact_constraints)
         {
             if (contact.collision){
                 this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_1), 0.05, RED);

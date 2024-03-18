@@ -19,7 +19,7 @@ robosim::World simple_box_collisions_scenario(){
     
 
 
-    robosim::World world = robosim::World(0.01, 60);
+    robosim::World world = robosim::World(0.01, 1);
     quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 2.0);
     scalar mass = 1.0;
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
@@ -28,7 +28,9 @@ robosim::World simple_box_collisions_scenario(){
     
 
     world.add_plane({0.0, 1.0, 0.0}, 0.0);
-    int id = world.create_body({5.0, 2.0, 0.0}, ori, vec3{-0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 4*mass, 4.0 *  (10.0/12) * inertia_tensor, DYNAMIC);
+
+    
+    int id = world.create_body({5.0, 4.0, 0.0}, ori, vec3{-0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0 *mass);
     world.set_body_box_collider(id, {1.0, 1.0, 1.0});
 
     world.set_gravity({0.0, -9.8, 0.0});

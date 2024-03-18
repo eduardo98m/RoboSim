@@ -31,10 +31,27 @@ namespace ti
         return (vec3){v[0], v[1], v[2]};
     }
 
+    mat3 mar3_from_eigen(const hpp::fcl::Matrix3f &mat){
+        return (mat3){
+            mat(0, 0), mat(0, 1), mat(0, 2),
+            mat(0, 1), mat(1, 1), mat(1, 2),
+            mat(0, 2), mat(1, 2), mat(2, 2)
+        };
+    }
+
     quat from_eigen(hpp::fcl::Quaternion3f q)
     {
         return (quat){q.x(), q.y(), q.z(), q.w()};
     }
+
+
+    hpp::fcl::Vec3f to_eigen(vec3 v)
+    {
+
+        return (hpp::fcl::Vec3f){v[0], v[1], v[2]};
+    }
+
+
 };
 
 std::string ToString(const vec2 &v, int precision)
