@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
     std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions"};
 
-    int selected_scenario = ScenarioType::COLLISIONS; // Default to collisions scenario
+    int selected_scenario = ScenarioType::BOX_COLLISIONS; // Default to collisions scenario
 
     auto gui_interface{
         [&pause_simulation, &reset_scenario, &selected_scenario, scenario_names](void)
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
             ImGui::End();
         }};
 
-    robosim::World world = collisions_scenario();
+    robosim::World world = simple_box_collisions_scenario();
     ;
 
     Visualizer visualizer(1920, 1080, "RoboVis");
@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
             }
             visualizer.clear_visual_objects();
             visualizer.clear_gui_interfaces();
+            visualizer.unload_models();
             visualizer.set_imgui_interfaces(gui_interface);
             world.step();
 

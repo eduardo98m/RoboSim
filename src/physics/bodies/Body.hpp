@@ -2,22 +2,73 @@
 #include "physics/math/math.hpp"
 #include "Shapes.hpp"
 
-//#include "hpp/fcl/math/transform.h"
+// #include "hpp/fcl/math/transform.h"
 #include "hpp/fcl/BVH/BVH_model.h"
 #include "hpp/fcl/collision.h"
 #include "hpp/fcl/collision_data.h"
 #include <memory>
+#include <optional>
+
 enum BodyType
 {
     STATIC,
     DYNAMIC
 };
 
+// TODO : Change this to another file
+namespace rs
+{
+    struct Color
+    {
+        u_int8_t r = 255;
+        u_int8_t g = 255;
+        u_int8_t b = 255;
+        u_int8_t a = 255;
+
+        // Overloading the subscript operator []
+        uint8_t &operator[](size_t index)
+        {
+            // Assuming index is within bounds (0 to 3)
+            switch (index)
+            {
+            case 0:
+                return r;
+            case 1:
+                return g;
+            case 2:
+                return b;
+            case 3:
+                return a;
+            default:
+                throw std::out_of_range("Index out of range");
+            }
+        }
+
+        // Overloading const version of the subscript operator []
+        const uint8_t &operator[](size_t index) const
+        {
+            // Assuming index is within bounds (0 to 3)
+            switch (index)
+            {
+            case 0:
+                return r;
+            case 1:
+                return g;
+            case 2:
+                return b;
+            case 3:
+                return a;
+            default:
+                throw std::out_of_range("Index out of range");
+            }
+        }
+    };
+
+};
 
 class Body
 {
 private:
-    
     /* linear and angular force */
     vec3 force = {0.0, 0.0, 0.0};
     vec3 torque = {0.0, 0.0, 0.0};
@@ -47,6 +98,9 @@ public:
 
     std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info;
 
+    std::optional<std::string> visual_object_path = std::nullopt;
+
+    rs::Color color = {.r = 255, .g = 95, .b = 31, .a = 255};
     /* linear and angular velocity */
     vec3 linear_velocity;
     vec3 angular_velocity;
@@ -73,7 +127,7 @@ public:
     scalar get_rotational_generalized_inverse_mass(vec3 n);
 
     void update_inertia_tensor_world();
-    //void update_inverse_inertia_tensor_world();
+    // void update_inverse_inertia_tensor_world();
 
     void update_position_and_orientation(scalar time_step);
 
@@ -121,10 +175,12 @@ public:
     void set_sphere_collider(scalar radius, bool recompute_inertia = true);
 
     void set_capsule_collider(scalar radius, scalar height, bool recompute_inertia = true);
-    
+
     void set_cylinder_collider(scalar radius, scalar height, bool recompute_inertia = true);
 
     void set_plane_collider(vec3 normal, scalar offset);
 
     void set_intertia_tensor(const mat3 &intertia_tensor);
+
+    void set_visual_object_path(std::string path);
 };

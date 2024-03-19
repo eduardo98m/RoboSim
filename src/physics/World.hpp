@@ -79,6 +79,11 @@ namespace robosim
         vec3 get_body_position(int id);
         quat get_body_orientation(int id);
         vec3 get_body_angular_velocity(int id);
+        std::optional<std::string> get_body_visual_shape_path(int id);
+        void set_body_visual_shape_path(int id, std::string path);
+        void set_body_color(int id, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255);
+        void set_body_color(int id, const rs::Color &color);
+        rs::Color get_body_color(int id);
         std::shared_ptr<hpp::fcl::CollisionGeometry> get_collider_info(int id);
         AABB get_aabb(int id);
 

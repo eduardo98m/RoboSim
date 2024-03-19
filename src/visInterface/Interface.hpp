@@ -15,10 +15,22 @@
 #include <iomanip>
 #include <sstream>
 
+
+#define VISUAL_SHAPES_GROUP 1
+
+#define COLLISION_SHAPES_GROUP 2
+
 struct VisualizationSettings{
+
     bool show_revolute_joints = false;
     bool show_bounding_boxes = false;
     bool show_contact_points = true;
+    bool render_visual_objects = false;
+    bool render_collision_shapes = false;
+
+    bool toggle_visual_objects = false;
+    bool toggle_collision_shapes = false;
+
     int size = 50;
     std::vector<std::pair<int, bool>> enabled_rev_joints;
 };
@@ -27,6 +39,7 @@ class Interface
 {
 private:
     std::vector<std::pair<int, int>> body_to_visual_shape;
+    std::vector<std::pair<int, int>> body_to_collision_shape;
 
     std::shared_ptr<robosim::World> world_;
     std::shared_ptr<Visualizer> visualizer_;
@@ -37,7 +50,10 @@ public:
     Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visualizer> visualizer);
 
     void update(void);
+
+    void add_collision_object(int body_id, int group_id,  Color* color);
     
+    void add_visual_object(int body_id, int group_id);
 };
 
 

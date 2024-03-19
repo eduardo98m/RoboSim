@@ -209,3 +209,7 @@ void Body::set_cylinder_collider(scalar radius, scalar height, bool recompute_in
 void Body::set_plane_collider(vec3 normal, scalar offset){
     this->collider_info =  std::make_shared<hpp::fcl::Halfspace>(normal.x, normal.y, normal.z, offset);
 }
+
+void Body::set_visual_object_path(std::string path){
+    this->visual_object_path = std::make_optional(path);
+}
