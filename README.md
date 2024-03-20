@@ -90,26 +90,14 @@ make
     * [-] Add collision shapes
         * [x] Sphere
         * [x] Box
+        * [x] Cylinder
         * [ ] Capsule
-        * [ ] Plane
+        * [x] Plane (There might be issues with the plane)
         * [ ] Heightmap
-    * [ ] Add collision detection and response:
-        * [ ] Sphere <-> Sphere
-        * [ ] Sphere <-> Box
-        * [ ] Sphere <-> Capsule
-        * [ ] Sphere <-> Plane
-        * [ ] Sphere <-> Heightmap
-        * [ ] Box <-> Box
-        * [ ] Box <-> Capsule
-        * [ ] Box <-> Plane
-        * [ ] Box <-> Heightmap
-        * [ ] Capsule <-> Capsule
-        * [ ] Capsule <-> Plane
-        * [ ] Capsule <-> Heightmap
-    * [ ] Add collision manifolds.
-    * [ ] Implement the Sutherland–Hodgman algorithm.
+    * [x] Collision detection and respose implemeted using hpp::fcl (human path planner fast colision library).
+    * [x] Collision groups.
 * [ ] **Constraints**
-    * [ ] Contact constraints.
+    * [x] Contact constraints.
     * [ ] Prismatic joint constraint
         * [ ] Limited
         * [ ] Driven

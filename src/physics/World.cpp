@@ -275,11 +275,70 @@ void World::collisions_detection_preparations(void)
     {
         for (int j = i + 1; j < n_bodies; j++)
         {
-            int id = this->create_contact_constraint(i, j);
-            this->body_pair_to_contact_constraint_map.insert({{i, j}, id});
+            if (this->can_collide(i, j))
+            {
+                int id = this->create_contact_constraint(i, j);
+                this->body_pair_to_contact_constraint_map.insert({{i, j}, id});
+            }
         }
     }
 }
+
+bool World::can_collide(size_t bodyA, size_t bodyB) const
+{
+    // Check if either body belongs to group 0 (default collision group)
+    if (collision_groups.count(bodyA) == 0 || collision_groups.count(bodyB) == 0)
+    {
+        return true; // Default collision for unassigned bodies or group 0
+    }
+    // Otherwise, check for bit overlap in their group bitsets
+
+    // Otherwise, check for bit overlap in their collision group bitsets
+    uint32_t groupA = collision_groups.at(bodyA);
+    uint32_t groupB = collision_groups.at(bodyB);
+    uint32_t commonGroups = groupA & groupB; // Bitwise AND to find common groups
+
+    return commonGroups != 0;
+}
+
+void World::set_collision_group(size_t id, u_int32_t collision_group)
+{
+    if (collision_group < 0 || collision_group >= MAX_COLLISION_GROUPS)
+    {
+        // Handle error - invalid collision group
+        return;
+    }
+    this->collision_groups[id] = collision_group; 
+}
+
+
+// std::string World::print_collision_groups(void) const
+// {
+//     std::string output;
+//     for (const auto &[body_id, group] : collision_groups)
+//     {
+//         output += "Body " + std::to_string(body_id) + ": ";
+//         bool first_group = true;
+//         for (int i = 0; i < MAX_COLLISION_GROUPS; ++i)
+//         {
+//             if (group.groupBits[i])
+//             {
+//                 if (!first_group)
+//                 {
+//                     output += ", ";
+//                 }
+//                 output += std::to_string(i);
+//                 first_group = false;
+//             }
+//         }
+//         if (first_group)
+//         {
+//             output += "None";
+//         }
+//         output += "\n";
+//     }
+//     return output;
+// }
 
 // Collisions
 void World::broad_phase_collision_detection(void)
@@ -335,23 +394,28 @@ int World::get_number_of_revolute_joints(void)
     return this->revolute_joint_constraints.size();
 }
 
-std::optional<std::string> World::get_body_visual_shape_path(int id){
+std::optional<std::string> World::get_body_visual_shape_path(int id)
+{
     return this->bodies[id].visual_object_path;
 }
 
-rs::Color World::get_body_color(int id){
+rs::Color World::get_body_color(int id)
+{
     return this->bodies[id].color;
 }
 
-void World::set_body_color(int id, const rs::Color &color){
+void World::set_body_color(int id, const rs::Color &color)
+{
     this->bodies[id].color = color;
 }
 
-void World::set_body_color(int id, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha){
-   rs::Color color = {.r = r, .g = g, .b = b, .a = alpha};
-   this->set_body_color(id, color);
+void World::set_body_color(int id, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha)
+{
+    rs::Color color = {.r = r, .g = g, .b = b, .a = alpha};
+    this->set_body_color(id, color);
 }
 
-void World::set_body_visual_shape_path(int id, std::string path){
-  this->bodies[id].set_visual_object_path(path);
+void World::set_body_visual_shape_path(int id, std::string path)
+{
+    this->bodies[id].set_visual_object_path(path);
 }

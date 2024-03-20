@@ -5,6 +5,7 @@
 #include "scenarios/collisions_scenario.hpp"
 #include "scenarios/robot_arm_scenario.hpp"
 #include "scenarios/simple_box_collisions_scenario.hpp"
+#include "scenarios/collisions_groups_scenario.hpp"
 // Import the sine function from the standard library
 #include <math.h>
 #include <iostream>
@@ -26,10 +27,11 @@ int main(int argc, char *argv[])
     {
         COLLISIONS,
         ROBOT,
-        BOX_COLLISIONS
+        BOX_COLLISIONS,
+        COLLISION_GROUPS
     };
 
-    std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions"};
+    std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions", "Collision groups"};
 
     int selected_scenario = ScenarioType::BOX_COLLISIONS; // Default to collisions scenario
 
@@ -127,6 +129,8 @@ int main(int argc, char *argv[])
             case ScenarioType::BOX_COLLISIONS:
                 world = simple_box_collisions_scenario();
                 break;
+            case ScenarioType::COLLISION_GROUPS:
+                world = collision_groups_scenario();
             default:
                 break;
             }
