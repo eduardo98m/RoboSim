@@ -105,7 +105,6 @@ namespace robosim
 
         bool can_collide(size_t bodyA, size_t bodyB) const;
         void set_collision_group(size_t id, u_int32_t collision_group);
-        std::string print_collision_groups() const;
         /*
          * Creates a contact contraint between two bodies
          */

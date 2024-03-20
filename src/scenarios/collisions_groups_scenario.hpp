@@ -20,7 +20,7 @@ robosim::World collision_groups_scenario()
     const float Y_MIN = 0.1f, Y_MAX = 5.1f;
     const float Z_MIN = -2.5f, Z_MAX = 2.5f;
     const float RADIUS = 0.4f;
-    const int GRID_SIZE =  4 ;
+    const int GRID_SIZE =  2;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> disX(X_MIN, X_MAX);
@@ -80,7 +80,6 @@ robosim::World collision_groups_scenario()
         i++;
     }   
 
-    //world.set_collisions_with_groups(2, {3});
 
     int ball_id = world.create_body({-10.0, 2.0, 0.0}, ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0), vec3{20.1, 0.0, 0.0}, {0.0, 0.0, 0.0}, 50 * mass, 5.0 * (10.0 / 12) * inertia_tensor, DYNAMIC);
     world.set_body_sphere_collider(ball_id, 2.0 * RADIUS);

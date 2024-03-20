@@ -311,35 +311,6 @@ void World::set_collision_group(size_t id, u_int32_t collision_group)
     this->collision_groups[id] = collision_group; 
 }
 
-
-// std::string World::print_collision_groups(void) const
-// {
-//     std::string output;
-//     for (const auto &[body_id, group] : collision_groups)
-//     {
-//         output += "Body " + std::to_string(body_id) + ": ";
-//         bool first_group = true;
-//         for (int i = 0; i < MAX_COLLISION_GROUPS; ++i)
-//         {
-//             if (group.groupBits[i])
-//             {
-//                 if (!first_group)
-//                 {
-//                     output += ", ";
-//                 }
-//                 output += std::to_string(i);
-//                 first_group = false;
-//             }
-//         }
-//         if (first_group)
-//         {
-//             output += "None";
-//         }
-//         output += "\n";
-//     }
-//     return output;
-// }
-
 // Collisions
 void World::broad_phase_collision_detection(void)
 {
