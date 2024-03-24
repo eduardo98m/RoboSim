@@ -308,7 +308,7 @@ void World::set_collision_group(size_t id, u_int32_t collision_group)
         // Handle error - invalid collision group
         return;
     }
-    this->collision_groups[id] = collision_group; 
+    this->collision_groups[id] = collision_group;
 }
 
 // Collisions
@@ -319,6 +319,144 @@ void World::broad_phase_collision_detection(void)
         constraint.check_broad_phase(this->timestep);
     }
 }
+
+std::vector<vec3> World::raycast(vec3 start, vec3 end)
+{
+
+    // Create a capsule in hpp::fcl
+    scalar lenght = ti::magnitude(end - start);
+    scalar radius = 0.001; // if we take 1 m as the unit, this should be 1 [mm]
+
+    std::shared_ptr<hpp::fcl::Capsule> ray_collider = std::make_shared<hpp::fcl::Capsule>(radius, lenght);
+
+    vec3 position = 0.5 * (start + end);
+    vec3 direction = ti::normalize(end - start);
+    vec3 up = {0.0, 0.0, 1.0};
+    vec3 cross = ti::cross(up, direction);
+    vec3 axis = cross/ti::magnitude(cross);
+    scalar angle  = ti::acos(ti::dot(direction, up));
+    quat orientation = ti::quat_from_axis_angle(axis, angle) ;
+    
+    hpp::fcl::CollisionObject* ray = new hpp::fcl::CollisionObject(ray_collider);
+    ray->setTransform(ti::get_eigen_transform(position, orientation));
+
+    ray->computeAABB();
+
+    std::vector<vec3> points;
+    // Now we need to check the capsule collider with the rest of the bodies of the world
+    for (int i = 0; i < this->bodies.size(); i++)
+    {
+
+        hpp::fcl::CollisionObject* col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
+        col_obj->setTransform(
+                ti::get_eigen_transform(this->bodies[i].position,
+                                                  this->bodies[i].orientation)
+        );
+        col_obj->computeAABB();
+
+        if (ray->getAABB().contain(col_obj->getAABB())){
+            hpp::fcl::CollisionResult col_res;
+            hpp::fcl::CollisionRequest col_req;
+
+            col_req.num_max_contacts = 2;
+
+            hpp::fcl::collide(ray,
+                            col_obj,
+                            col_req,
+                            col_res);
+
+            if (col_res.isCollision())
+            {
+                vec3 point;
+                scalar min_dist = INFINITY;
+                for (int i = 0; i< col_res.numContacts(); i++ ){
+                    vec3 candidate = ti::from_eigen(col_res.getContact(i).pos);
+                    // scalar dist = ti::magnitude(start - candidate);
+                    // if (dist < min_dist){
+                    //     min_dist = dist;
+                    //     point = candidate;
+                    // }
+
+                    points.push_back(candidate);
+                }
+            }
+        }
+        
+    }
+
+    return points;
+}
+
+// std::vector<vec3> World::raycast(vec3 center, scalar radius)
+// {
+
+//     // Create a capsule in hpp::fcl
+//     scalar lenght = ti::magnitude(end - start);
+//     scalar radius = 0.001; // if we take 1 m as the unit, this should be 1 [mm]
+
+//     std::shared_ptr<hpp::fcl::Capsule> disc = std::make_shared<hpp::fcl::Capsule>(radius, lenght);
+
+//     vec3 position = 0.5*(start + end);
+
+//     vec3 direction = ti::normalize(end - start);
+//     vec3 up = {0.0, 1.0, 0.0};
+
+//     // Create a quaternion representing the capsule orientation
+//     quat orientation = ti::quat_from_axis_angle(direction, 0.0f);
+
+//     // Rotate the quaternion by 90 degrees around the up vector to align the capsule with the raycast
+//     orientation = orientation * ti::quat_from_axis_angle(up, M_PI / 2.0f);
+
+    
+//     hpp::fcl::CollisionObject* ray = new hpp::fcl::CollisionObject(ray_collider);
+//     ray->setTransform(ti::get_eigen_transform(position, orientation));
+
+//     ray->computeAABB();
+
+//     std::vector<vec3> points;
+//     // Now we need to check the capsule collider with the rest of the bodies of the world
+//     for (int i = 0; i < this->bodies.size(); i++)
+//     {
+
+//         hpp::fcl::CollisionObject* col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
+//         col_obj->setTransform(
+//                 ti::get_eigen_transform(this->bodies[i].position,
+//                                                   this->bodies[i].orientation)
+//         );
+//         col_obj->computeAABB();
+
+//         if (true){
+//             hpp::fcl::CollisionResult col_res;
+//             hpp::fcl::CollisionRequest col_req;
+
+//             hpp::fcl::collide(ray_collider.get(),
+//                             ti::get_eigen_transform(position, orientation),
+//                             this->bodies[i].collider_info.get(),
+//                             ti::get_eigen_transform(this->bodies[i].position,
+//                                                   this->bodies[i].orientation),
+//                             col_req,
+//                             col_res);
+
+//             if (col_res.isCollision())
+//             {
+//                 vec3 point;
+//                 scalar min_dist = INFINITY;
+//                 for (int i = 0; i< col_res.numContacts(); i++ ){
+//                     vec3 candidate = ti::from_eigen(col_res.getContact(i).pos);
+//                     scalar dist = ti::magnitude(start - candidate);
+//                     if (dist < min_dist){
+//                         min_dist = dist;
+//                         point = candidate;
+//                     }
+//                 }
+//                 points.push_back(point);
+//             }
+//         }
+        
+//     }
+
+//     return points;
+// }
 
 // Adding plane:
 int World::add_plane(vec3 normal, scalar offset)

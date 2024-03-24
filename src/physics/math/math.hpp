@@ -8,9 +8,17 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include "raylib.h"
 
+
+#ifdef EPSILON
+#undef EPSILON
+#endif
 #define EPSILON 1e-7
 
+#ifdef PI
+#undef PI
+#endif
 #define PI 3.1415926
 
 #ifdef SINGLE_PRECISION
@@ -67,6 +75,8 @@ namespace ti
     using glm::cos;
     using glm::sin;
 
+    using glm::acos;
+
     using glm::sqrt;
 
     using glm::min;
@@ -74,6 +84,8 @@ namespace ti
 
     using glm::abs;
     using glm::sign;
+
+
 
     /*l2 norm of the vector i.e: sqrt(x^2 + y^2 + z^2)*/
     scalar magnitude(vec3 v);
@@ -85,6 +97,8 @@ namespace ti
     */
     scalar atan2(scalar y, scalar x);
 
+
+
     /*
     *   
     */
@@ -95,6 +109,10 @@ namespace ti
     mat3 mar3_from_eigen(const hpp::fcl::Matrix3f &mat);
 
     hpp::fcl::Vec3f to_eigen(vec3 v);
+
+    Vector3 to_raylib(const vec3 &v);
+
+    Quaternion to_raylib(const quat &q);
     
     quat from_eigen(hpp::fcl::Quaternion3f q);
 };

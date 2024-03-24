@@ -10,7 +10,7 @@
 #include <vector>
 #include <tuple>
 #include <map>
-#include <bitset>
+#include <memory>
 #include "aabb_tree.hpp"
 #include "hpp/fcl/broadphase/broadphase_collision_manager.h"
 #include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree_array.h>
@@ -21,12 +21,6 @@ namespace robosim
 {
     // Maximum number of collision groups (adjust as needed)
     const int MAX_COLLISION_GROUPS = 32;
-
-    struct CollisionGroup
-    {
-        std::bitset<MAX_COLLISION_GROUPS> groupBits; // Bitset for collidable groups
-    };
-
 
     class World
     {
@@ -102,6 +96,8 @@ namespace robosim
         void narrow_phase_collisions(scalar inverse_timestep);
         void narrow_phase_collisions_velocity_level(scalar timestep);
         void get_contact_info();
+
+        std::vector<vec3> raycast(vec3 start, vec3 end);
 
         bool can_collide(size_t bodyA, size_t bodyB) const;
         void set_collision_group(size_t id, u_int32_t collision_group);

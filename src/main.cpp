@@ -6,6 +6,7 @@
 #include "scenarios/robot_arm_scenario.hpp"
 #include "scenarios/simple_box_collisions_scenario.hpp"
 #include "scenarios/collisions_groups_scenario.hpp"
+#include "scenarios/ray_cast_scenario.hpp"
 // Import the sine function from the standard library
 #include <math.h>
 #include <iostream>
@@ -28,12 +29,13 @@ int main(int argc, char *argv[])
         COLLISIONS,
         ROBOT,
         BOX_COLLISIONS,
-        COLLISION_GROUPS
+        COLLISION_GROUPS,
+        RAYCAST
     };
 
-    std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions", "Collision groups"};
+    std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions", "Collision groups", "Raycast",};
 
-    int selected_scenario = ScenarioType::BOX_COLLISIONS; // Default to collisions scenario
+    int selected_scenario = ScenarioType::RAYCAST; // Default to collisions scenario
 
     auto gui_interface{
         [&pause_simulation, &reset_scenario, &selected_scenario, scenario_names](void)
@@ -84,14 +86,12 @@ int main(int argc, char *argv[])
             ImGui::End();
         }};
 
-    robosim::World world = simple_box_collisions_scenario();
-    ;
+    robosim::World world = ray_cast_scenario();
 
     Visualizer visualizer(1920, 1080, "RoboVis");
     visualizer.set_up_camera();
 
     visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
-    // visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raster.fs", 0);
 
     visualizer.set_imgui_interfaces(gui_interface);
 
@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<Visualizer> vis_ptr(&visualizer);
     Interface *interface = new Interface(world_ptr, vis_ptr);
     //
+    auto loop_callback = [](void){};
 
     while (!WindowShouldClose())
     {
@@ -107,6 +108,9 @@ int main(int argc, char *argv[])
         if (!pause_simulation)
         {
             world.step();
+            if (selected_scenario == ScenarioType::RAYCAST){
+                ray_cast_callback(world_ptr, vis_ptr);
+            }
         }
 
         interface->update();
@@ -121,16 +125,18 @@ int main(int argc, char *argv[])
             case ScenarioType::COLLISIONS:
                 world = collisions_scenario();
                 break;
-
             case ScenarioType::ROBOT:
                 world = robot_arm_scenario();
                 break;
-
             case ScenarioType::BOX_COLLISIONS:
                 world = simple_box_collisions_scenario();
                 break;
             case ScenarioType::COLLISION_GROUPS:
                 world = collision_groups_scenario();
+                break;
+            case ScenarioType::RAYCAST:
+                world = ray_cast_scenario();
+                break;
             default:
                 break;
             }

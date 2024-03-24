@@ -51,6 +51,18 @@ namespace ti
         return (hpp::fcl::Vec3f){v[0], v[1], v[2]};
     }
 
+    Vector3 to_raylib(const vec3 &v)
+    {
+        return {(float)v.x, (float)v.y, (float)v.z};
+    }
+
+    Quaternion to_raylib(const quat &q)
+    {
+        return {(float)q.x, (float)q.y, (float)q.z, (float)q.w};
+    }
+
+    
+
 
 };
 
