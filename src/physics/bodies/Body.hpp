@@ -120,8 +120,12 @@ public:
     
 
     /* Material properties */
-    scalar dynamic_fricction_coeff = 0.5;
+    // Dynamic fricction coeficient
+    scalar dynamic_fricction_coeff = 0.48;
+    // Static fricction coefficient
     scalar static_fricction_coeff = 0.5;
+    // Restitution coeficient of the body
+    scalar restitution = 0.7;
 
     /*
      * Class constructor

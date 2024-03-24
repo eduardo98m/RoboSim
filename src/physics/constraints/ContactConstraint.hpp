@@ -18,6 +18,7 @@ private:
     // Fricction properties
     scalar static_fricction_coeff;
     scalar dynamic_fricction_coeff;
+    scalar restitution;
 
     // Positional Constraints (Normal and tangencial)
     PositionalConstraint * normal_constraint;

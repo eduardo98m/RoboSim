@@ -243,6 +243,31 @@ namespace robosim
         void set_body_color(int id, const rs::Color &color);
 
         /*
+         * Sets the static fricction coefficient of a body
+         *
+         * @param id The index of the body.
+         * @param coeff The static fricction coefficient of the body.
+         */
+        void set_body_static_friccion_coefficient(int id, scalar coeff);
+
+        /*
+         * Sets the dynamic fricction coefficient of a body
+         *
+         * @param id The index of the body.
+         * @param coeff The dynamic fricction coefficient of the body.
+         */
+        void set_body_dynamic_friccion_coefficient(int id, scalar coeff);
+
+
+        /*
+         * Sets the restitution coefficient of a body
+         *
+         * @param id The index of the body.
+         * @param coeff The restitution coefficient of the body.
+         */
+        void set_body_restitution_coefficient(int id, scalar coeff);
+
+        /*
          * Gets the color of a body in the world.
          *
          * @param id The index of the body.

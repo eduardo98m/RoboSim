@@ -12,8 +12,9 @@ ContactConstraint::ContactConstraint(Body *body_1,
     this->tangencial_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
     this->normal_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
 
-    this->static_fricction_coeff = 0.70;
-    this->dynamic_fricction_coeff = 0.75;
+    this->static_fricction_coeff = 0.5*(body_1->static_fricction_coeff + body_2->static_fricction_coeff);
+    this->dynamic_fricction_coeff = 0.5*(body_1->dynamic_fricction_coeff + body_2->dynamic_fricction_coeff);
+    this->restitution = ti::min(body_1->restitution, body_2->restitution);
 }
 
 void ContactConstraint::apply_constraint(scalar inverse_time_step)
@@ -121,13 +122,13 @@ void ContactConstraint::apply_constraint_velocity_level(scalar time_step)
     }
     
 
-    scalar restitution = 0.70;
+    scalar contact_restitution = this->restitution;
     if (ti::abs(v_n) <= 2.0 * 9.8 * time_step)
     {
-        restitution = 0.0;
+        contact_restitution = 0.0;
     }
 
-    delta_v += n * (-v_n + ti::min(-restitution * this->relative_velocity, 0.0));
+    delta_v += n * (-v_n + ti::min(-contact_restitution * this->relative_velocity, 0.0));
 
     scalar w_1 = this->body_1->get_positional_generalized_inverse_mass(r_1_wc, n);
     scalar w_2 = this->body_2->get_positional_generalized_inverse_mass(r_2_wc, n);

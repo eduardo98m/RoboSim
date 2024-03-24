@@ -140,6 +140,18 @@ void World::set_body_capsule_collider(int id, scalar radius, scalar height)
     this->bodies[id].set_capsule_collider(radius, height);
 }
 
+void  World::set_body_static_friccion_coefficient(int id, scalar coeff){
+    this->bodies[id].static_fricction_coeff = coeff;
+}
+
+void  World::set_body_dynamic_friccion_coefficient(int id, scalar coeff){
+    this->bodies[id].dynamic_fricction_coeff = coeff;
+}
+
+void  World::set_body_restitution_coefficient(int id, scalar coeff){
+    this->bodies[id].restitution = coeff;
+}
+
 int World::create_positional_constraint(int body_1_id, int body_2_id, vec3 r_1, vec3 r_2, scalar compliance, scalar damping)
 {
 
@@ -325,9 +337,9 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
 
     // Create a capsule in hpp::fcl
     scalar lenght = ti::magnitude(end - start);
-    scalar radius = 0; // if we take 1 m as the unit, this should be 1 [mm]
+    scalar radius = 0; //
 
-    std::shared_ptr<hpp::fcl::Capsule> ray_collider = std::make_shared<hpp::fcl::Capsule>(radius, lenght);
+    std::shared_ptr<hpp::fcl::Cylinder> ray_collider = std::make_shared<hpp::fcl::Cylinder>(radius, lenght);
 
     vec3 position = 0.5 * (start + end);
     vec3 direction = ti::normalize(end - start);
@@ -356,9 +368,9 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
 
         if (ray->getAABB().contain(col_obj->getAABB())){
             hpp::fcl::CollisionResult col_res;
-            hpp::fcl::CollisionRequest col_req;
+            hpp::fcl::CollisionRequest col_req;// = hpp::fcl::CollisionRequest(hpp::fcl::CollisionRequestFlag::DISTANCE_LOWER_BOUND, 2);
 
-            col_req.num_max_contacts = 2;
+            //col_req.num_max_contacts = 16;
 
             hpp::fcl::collide(ray,
                             col_obj,
@@ -369,6 +381,7 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
             {
                 vec3 point;
                 scalar min_dist = INFINITY;
+                std::cerr << "N contacs : " << col_res.numContacts() << "\n"; 
                 for (int i = 0; i< col_res.numContacts(); i++ ){
                     vec3 candidate = ti::from_eigen(col_res.getContact(i).pos);
                     // scalar dist = ti::magnitude(start - candidate);
@@ -379,6 +392,7 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
 
                     points.push_back(candidate);
                 }
+                //points.push_back(ti::from_eigen(col_res.nearest_points[1]));
             }
         }
         
