@@ -325,7 +325,7 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
 
     // Create a capsule in hpp::fcl
     scalar lenght = ti::magnitude(end - start);
-    scalar radius = 0.001; // if we take 1 m as the unit, this should be 1 [mm]
+    scalar radius = 0; // if we take 1 m as the unit, this should be 1 [mm]
 
     std::shared_ptr<hpp::fcl::Capsule> ray_collider = std::make_shared<hpp::fcl::Capsule>(radius, lenght);
 
@@ -387,82 +387,73 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
     return points;
 }
 
-// std::vector<vec3> World::raycast(vec3 center, scalar radius)
-// {
+std::vector<vec3> World::disc_raycast(vec3 center, scalar radius, vec3 axis)
+{
 
-//     // Create a capsule in hpp::fcl
-//     scalar lenght = ti::magnitude(end - start);
-//     scalar radius = 0.001; // if we take 1 m as the unit, this should be 1 [mm]
+    // Create a capsule in hpp::fcl
+    scalar lenght = 0.001;
 
-//     std::shared_ptr<hpp::fcl::Capsule> disc = std::make_shared<hpp::fcl::Capsule>(radius, lenght);
+    std::shared_ptr<hpp::fcl::Cylinder> disc_collider = std::make_shared<hpp::fcl::Cylinder>(radius, lenght);
 
-//     vec3 position = 0.5*(start + end);
-
-//     vec3 direction = ti::normalize(end - start);
-//     vec3 up = {0.0, 1.0, 0.0};
-
-//     // Create a quaternion representing the capsule orientation
-//     quat orientation = ti::quat_from_axis_angle(direction, 0.0f);
-
-//     // Rotate the quaternion by 90 degrees around the up vector to align the capsule with the raycast
-//     orientation = orientation * ti::quat_from_axis_angle(up, M_PI / 2.0f);
-
+    vec3 position = center;
+    vec3 direction = axis;
+    vec3 up = {0.0, 0.0, 1.0};
+    vec3 cross = ti::cross(up, direction);
+    vec3 rot_axis = cross/ti::magnitude(cross);
+    scalar angle  = ti::acos(ti::dot(direction, up));
+    quat orientation = ti::quat_from_axis_angle(rot_axis, angle) ;
     
-//     hpp::fcl::CollisionObject* ray = new hpp::fcl::CollisionObject(ray_collider);
-//     ray->setTransform(ti::get_eigen_transform(position, orientation));
+    
+    hpp::fcl::CollisionObject* disc = new hpp::fcl::CollisionObject(disc_collider);
+    disc->setTransform(ti::get_eigen_transform(position, orientation));
 
-//     ray->computeAABB();
+    disc->computeAABB();
 
-//     std::vector<vec3> points;
-//     // Now we need to check the capsule collider with the rest of the bodies of the world
-//     for (int i = 0; i < this->bodies.size(); i++)
-//     {
+    std::vector<vec3> points;
+    // Now we need to check the capsule collider with the rest of the bodies of the world
+    for (int i = 0; i < this->bodies.size(); i++)
+    {
 
-//         hpp::fcl::CollisionObject* col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
-//         col_obj->setTransform(
-//                 ti::get_eigen_transform(this->bodies[i].position,
-//                                                   this->bodies[i].orientation)
-//         );
-//         col_obj->computeAABB();
+        hpp::fcl::CollisionObject* col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
+        col_obj->setTransform(
+                ti::get_eigen_transform(this->bodies[i].position,
+                                                  this->bodies[i].orientation)
+        );
+        col_obj->computeAABB();
 
-//         if (true){
-//             hpp::fcl::CollisionResult col_res;
-//             hpp::fcl::CollisionRequest col_req;
+        if (disc->getAABB().contain(col_obj->getAABB())){
+            hpp::fcl::CollisionResult col_res;
+            hpp::fcl::CollisionRequest col_req;
+            col_req.num_max_contacts = 64;
 
-//             hpp::fcl::collide(ray_collider.get(),
-//                             ti::get_eigen_transform(position, orientation),
-//                             this->bodies[i].collider_info.get(),
-//                             ti::get_eigen_transform(this->bodies[i].position,
-//                                                   this->bodies[i].orientation),
-//                             col_req,
-//                             col_res);
+            hpp::fcl::collide(disc,
+                            col_obj,
+                            col_req,
+                            col_res);
 
-//             if (col_res.isCollision())
-//             {
-//                 vec3 point;
-//                 scalar min_dist = INFINITY;
-//                 for (int i = 0; i< col_res.numContacts(); i++ ){
-//                     vec3 candidate = ti::from_eigen(col_res.getContact(i).pos);
-//                     scalar dist = ti::magnitude(start - candidate);
-//                     if (dist < min_dist){
-//                         min_dist = dist;
-//                         point = candidate;
-//                     }
-//                 }
-//                 points.push_back(point);
-//             }
-//         }
+            if (col_res.isCollision())
+            {
+                vec3 point;
+                scalar min_dist = INFINITY;
+                for (int i = 0; i< col_res.numContacts(); i++ ){
+                    vec3 candidate = ti::from_eigen(col_res.getContact(i).pos);
+                    points.push_back(candidate);
+                }
+                
+            }
+        }
         
-//     }
+    }
 
-//     return points;
-// }
+    return points;
+}
+
 
 // Adding plane:
 int World::add_plane(vec3 normal, scalar offset)
 {
     normal = ti::normalize(normal);
-    this->plane_body_idx = this->create_body(vec3(0.0, 0.0, 0.0),
+    int plane_body_idx = this->create_body(vec3(0.0, 0.0, 0.0),
                                              quat(1.0, 0.0, 0.0, 0.0),
                                              vec3(0.0, 0.0, 0.0),
                                              vec3(0.0, 0.0, 0.0),
@@ -472,9 +463,9 @@ int World::add_plane(vec3 normal, scalar offset)
                                                         0.0, 0.0, 1.0),
                                              BodyType::STATIC);
 
-    this->set_body_plane_collider(this->plane_body_idx, normal, offset);
+    this->set_body_plane_collider(plane_body_idx, normal, offset);
 
-    return this->plane_body_idx;
+    return plane_body_idx;
 }
 
 // Revolute joints
