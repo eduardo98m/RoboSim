@@ -59,6 +59,7 @@ robosim::World collision_groups_scenario()
     //uint plane_id = world.add_plane({0.0, 1.0, 0}, 0.0);
     int plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500 * mass, 500 * (10.0 / 12) * inertia_tensor, STATIC);
     world.set_body_box_collider(plane_id, {50.0, 0.2, 50.0});
+    world.set_body_color(plane_id, 173, 216, 230);
 
     // world.set_body_sphere_collider(ball_id, 1.0);
     int  i = 0;
