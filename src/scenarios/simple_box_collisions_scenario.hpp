@@ -1,5 +1,7 @@
 #pragma once
 
+#include "scenarios/scenario.hpp"
+
 #include "physics/math/math.hpp" 
 #include "physics/constraints/RevoluteJointConstraint.hpp"
 
@@ -15,10 +17,7 @@
 
 
 robosim::World simple_box_collisions_scenario(){
-
     
-
-
     robosim::World world = robosim::World(0.01, 1);
     quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 2.0);
     scalar mass = 1.0;
@@ -42,6 +41,4 @@ robosim::World simple_box_collisions_scenario(){
 
 
     return world;
-
-
 }

@@ -7,6 +7,7 @@
 #include "constraints/ContactConstraint.hpp"
 #include "collisions/broad_phase.hpp"
 #include "collisions/collisions.hpp"
+#include "physics/articulatedSystem/ArticulatedSystem.hpp"
 #include <vector>
 #include <tuple>
 #include <map>
@@ -42,8 +43,8 @@ namespace robosim
         // Unordered map that maps the bodies to collision groups
         std::unordered_map<size_t, uint32_t> collision_groups;
 
-        // Plane (if used has a reserved attribute in the world class)
-        //int plane_body_idx = -1; // Default (-1) (you wont get anything!)
+        // Articulated systems
+        std::vector<ArticulatedSystem> articulated_systems;
 
         /*
          * Updates the positions and orientations of all bodies in the world based on their velocities and the given time step.
@@ -479,5 +480,52 @@ namespace robosim
          * @return The index of the body representing the plane.
          */
         int add_plane(vec3 normal, scalar offset);
+
+
+        // Functions for the articulates system management
+        
+        /*
+         * Groups a series of (connected) bodies and joints into an articulated system
+         *
+         * @param joint_ids The ids of the joints
+         * @param joint_types The types of the joints (constraints)
+         * @return The index of the articulated system
+         */
+        size_t create_articulated_system(
+            const std::vector<size_t> &joint_ids, 
+            const std::vector<JointType> &joint_types,
+            const std::vector<size_t> &link_ids
+        );
+
+        /*
+         * Gets the state of the articulated system
+         *
+         * @param id The id of the articulated_system
+         * @return A vector of scalars where:
+         *         * The first 3 elements are the base_link positions
+         *         * The next 4 elements are the base link orientation expreesed as a quaternion (q.x, q.y, q.z, q.w)
+         *         * The following elementes are the articulation variables
+         */
+        std::vector<scalar> get_articulated_system_state(size_t id);
+
+        /*
+         * Set the target of the articulated system joints target positions
+         *
+         * @param id The id of the articulated_system
+         * @return A vector of scalars where:
+         *         * The first 3 elements are the base_link positions
+         *         * The next 4 elements are the base link orientation expreesed as a quaternion (q.x, q.y, q.z, q.w)
+         *         * The following elementes are the articulation variables
+         */
+        void set_articulated_system_joint_targets(size_t id, std::vector<scalar> joint_targets);
+
+
+        /*
+         * Gets the pose of a link of an articulated sistem
+         *
+         * @param id The id of the articulated_system
+         * @return The pose (position and orientation) of the selected link
+         */
+        pose get_articulated_system_link_pose(size_t id,  size_t link_id);
     };
 } // namespace robosim

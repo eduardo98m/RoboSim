@@ -144,3 +144,7 @@ RevoluteJointInfo RevoluteJointConstraint::get_info(void){
 
     return info;
 }
+
+scalar RevoluteJointConstraint::get_current_angle(void){
+    return this->current_angle;
+}

@@ -83,6 +83,7 @@ make
 ```
 
 # TODO:
+* [ ] URGENT : Fix a bug related to memory management: Currently it is not possible to create a world instance in a sub context and return a pointer of that instance to the current context (An issue with the colliders from hpp::fcl shared poiters arises). 
 * [ ] Build intructions/Tutorial
 * [ ] Documentation
 * [-] Interface Simulator <-> Visualizer (WIP)

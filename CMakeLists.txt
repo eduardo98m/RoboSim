@@ -35,6 +35,7 @@ set(PHYSICS_SOURCES
     "src/physics/math/math.cpp"    
     # World
     "src/physics/World.cpp"
+    "src/physics/WorldArticulatedSystem.cpp"
     #Interface
     "src/visInterface/Interface.cpp"
     )

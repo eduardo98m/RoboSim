@@ -1,5 +1,5 @@
 #pragma once
-
+#include "scenarios/scenario.hpp"
 #include "physics/math/math.hpp"
 #include "physics/constraints/RevoluteJointConstraint.hpp"
 
@@ -13,7 +13,7 @@
 #include <memory>
 #include <random>
 
-robosim::World collision_groups_scenario()
+robosim::World  collision_groups_scenario()
 {
 
     const float X_MIN = -2.5f, X_MAX = 2.5f;

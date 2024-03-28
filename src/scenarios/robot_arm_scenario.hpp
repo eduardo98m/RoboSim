@@ -1,5 +1,7 @@
 #pragma once
 
+#include "scenarios/scenario.hpp"
+
 #include "physics/math/math.hpp" 
 #include "physics/constraints/RevoluteJointConstraint.hpp"
 
@@ -76,6 +78,5 @@ robosim::World robot_arm_scenario(){
     world.set_revolute_joint_target_angle(joint_3, PI/2);
 
     return world;
-
 
 }

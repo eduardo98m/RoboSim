@@ -1,5 +1,7 @@
 #pragma once
 
+#include "scenarios/scenario.hpp"
+
 #include "physics/math/math.hpp"
 #include "physics/constraints/RevoluteJointConstraint.hpp"
 
@@ -135,4 +137,5 @@ robosim::World ray_cast_scenario()
     world.collisions_detection_preparations();
 
     return world;
+
 }

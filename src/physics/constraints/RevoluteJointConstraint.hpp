@@ -42,8 +42,7 @@ class RevoluteJointConstraint{
         // Damping 
         scalar damping;
 
-        // Driven Joint options
-        RevoluteJointType type;
+        
         scalar target_speed = 0.0;
         scalar target_angle = 0.0;
         
@@ -68,6 +67,8 @@ class RevoluteJointConstraint{
         
         PositionalConstraint *attachment_point_constraint;
     public:
+        // Joint type (FREE - DRIVEN_BY_POSITION - DRIVEN_BY_SPEED)
+        RevoluteJointType type;
 
         RevoluteJointConstraint(Body * body_1, 
                              Body * body_2,
@@ -93,5 +94,7 @@ class RevoluteJointConstraint{
         void reset_lagrange_multipliers(void);
 
         RevoluteJointInfo get_info(void);
+
+        scalar get_current_angle(void);
 
 };

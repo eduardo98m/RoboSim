@@ -2,11 +2,13 @@
 #include "physics/math/math.hpp"
 #include "physics/constraints/RevoluteJointConstraint.hpp"
 
+#include "scenarios/scenario.hpp"
 #include "scenarios/collisions_scenario.hpp"
 #include "scenarios/robot_arm_scenario.hpp"
 #include "scenarios/simple_box_collisions_scenario.hpp"
 #include "scenarios/collisions_groups_scenario.hpp"
 #include "scenarios/ray_cast_scenario.hpp"
+#include "scenarios/articulated_system.hpp"
 // Import the sine function from the standard library
 #include <math.h>
 #include <iostream>
@@ -30,12 +32,20 @@ int main(int argc, char *argv[])
         ROBOT,
         BOX_COLLISIONS,
         COLLISION_GROUPS,
-        RAYCAST
+        RAYCAST,
+        ARTICULATED_SYSTEM
     };
 
-    std::vector<std::string> scenario_names = {"Collisions Scenario", "Robot Scenario", "Box Collisions", "Collision groups", "Raycast",};
+    std::vector<std::string> scenario_names = {
+        "Collisions Scenario",
+        "Robot Scenario",
+        "Box Collisions",
+        "Collision groups",
+        "Raycast",
+        "Articulated System"
+    };
 
-    int selected_scenario = ScenarioType::RAYCAST; // Default to collisions scenario
+    int selected_scenario = ScenarioType::COLLISIONS; // Default to collisions scenario
 
     auto gui_interface{
         [&pause_simulation, &reset_scenario, &selected_scenario, scenario_names](void)
@@ -86,7 +96,12 @@ int main(int argc, char *argv[])
             ImGui::End();
         }};
 
-    robosim::World world = ray_cast_scenario();
+    //robosim::World world;
+    std::function<void(std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>)> step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+    std::function<void()> gui_callback = [](){};
+    robosim::World world  = collisions_scenario();
+
+
 
     Visualizer visualizer(1920, 1080, "RoboVis");
     visualizer.set_up_camera();
@@ -94,23 +109,22 @@ int main(int argc, char *argv[])
     visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
 
     visualizer.set_imgui_interfaces(gui_interface);
+    visualizer.set_imgui_interfaces(gui_callback);
 
     std::shared_ptr<robosim::World> world_ptr(&world);
     std::shared_ptr<Visualizer> vis_ptr(&visualizer);
-    Interface *interface = new Interface(world_ptr, vis_ptr);
-    //
-    auto loop_callback = [](void){};
 
+    Interface *interface = new Interface(world_ptr, vis_ptr);
+
+   
     while (!WindowShouldClose())
     {
         visualizer.update();
 
         if (!pause_simulation)
         {
-            world.step();
-            if (selected_scenario == ScenarioType::RAYCAST){
-                ray_cast_callback(world_ptr, vis_ptr);
-            }
+            world_ptr->step();
+            step_callback(world_ptr, vis_ptr);
         }
 
         interface->update();
@@ -123,28 +137,45 @@ int main(int argc, char *argv[])
             switch (selected_scenario)
             {
             case ScenarioType::COLLISIONS:
-                world = collisions_scenario();
+                world  = collisions_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
                 break;
             case ScenarioType::ROBOT:
-                world = robot_arm_scenario();
+                world  = robot_arm_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
                 break;
             case ScenarioType::BOX_COLLISIONS:
-                world = simple_box_collisions_scenario();
+                world  = simple_box_collisions_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
                 break;
             case ScenarioType::COLLISION_GROUPS:
-                world = collision_groups_scenario();
+                world  = collision_groups_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
                 break;
             case ScenarioType::RAYCAST:
-                world = ray_cast_scenario();
+                world  = ray_cast_scenario();
+                step_callback = ray_cast_callback;
+                gui_callback = [](){};
                 break;
+            case ScenarioType::ARTICULATED_SYSTEM:
+                world  = articulated_system_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};;
+                gui_callback = [](){};
+                std::tie(step_callback, gui_callback) = create_functions(world_ptr);
             default:
                 break;
             }
+
             visualizer.clear_visual_objects();
             visualizer.clear_gui_interfaces();
             visualizer.unload_models();
             visualizer.set_imgui_interfaces(gui_interface);
-            world.step();
+            visualizer.set_imgui_interfaces(gui_callback);
+            world_ptr->step();
 
             delete interface; // This is to avoid a memory leak
             interface = new Interface(world_ptr, vis_ptr);
