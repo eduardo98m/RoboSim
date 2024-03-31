@@ -150,13 +150,16 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
 
             ImGui::SameLine();
 
-            ImGui::Checkbox("Show bounding boxes", &this->settings.render_visual_objects);
+            ImGui::Checkbox(" ", &this->settings.render_visual_objects);
 
             ImGui::EndGroup();
             if (ImGui::Button("Toggle collision objects"))
             {
                 this->settings.toggle_collision_shapes = true; // Set the flag to indicate a reset is requested
             }
+            ImGui::SameLine();
+
+            ImGui::Checkbox(" ", &this->settings.render_collision_shapes);
 
             ImGui::Text("Revolute Joints");
             ImGui::Separator();
