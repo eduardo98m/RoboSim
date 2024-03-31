@@ -17,9 +17,9 @@
 robosim::World articulated_system_scenario()
 {
 
-    robosim::World world = robosim::World(0.01, 20);
-    quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 2.0);
-    scalar mass = 1.0;
+    robosim::World world = robosim::World(0.01, 120);
+    quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0);
+    scalar mass = 0.05;
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
                                0.0, 1.0, 0.0,
                                0.0, 0.0, 1.0};
@@ -31,10 +31,10 @@ robosim::World articulated_system_scenario()
     world.set_body_box_collider(base_id, vec3(0.1, 0.5, 0.1));
 
     size_t ball_1_id = world.create_body({0.0, 5.0, 0.0}, ori, lin_vel, ang_vel, 12.0 * mass, (.7 * mass / 12) * inertia_tensor, DYNAMIC);
-    world.set_body_box_collider(ball_1_id, vec3(0.1, 0.5, 0.1));
+    world.set_body_box_collider(ball_1_id, vec3(0.1, 0.3, 0.1));
 
     size_t ball_2_id = world.create_body({0.0, 3.0, 0.0}, ori, lin_vel, ang_vel, mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
-    world.set_body_box_collider(ball_2_id, vec3(0.1, 0.3, 0.1));
+    world.set_body_cylinder_collider(ball_2_id, 0.1,  0.4);
 
     size_t ball_3_id = world.create_body({0.0, 6.0, 0.0}, ori, lin_vel, ang_vel, .6 * mass, (.6 * mass / 12) * inertia_tensor, DYNAMIC);
     world.set_body_box_collider(ball_3_id, vec3(0.1, 0.3, 0.1));
@@ -60,14 +60,17 @@ robosim::World articulated_system_scenario()
     size_t ball_10_id = world.create_body({0.0, 12.0, 0.1}, ori, lin_vel, ang_vel, 1 * mass, (10.0 / 12) * inertia_tensor, DYNAMIC);
     world.set_body_sphere_collider(ball_10_id, 0.2);
 
-    world.set_gravity({0.0, 0.0, 0.0});
+    int plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500 * mass, 500 * (10.0 / 12) * inertia_tensor, STATIC);
+    world.set_body_box_collider(plane_id, {50.0, 0.2, 50.0});
+
+    world.set_gravity({0.0, -9.8, 0.0});
     world.collisions_detection_preparations();
 
-    size_t joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  0.001, 2.0, DRIVEN_BY_POSITION, false, -0.8, 0.8);
-    size_t joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 1.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0},  0.001, 2.0, DRIVEN_BY_POSITION, false, -0.5, 0.5);
-    size_t joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.1, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.001, 2.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    size_t joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.001, 2.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    size_t joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.001, 2.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    size_t joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.8, 0.8);
+    size_t joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true   , -0.5, 0.5);
+    size_t joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    size_t joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    size_t joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
 
     // Lets create the articulates systems:
     std::vector<size_t> joint_ids = {joint_0, joint_1, joint_2, joint_3, joint_4};
@@ -86,8 +89,9 @@ create_functions(std::shared_ptr<robosim::World> world_ptr)
 {
     std::vector<scalar> joint_values = world_ptr->get_articulated_system_state(0);
 
-    static std::vector<float> target_values = {};
-    for (int i = 6; i < joint_values.size(); i++)
+    static std::vector<float> target_values;
+    target_values = {};
+    for (int i = 7; i < joint_values.size(); i++)
     {
         target_values.push_back(0.0f);
     }
@@ -99,7 +103,7 @@ create_functions(std::shared_ptr<robosim::World> world_ptr)
 
             for (int i = 0; i < target_values.size(); i++)
             {
-                ImGui::SliderFloat(("Joint " + std::to_string(i)).c_str(), &target_values[i], -3.14159f, 3.14159f, "%.2f");
+                ImGui::SliderFloat(("Joint " + std::to_string(i)).c_str(), &target_values[i], -180.0, 180.0, "%.2f");
             }
             ImGui::End();
         }};
@@ -110,7 +114,7 @@ create_functions(std::shared_ptr<robosim::World> world_ptr)
             std::vector<scalar> target_scalars = {};
             for (int i = 0; i < target_values.size(); i++)
             {
-                target_scalars.push_back(target_values[i]);
+                target_scalars.push_back(target_values[i] * PI/180.0);
             }
 
             world_ptr->set_articulated_system_joint_targets(0, target_scalars);
