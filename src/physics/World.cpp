@@ -337,9 +337,9 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
 
     // Create a capsule in hpp::fcl
     scalar lenght = ti::magnitude(end - start);
-    scalar radius = 0; //
 
-    std::shared_ptr<hpp::fcl::Cylinder> ray_collider = std::make_shared<hpp::fcl::Cylinder>(radius, lenght);
+    std::shared_ptr<hpp::fcl::Capsule> ray_collider = std::make_shared<hpp::fcl::Capsule>(0.0, lenght);
+    std::shared_ptr<hpp::fcl::Sphere> ray_origin_collider = std::make_shared<hpp::fcl::Sphere>(0.0);
 
     vec3 position = 0.5 * (start + end);
     vec3 direction = ti::normalize(end - start);
@@ -351,6 +351,9 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
     
     hpp::fcl::CollisionObject* ray = new hpp::fcl::CollisionObject(ray_collider);
     ray->setTransform(ti::get_eigen_transform(position, orientation));
+
+    hpp::fcl::CollisionObject* ray_origin = new hpp::fcl::CollisionObject(ray_origin_collider);
+    ray_origin->setTransform(ti::get_eigen_transform(start, {0.0, 0.0, 0.0, 1.0}));
 
     ray->computeAABB();
 
@@ -378,26 +381,24 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
                             col_res);
 
             if (col_res.isCollision())
-            {
-                vec3 point;
-                scalar min_dist = INFINITY;
-                std::cerr << "N contacs : " << col_res.numContacts() << "\n"; 
-                for (int i = 0; i< col_res.numContacts(); i++ ){
-                    vec3 candidate = ti::from_eigen(col_res.getContact(i).pos);
-                    // scalar dist = ti::magnitude(start - candidate);
-                    // if (dist < min_dist){
-                    //     min_dist = dist;
-                    //     point = candidate;
-                    // }
+            {   
+                // hpp::fcl::DistanceResult dis_res;
+                // hpp::fcl::DistanceRequest dis_req = hpp::fcl::DistanceRequest(false);
 
-                    points.push_back(candidate);
+                // hpp::fcl::distance(ray_origin,
+                //             col_obj,
+                //             dis_req,
+                //             dis_res); 
+                for (auto & contact : col_res.getContacts()){
+                    points.push_back(ti::from_eigen(contact.pos));// - ti::from_eigen(contact.normal) * contact.penetration_depth * 0.5);
                 }
-                //points.push_back(ti::from_eigen(col_res.nearest_points[1]));
+                //hpp::fcl::Contact contact = col_res.getContact(0);
+                
+                
             }
         }
-        
     }
-
+        
     return points;
 }
 
