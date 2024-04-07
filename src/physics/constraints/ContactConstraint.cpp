@@ -54,9 +54,7 @@ void ContactConstraint::apply_constraint(scalar inverse_time_step)
 
     this->relative_velocity = ti::dot(v_n, n);
 
-    scalar lambda_t = this->tangencial_constraint->get_lagrange_multiplier();
-    scalar lambda_n = this->normal_constraint->get_lagrange_multiplier();
-
+    
     // Note this are recalculated for the previous positions
     r_1_wc = p_1 - this->body_1->prev_position;
     r_2_wc = p_2 - this->body_2->prev_position;
@@ -70,6 +68,9 @@ void ContactConstraint::apply_constraint(scalar inverse_time_step)
     vec3 delta_p = (p_1 - prev_p_1) - (p_2 - prev_p_2);
 
     vec3 delta_p_tangencial = delta_p - (ti::dot(delta_p, n)) * n;
+
+    scalar lambda_t = this->tangencial_constraint->compute_lagrange_multiplier(inverse_time_step);
+    scalar lambda_n = this->normal_constraint->get_lagrange_multiplier();
 
     if (lambda_t > lambda_n * this->static_fricction_coeff)
     {

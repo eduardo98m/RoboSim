@@ -70,7 +70,6 @@ void PositionalConstraint::apply_constraint(scalar inverse_time_step){
     // Apply the impulse to both bodies
     this->body_1->apply_positional_constraint_impulse( impulse, r_1_wc);
     this->body_2->apply_positional_constraint_impulse(-impulse, r_2_wc);// Note the negative sign at the impulse!
-
 }
 
 void PositionalConstraint::reset_lagrange_multiplier(void){
@@ -84,4 +83,23 @@ void PositionalConstraint::set_constraint_positions(const vec3 &r_1, const vec3 
 
 scalar PositionalConstraint::get_lagrange_multiplier(void){
     return this->lambda;
+}
+
+
+scalar PositionalConstraint::compute_lagrange_multiplier(scalar inverse_time_step){
+
+    
+    // Get the world coordinates of r vectors of the two constriant bodies
+    vec3 r_1_wc = ti::rotate(this->body_1->orientation, this->r_1);
+    vec3 r_2_wc = ti::rotate(this->body_2->orientation, this->r_2);
+
+    // Calculte the generalized inverse mass of the bodies
+    scalar w_1 = this->body_1->get_positional_generalized_inverse_mass(r_1_wc, this->n);
+    scalar w_2 = this->body_2->get_positional_generalized_inverse_mass(r_2_wc, this->n);
+
+    // Calculate the change in the lagrange multiplier (delta lambda)
+    scalar delta_lambda = this->compute_positional_delta_lambda(w_1, w_2, inverse_time_step);
+
+    // Update the lagrange multiplier    
+    return this->lambda + delta_lambda;
 }

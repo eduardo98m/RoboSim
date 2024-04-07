@@ -14,12 +14,14 @@ void World::step()
     scalar inv_h = 1 / h;
 
     this->broad_phase_collision_detection();
-    for (ContactConstraint &constraint : this->contact_constraints)
-    {
-        constraint.reset_lagrange_multipliers();
-    }
+
     for (int i = 0; i < this->substeps; i++)
     {
+        // TODO: Check if this is correct (The we reset the contact lambdas here or outside the substepping loop)
+        for (ContactConstraint &constraint : this->contact_constraints)
+        {
+            constraint.reset_lagrange_multipliers();
+        }
         this->update_bodies_position_and_orientation(h);
         this->solve_positions(inv_h, h);
         this->update_bodies_velocities(inv_h);
@@ -125,8 +127,9 @@ void World::set_body_box_collider(int id, vec3 half_extents)
     this->bodies[id].set_box_collider(half_extents, true);
 }
 
-void World::set_heightmap_collider(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims){
-    this->bodies[id].set_heightmap_collider(x_scale,  y_scale, heightdata, x_dims, y_dims);
+void World::set_heightmap_collider(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims)
+{
+    this->bodies[id].set_heightmap_collider(x_scale, y_scale, heightdata, x_dims, y_dims);
 }
 
 void World::set_body_cylinder_collider(int id, scalar radius, scalar height)
@@ -144,15 +147,18 @@ void World::set_body_capsule_collider(int id, scalar radius, scalar height)
     this->bodies[id].set_capsule_collider(radius, height);
 }
 
-void  World::set_body_static_friccion_coefficient(int id, scalar coeff){
+void World::set_body_static_friccion_coefficient(int id, scalar coeff)
+{
     this->bodies[id].static_fricction_coeff = coeff;
 }
 
-void  World::set_body_dynamic_friccion_coefficient(int id, scalar coeff){
+void World::set_body_dynamic_friccion_coefficient(int id, scalar coeff)
+{
     this->bodies[id].dynamic_fricction_coeff = coeff;
 }
 
-void  World::set_body_restitution_coefficient(int id, scalar coeff){
+void World::set_body_restitution_coefficient(int id, scalar coeff)
+{
     this->bodies[id].restitution = coeff;
 }
 
@@ -349,14 +355,14 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
     vec3 direction = ti::normalize(end - start);
     vec3 up = {0.0, 0.0, 1.0};
     vec3 cross = ti::cross(up, direction);
-    vec3 axis = cross/ti::magnitude(cross);
-    scalar angle  = ti::acos(ti::dot(direction, up));
-    quat orientation = ti::quat_from_axis_angle(axis, angle) ;
-    
-    hpp::fcl::CollisionObject* ray = new hpp::fcl::CollisionObject(ray_collider);
+    vec3 axis = cross / ti::magnitude(cross);
+    scalar angle = ti::acos(ti::dot(direction, up));
+    quat orientation = ti::quat_from_axis_angle(axis, angle);
+
+    hpp::fcl::CollisionObject *ray = new hpp::fcl::CollisionObject(ray_collider);
     ray->setTransform(ti::get_eigen_transform(position, orientation));
 
-    hpp::fcl::CollisionObject* ray_origin = new hpp::fcl::CollisionObject(ray_origin_collider);
+    hpp::fcl::CollisionObject *ray_origin = new hpp::fcl::CollisionObject(ray_origin_collider);
     ray_origin->setTransform(ti::get_eigen_transform(start, {0.0, 0.0, 0.0, 1.0}));
 
     ray->computeAABB();
@@ -366,44 +372,42 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
     for (int i = 0; i < this->bodies.size(); i++)
     {
 
-        hpp::fcl::CollisionObject* col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
+        hpp::fcl::CollisionObject *col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
         col_obj->setTransform(
-                ti::get_eigen_transform(this->bodies[i].position,
-                                                  this->bodies[i].orientation)
-        );
+            ti::get_eigen_transform(this->bodies[i].position,
+                                    this->bodies[i].orientation));
         col_obj->computeAABB();
 
-        if (ray->getAABB().contain(col_obj->getAABB())){
+        if (ray->getAABB().contain(col_obj->getAABB()))
+        {
             hpp::fcl::CollisionResult col_res;
-            hpp::fcl::CollisionRequest col_req;// = hpp::fcl::CollisionRequest(hpp::fcl::CollisionRequestFlag::DISTANCE_LOWER_BOUND, 2);
+            hpp::fcl::CollisionRequest col_req; // = hpp::fcl::CollisionRequest(hpp::fcl::CollisionRequestFlag::DISTANCE_LOWER_BOUND, 2);
 
-            //col_req.num_max_contacts = 16;
+            // col_req.num_max_contacts = 16;
 
             hpp::fcl::collide(ray,
-                            col_obj,
-                            col_req,
-                            col_res);
+                              col_obj,
+                              col_req,
+                              col_res);
 
             if (col_res.isCollision())
-            {   
+            {
                 hpp::fcl::DistanceResult dis_res;
                 hpp::fcl::DistanceRequest dis_req = hpp::fcl::DistanceRequest(false);
 
                 hpp::fcl::distance(ray,
-                            col_obj,
-                            dis_req,
-                            dis_res); 
+                                   col_obj,
+                                   dis_req,
+                                   dis_res);
                 // for (auto & contact : col_res.getContacts()){
                 //     points.push_back(ti::from_eigen(contact.pos));// - ti::from_eigen(contact.normal) * contact.penetration_depth * 0.5);
                 // }
-                points.push_back(ti::from_eigen(dis_res.nearest_points[1]));// - ti::from_eigen(contact.normal) * contact.penetration_depth * 0.5);
+                points.push_back(ti::from_eigen(dis_res.nearest_points[1])); // - ti::from_eigen(contact.normal) * contact.penetration_depth * 0.5);
                 hpp::fcl::Contact contact = col_res.getContact(0);
-                
-                
             }
         }
     }
-        
+
     return points;
 }
 
@@ -419,12 +423,11 @@ std::vector<vec3> World::disc_raycast(vec3 center, scalar radius, vec3 axis)
     vec3 direction = axis;
     vec3 up = {0.0, 0.0, 1.0};
     vec3 cross = ti::cross(up, direction);
-    vec3 rot_axis = cross/ti::magnitude(cross);
-    scalar angle  = ti::acos(ti::dot(direction, up));
-    quat orientation = ti::quat_from_axis_angle(rot_axis, angle) ;
-    
-    
-    hpp::fcl::CollisionObject* disc = new hpp::fcl::CollisionObject(disc_collider);
+    vec3 rot_axis = cross / ti::magnitude(cross);
+    scalar angle = ti::acos(ti::dot(direction, up));
+    quat orientation = ti::quat_from_axis_angle(rot_axis, angle);
+
+    hpp::fcl::CollisionObject *disc = new hpp::fcl::CollisionObject(disc_collider);
     disc->setTransform(ti::get_eigen_transform(position, orientation));
 
     disc->computeAABB();
@@ -434,54 +437,52 @@ std::vector<vec3> World::disc_raycast(vec3 center, scalar radius, vec3 axis)
     for (int i = 0; i < this->bodies.size(); i++)
     {
 
-        hpp::fcl::CollisionObject* col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
+        hpp::fcl::CollisionObject *col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
         col_obj->setTransform(
-                ti::get_eigen_transform(this->bodies[i].position,
-                                                  this->bodies[i].orientation)
-        );
+            ti::get_eigen_transform(this->bodies[i].position,
+                                    this->bodies[i].orientation));
         col_obj->computeAABB();
 
-        if (disc->getAABB().contain(col_obj->getAABB())){
+        if (disc->getAABB().contain(col_obj->getAABB()))
+        {
             hpp::fcl::CollisionResult col_res;
             hpp::fcl::CollisionRequest col_req;
             col_req.num_max_contacts = 64;
 
             hpp::fcl::collide(disc,
-                            col_obj,
-                            col_req,
-                            col_res);
+                              col_obj,
+                              col_req,
+                              col_res);
 
             if (col_res.isCollision())
             {
                 vec3 point;
                 scalar min_dist = INFINITY;
-                for (int i = 0; i< col_res.numContacts(); i++ ){
+                for (int i = 0; i < col_res.numContacts(); i++)
+                {
                     vec3 candidate = ti::from_eigen(col_res.getContact(i).pos);
                     points.push_back(candidate);
                 }
-                
             }
         }
-        
     }
 
     return points;
 }
-
 
 // Adding plane:
 int World::add_plane(vec3 normal, scalar offset)
 {
     normal = ti::normalize(normal);
     int plane_body_idx = this->create_body(vec3(0.0, 0.0, 0.0),
-                                             quat(1.0, 0.0, 0.0, 0.0),
-                                             vec3(0.0, 0.0, 0.0),
-                                             vec3(0.0, 0.0, 0.0),
-                                             1.0,
-                                             1.0 * mat3(1.0, 0.0, 0.0,
-                                                        0.0, 1.0, 0.0,
-                                                        0.0, 0.0, 1.0),
-                                             BodyType::STATIC);
+                                           quat(1.0, 0.0, 0.0, 0.0),
+                                           vec3(0.0, 0.0, 0.0),
+                                           vec3(0.0, 0.0, 0.0),
+                                           1.0,
+                                           1.0 * mat3(1.0, 0.0, 0.0,
+                                                      0.0, 1.0, 0.0,
+                                                      0.0, 0.0, 1.0),
+                                           BodyType::STATIC);
 
     this->set_body_plane_collider(plane_body_idx, normal, offset);
 

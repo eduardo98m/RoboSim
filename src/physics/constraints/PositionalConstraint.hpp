@@ -84,4 +84,9 @@ class PositionalConstraint{
 
         scalar get_lagrange_multiplier(void);
 
+        /*
+        * @brief Computes the lagrange multiplier of the constraint (for the current state) doest update any parameters.
+        */
+        scalar compute_lagrange_multiplier(scalar inverse_time_step);
+
 };
