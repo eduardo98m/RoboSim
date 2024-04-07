@@ -9,6 +9,7 @@
 #include "scenarios/collisions_groups_scenario.hpp"
 #include "scenarios/ray_cast_scenario.hpp"
 #include "scenarios/articulated_system.hpp"
+#include "scenarios/heightmap.hpp"
 // Import the sine function from the standard library
 #include <math.h>
 #include <iostream>
@@ -33,7 +34,8 @@ int main(int argc, char *argv[])
         BOX_COLLISIONS,
         COLLISION_GROUPS,
         RAYCAST,
-        ARTICULATED_SYSTEM
+        ARTICULATED_SYSTEM,
+        HEIGHTMAP
     };
 
     std::vector<std::string> scenario_names = {
@@ -42,7 +44,8 @@ int main(int argc, char *argv[])
         "Box Collisions",
         "Collision groups",
         "Raycast",
-        "Articulated System"
+        "Articulated System",
+        "Heightmap"
     };
 
     int selected_scenario = ScenarioType::COLLISIONS; // Default to collisions scenario
@@ -163,9 +166,13 @@ int main(int argc, char *argv[])
                 break;
             case ScenarioType::ARTICULATED_SYSTEM:
                 world  = articulated_system_scenario();
-                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};;
-                gui_callback = [](){};
                 std::tie(step_callback, gui_callback) = create_functions(world_ptr);
+                break;
+            case ScenarioType::HEIGHTMAP:
+                world = heightmap_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
+                break;
             default:
                 break;
             }

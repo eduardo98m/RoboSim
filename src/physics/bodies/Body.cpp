@@ -206,6 +206,24 @@ void Body::set_cylinder_collider(scalar radius, scalar height, bool recompute_in
     }
 }
 
+void Body::set_heightmap_collider(scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims){
+
+    // Create an Eigen matrix to hold the height data
+    hpp::fcl::MatrixXf heightdata_mat(x_dims, y_dims);
+
+    // Populate the matrix with the provided height data
+    for (size_t i = 0; i < x_dims; ++i) {
+        for (size_t j = 0; j < y_dims; ++j) {
+            // Assuming the heightdata is stored in row-major order
+            heightdata_mat(i, j) = heightdata[i * y_dims + j];
+        }
+    }
+
+    this->collider_info =  std::make_shared<hpp::fcl::HeightField<hpp::fcl::AABB>>(x_scale, y_scale, heightdata_mat);
+
+}
+
+
 void Body::set_plane_collider(vec3 normal, scalar offset){
     this->collider_info =  std::make_shared<hpp::fcl::Halfspace>(normal.x, normal.y, normal.z, offset);
 }

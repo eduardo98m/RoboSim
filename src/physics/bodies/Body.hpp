@@ -4,6 +4,7 @@
 #include "hpp/fcl/BVH/BVH_model.h"
 #include "hpp/fcl/collision.h"
 #include "hpp/fcl/collision_data.h"
+#include "hpp/fcl/hfield.h"
 #include <memory>
 #include <optional>
 
@@ -268,6 +269,11 @@ public:
      * @param offset The offset of the plane from the origin
      */
     void set_plane_collider(vec3 normal, scalar offset);
+
+    /*
+    * Set
+    */
+    void set_heightmap_collider(scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims);
 
     /*
      * Sets the inertia tensor of the body

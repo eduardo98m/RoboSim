@@ -125,6 +125,10 @@ void World::set_body_box_collider(int id, vec3 half_extents)
     this->bodies[id].set_box_collider(half_extents, true);
 }
 
+void World::set_heightmap_collider(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims){
+    this->bodies[id].set_heightmap_collider(x_scale,  y_scale, heightdata, x_dims, y_dims);
+}
+
 void World::set_body_cylinder_collider(int id, scalar radius, scalar height)
 {
     this->bodies[id].set_cylinder_collider(radius, height, true);
@@ -382,17 +386,18 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
 
             if (col_res.isCollision())
             {   
-                // hpp::fcl::DistanceResult dis_res;
-                // hpp::fcl::DistanceRequest dis_req = hpp::fcl::DistanceRequest(false);
+                hpp::fcl::DistanceResult dis_res;
+                hpp::fcl::DistanceRequest dis_req = hpp::fcl::DistanceRequest(false);
 
-                // hpp::fcl::distance(ray_origin,
-                //             col_obj,
-                //             dis_req,
-                //             dis_res); 
-                for (auto & contact : col_res.getContacts()){
-                    points.push_back(ti::from_eigen(contact.pos));// - ti::from_eigen(contact.normal) * contact.penetration_depth * 0.5);
-                }
-                //hpp::fcl::Contact contact = col_res.getContact(0);
+                hpp::fcl::distance(ray,
+                            col_obj,
+                            dis_req,
+                            dis_res); 
+                // for (auto & contact : col_res.getContacts()){
+                //     points.push_back(ti::from_eigen(contact.pos));// - ti::from_eigen(contact.normal) * contact.penetration_depth * 0.5);
+                // }
+                points.push_back(ti::from_eigen(dis_res.nearest_points[1]));// - ti::from_eigen(contact.normal) * contact.penetration_depth * 0.5);
+                hpp::fcl::Contact contact = col_res.getContact(0);
                 
                 
             }

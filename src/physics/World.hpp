@@ -180,6 +180,14 @@ namespace robosim
          */
         void set_body_plane_collider(int id, vec3 normal, scalar offset);
 
+
+
+        /*
+         * Sets a heightmap collider for a body in the world.
+         *
+         */
+        void set_heightmap_collider(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims);
+
         /*
          * Gets the number of bodies in the world.
          *

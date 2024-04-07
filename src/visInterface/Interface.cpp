@@ -10,7 +10,7 @@ Quaternion quatToQuaternion(const quat &q)
     return {(float)q.x, (float)q.y, (float)q.z, (float)q.w};
 }
 
-void Interface::add_collision_object(int body_id, int group_id, Color* color)
+void Interface::add_collision_object(int body_id, int group_id, Color *color)
 {
     Vector3 position = vec3ToVector3(this->world_->get_body_position(body_id));
     Quaternion orientation = quatToQuaternion(this->world_->get_body_orientation(body_id));
@@ -20,36 +20,36 @@ void Interface::add_collision_object(int body_id, int group_id, Color* color)
     if (auto box = std::dynamic_pointer_cast<hpp::fcl::Box>(collider_info))
     {
         vis_shape_id = this->visualizer_->add_box(position,
-                                                      orientation,
-                                                      color ? *color:RED,
-                                                      box->halfSide[0] * 2.0, box->halfSide[1] * 2.0, box->halfSide[2] * 2.0,
-                                                      group_id);
+                                                  orientation,
+                                                  color ? *color : RED,
+                                                  box->halfSide[0] * 2.0, box->halfSide[1] * 2.0, box->halfSide[2] * 2.0,
+                                                  group_id);
     }
     else if (auto sphere = std::dynamic_pointer_cast<hpp::fcl::Sphere>(collider_info))
     {
         vis_shape_id = this->visualizer_->add_sphere(position,
-                                                         orientation,
-                                                         color ? *color:BLUE,
-                                                         sphere->radius,
-                                                         group_id);
+                                                     orientation,
+                                                     color ? *color : BLUE,
+                                                     sphere->radius,
+                                                     group_id);
     }
     else if (auto capsule = std::dynamic_pointer_cast<hpp::fcl::Capsule>(collider_info))
     {
         // TODO: Create the function to add capsules in the this->visualizer_
         vis_shape_id = this->visualizer_->add_cylinder(position,
-                                                           orientation,
-                                                           color ? *color:ORANGE,
-                                                           capsule->radius,
-                                                           capsule->halfLength * 2.0);
+                                                       orientation,
+                                                       color ? *color : ORANGE,
+                                                       capsule->radius,
+                                                       capsule->halfLength * 2.0);
     }
     else if (auto cylinder = std::dynamic_pointer_cast<hpp::fcl::Cylinder>(collider_info))
     {
         vis_shape_id = this->visualizer_->add_cylinder(position,
-                                                           orientation,
-                                                           color ? *color:PURPLE,
-                                                           cylinder->radius,
-                                                           cylinder->halfLength * 2.0,
-                                                           group_id);
+                                                       orientation,
+                                                       color ? *color : PURPLE,
+                                                       cylinder->radius,
+                                                       cylinder->halfLength * 2.0,
+                                                       group_id);
     }
     else if (auto plane = std::dynamic_pointer_cast<hpp::fcl::Halfspace>(collider_info))
     {
@@ -58,10 +58,37 @@ void Interface::add_collision_object(int body_id, int group_id, Color* color)
         position = vec3ToVector3(ti::from_eigen(plane->n * plane->d));
         orientation = QuaternionFromVector3ToVector3({0.0, 1.0, 0.0}, vec3ToVector3(ti::from_eigen(plane->n)));
         vis_shape_id = this->visualizer_->add_plane(position,
+                                                    orientation,
+                                                    color ? *color : LIGHTGRAY,
+                                                    100.0,
+                                                    100.0,
+                                                    group_id);
+    }
+    else if (auto heightmap = std::dynamic_pointer_cast<hpp::fcl::HeightField<hpp::fcl::AABB>>(collider_info))
+    {
+
+        int x_dim = heightmap->getXDim();
+        float x_scale = (float)ti::abs(heightmap->getXGrid()[x_dim - 1] - heightmap->getXGrid()[0]);
+
+        int z_dim = heightmap->getYDim();
+        float z_scale = (float)ti::abs(heightmap->getYGrid()[z_dim - 1] - heightmap->getYGrid()[0]);
+
+        position = vec3ToVector3({0.0, 0.0, 0.0});
+        orientation = QuaternionFromAxisAngle({0.0, 1.0, 0.0}, 0.0);
+
+        // Convert Eigen::MatrixXd to a linear array of floats
+        std::vector<float> mat_vec(heightmap->getHeights().data(), heightmap->getHeights().data() + heightmap->getHeights().size());
+
+        // If you must have a float pointer, use the address of the first element of the vector
+        vis_shape_id = this->visualizer_->add_heightmap(position,
                                                         orientation,
-                                                        color ? *color:LIGHTGRAY,
-                                                        100.0,
-                                                        100.0,
+                                                        color ? *color : YELLOW,
+                                                        heightmap->getXDim(),
+                                                        heightmap->getYDim(),
+                                                        mat_vec,
+                                                        x_scale,
+                                                        1.0,
+                                                        z_scale,
                                                         group_id);
     }
     else
@@ -69,12 +96,14 @@ void Interface::add_collision_object(int body_id, int group_id, Color* color)
         return;
     }
 
-    if (group_id == VISUAL_SHAPES_GROUP){
+    if (group_id == VISUAL_SHAPES_GROUP)
+    {
         this->body_to_visual_shape.push_back({body_id, vis_shape_id});
-    }else if (group_id == COLLISION_SHAPES_GROUP){
+    }
+    else if (group_id == COLLISION_SHAPES_GROUP)
+    {
         this->body_to_collision_shape.push_back({body_id, vis_shape_id});
     }
-    
 }
 
 void Interface::add_visual_object(int body_id, int group_id)
@@ -86,14 +115,12 @@ void Interface::add_visual_object(int body_id, int group_id)
 
     std::optional<std::string> path = this->world_->get_body_visual_shape_path(body_id);
 
-    
     rs::Color c = this->world_->get_body_color(body_id);
     Color color = {static_cast<unsigned char>(c[0]),
-                    static_cast<unsigned char>(c[1]),
-                    static_cast<unsigned char>(c[2]),
-                    static_cast<unsigned char>(c[3])};
-    
-    
+                   static_cast<unsigned char>(c[1]),
+                   static_cast<unsigned char>(c[2]),
+                   static_cast<unsigned char>(c[3])};
+
     if (path.has_value())
     {
         int vis_shape_id = this->visualizer_->add_mesh(path.value().c_str(), position, orientation, color, 1.0, VISUAL_SHAPES_GROUP);
@@ -103,8 +130,6 @@ void Interface::add_visual_object(int body_id, int group_id)
     {
         this->add_collision_object(body_id, VISUAL_SHAPES_GROUP, &color);
     }
-
-    
 }
 
 Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visualizer> visualizer)
@@ -192,27 +217,34 @@ void Interface::update(void)
 {
 
     // Bodies
-    if (this->settings.toggle_visual_objects){
-        this->settings.toggle_visual_objects =false;
-        if (this->settings.render_visual_objects){
+    if (this->settings.toggle_visual_objects)
+    {
+        this->settings.toggle_visual_objects = false;
+        if (this->settings.render_visual_objects)
+        {
             this->visualizer_->disable_visual_object_group_rendering(VISUAL_SHAPES_GROUP);
-        }else{
+        }
+        else
+        {
             this->visualizer_->enable_visual_object_group_rendering(VISUAL_SHAPES_GROUP);
         }
-        this->settings.render_visual_objects= !this->settings.render_visual_objects;
+        this->settings.render_visual_objects = !this->settings.render_visual_objects;
     }
 
-    if (this->settings.toggle_collision_shapes){
-        this->settings.toggle_collision_shapes =false;
-        if (this->settings.render_collision_shapes){
+    if (this->settings.toggle_collision_shapes)
+    {
+        this->settings.toggle_collision_shapes = false;
+        if (this->settings.render_collision_shapes)
+        {
             this->visualizer_->disable_visual_object_group_rendering(COLLISION_SHAPES_GROUP);
-        }else{
+        }
+        else
+        {
             this->visualizer_->enable_visual_object_group_rendering(COLLISION_SHAPES_GROUP);
         }
-        this->settings.render_collision_shapes= !this->settings.render_collision_shapes;
+        this->settings.render_collision_shapes = !this->settings.render_collision_shapes;
     }
 
-    
     for (auto pair : this->body_to_visual_shape)
     {
 
@@ -227,7 +259,7 @@ void Interface::update(void)
             this->visualizer_->draw_aabb(vec3ToVector3(aabb.min), vec3ToVector3(aabb.max), GREEN);
         }
     }
-    
+
     for (auto pair : this->body_to_collision_shape)
     {
         this->visualizer_->update_visual_object_position_orientation(
