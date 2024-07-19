@@ -15,29 +15,48 @@ private:
     Body *body_1;
     // Reference to the second body
     Body *body_2;
-    // Fricction properties
-    scalar static_fricction_coeff;
-    scalar dynamic_fricction_coeff;
+
+    // Material properties of the contact
+    // (Calculated by combining the material proerties of the colliders)
+    // Static fricction
+    scalar static_fricction;
+    // Dynamic friction of the contact
+    scalar dynamic_fricction;
+    // Restitution coefficient of the contact
     scalar restitution;
 
-    // Positional Constraints (Normal and tangencial)
-    PositionalConstraint * normal_constraint;
-    PositionalConstraint * tangencial_constraint;
+    //
 
+    // Relevant quantities
     scalar relative_velocity = 0.0; //= {0.0, 0.0, 0.0, 0.0};
-
+    scalar normal_constraint_lagrange_multiplier = 0.0;
+    scalar tangencial_constraint_lagrange_multiplier = 0.0;
     vec3 normal_force = (vec3){0.0, 0.0, 0.0};
+    vec3 tangencial_force = (vec3){0.0, 0.0, 0.0};
 
 public:
-    // Collision points and normal vector.
-    ContactPoint collision_response;
-    bool broad_phase_detection;
+    // Check if the two bodies are really colliding
     bool collision;
-    ContactConstraint(Body *body_1, Body *body_2);
-    void check_broad_phase(scalar time_step);
+    // Normal Vector of the contact
+    vec3 normal;
+    // Contact point in the first body
+    vec3 p_1;
+    // Contact point in the second body
+    vec3 p_2;
+
+    ContactConstraint(Body *body_1,
+                      Body *body_2,
+                      vec3 normal,
+                      vec3 p_1,
+                      vec3 p_2,
+                      scalar static_fricction,
+                      scalar dynamic_fricction,
+                      scalar restitution);
+
+    void solve_normal_constraint(scalar inverse_time_step, scalar magnitude);
+    void solve_tangencial_constraint(scalar inverse_time_step);
     void calculate_narrow_phase_collision_response(void);
-    AABB get_aabb(Body *body);
-    void apply_constraint(scalar inverse_time_step);
+    void apply_constraint_position_level(scalar inverse_time_step);
     void apply_constraint_velocity_level(scalar time_step);
     void reset_lagrange_multipliers(void);
 };

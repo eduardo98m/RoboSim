@@ -7,8 +7,8 @@
 #include <memory>
 struct AABB
 {
-    vec3 min;
-    vec3 max;
+    vec3 min = {0.0, 0.0, 0.0};
+    vec3 max = {0.0, 0.0, 0.0};
 };
 
 AABB expandAABB(AABB aabb, vec3 factor);

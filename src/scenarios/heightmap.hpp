@@ -27,24 +27,27 @@ robosim::World heightmap_scenario(){
     
 
     // Create the floor with a heightmap collider
-    size_t x_dims = 50;
+    size_t x_dims = 50; 
     size_t y_dims = 50;
     std::vector<scalar> heightdata(x_dims * y_dims);
     for (size_t i = 0; i < x_dims * y_dims; ++i) {
         heightdata[i] = 0.0;
     }
-    int floor_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({1.0, 0.0, 0.0}, -PI/2), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0 * mass, inertia_tensor, BodyType::STATIC);
-    world.set_heightmap_collider(floor_id, x_dims, y_dims, heightdata, x_dims, y_dims);
+    int floor_id = world.create_body({0.0, 0.0, 0.0}, 
+                                     ti::quat_from_axis_angle({1.0, 0.0, 0.0}, -PI/2), 
+                                     vec3{0.0, 0.0, 0.0}, 
+                                     {0.0, 0.0, 0.0}, 1.0 * mass, inertia_tensor, BodyType::STATIC);
+    //world.set_heightmap_collider(floor_id, x_dims, y_dims, heightdata, x_dims, y_dims);
 
     
     int id = world.create_body({5.0, 4.0, 0.0}, ori, vec3{-0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0 *mass);
-    world.set_body_sphere_collider(id, 2.1);
+    world.attach_sphere_collider(id, 2.1);
 
     rs::Color color = {25, 41, 55, 0};
     world.set_body_color(id, color);
 
     world.set_gravity({0.0, -9.8, 0.0});
-    world.collisions_detection_preparations();
+    
 
 
     return world;

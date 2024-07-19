@@ -165,68 +165,27 @@ void Body::set_intertia_tensor(const mat3 &intertia_tensor){
     this->update_inertia_tensor_world();
 }
 
-void Body::set_box_collider(vec3 half_extents, bool recompute_inertia){
-    this->collider_info = std::make_shared<hpp::fcl::Box>(
-         half_extents.x * 2.0, 
-         half_extents.y * 2.0, 
-        half_extents.z * 2.0);
+// void Body::set_heightmap_collider(scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims){
 
-    if (recompute_inertia && this->type == BodyType::DYNAMIC){
-        scalar vol = this->collider_info->computeVolume();
-        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
-        set_intertia_tensor(inertia_tensor * this->mass);
-    }
-    
-}
+//     // Create an Eigen matrix to hold the height data
+//     hpp::fcl::MatrixXf heightdata_mat(x_dims, y_dims);
 
-void Body::set_sphere_collider(scalar radius, bool recompute_inertia){
-    this->collider_info =  std::make_shared<hpp::fcl::Sphere>(radius);
-    if (recompute_inertia && this->type == BodyType::DYNAMIC){
-        scalar vol = this->collider_info->computeVolume();
-        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
-        set_intertia_tensor(inertia_tensor * this->mass);
-    }
-}
+//     // Populate the matrix with the provided height data
+//     for (size_t i = 0; i < x_dims; ++i) {
+//         for (size_t j = 0; j < y_dims; ++j) {
+//             // Assuming the heightdata is stored in row-major order
+//             heightdata_mat(i, j) = heightdata[i * y_dims + j];
+//         }
+//     }
 
-void Body::set_capsule_collider(scalar radius, scalar height, bool recompute_inertia){
-    this->collider_info =  std::make_shared<hpp::fcl::Capsule>(  radius,  height);
-    if (recompute_inertia && this->type == BodyType::DYNAMIC){
-        scalar vol = this->collider_info->computeVolume();
-        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
-        set_intertia_tensor(inertia_tensor * this->mass);
-    }
-}
+//     this->collider_info =  std::make_shared<hpp::fcl::HeightField<hpp::fcl::AABB>>(x_scale, y_scale, heightdata_mat);
 
-void Body::set_cylinder_collider(scalar radius, scalar height, bool recompute_inertia){
-    this->collider_info =  std::make_shared<hpp::fcl::Cylinder>( radius,  height);
-    if (recompute_inertia && this->type == BodyType::DYNAMIC){
-        scalar vol = this->collider_info->computeVolume();
-        inertia_tensor = ti::mar3_from_eigen(this->collider_info->computeMomentofInertiaRelatedToCOM())/vol;
-        set_intertia_tensor(inertia_tensor * this->mass);
-    }
-}
-
-void Body::set_heightmap_collider(scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims){
-
-    // Create an Eigen matrix to hold the height data
-    hpp::fcl::MatrixXf heightdata_mat(x_dims, y_dims);
-
-    // Populate the matrix with the provided height data
-    for (size_t i = 0; i < x_dims; ++i) {
-        for (size_t j = 0; j < y_dims; ++j) {
-            // Assuming the heightdata is stored in row-major order
-            heightdata_mat(i, j) = heightdata[i * y_dims + j];
-        }
-    }
-
-    this->collider_info =  std::make_shared<hpp::fcl::HeightField<hpp::fcl::AABB>>(x_scale, y_scale, heightdata_mat);
-
-}
+// }
 
 
-void Body::set_plane_collider(vec3 normal, scalar offset){
-    this->collider_info =  std::make_shared<hpp::fcl::Halfspace>(normal.x, normal.y, normal.z, offset);
-}
+// void Body::set_plane_collider(vec3 normal, scalar offset){
+//     this->collider_info =  std::make_shared<hpp::fcl::Halfspace>(normal.x, normal.y, normal.z, offset);
+// }
 
 void Body::set_visual_object_path(std::string path){
     this->visual_object_path = std::make_optional(path);

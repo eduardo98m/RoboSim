@@ -10,6 +10,9 @@
 #include "scenarios/ray_cast_scenario.hpp"
 #include "scenarios/articulated_system.hpp"
 #include "scenarios/heightmap.hpp"
+#include "scenarios/urdf_scenario.hpp"
+#include "scenarios/box_stack.hpp"
+
 // Import the sine function from the standard library
 #include <math.h>
 #include <iostream>
@@ -20,6 +23,7 @@
 #include <memory>
 #include <random>
 #include "utils/Logging.hpp"
+
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +39,9 @@ int main(int argc, char *argv[])
         COLLISION_GROUPS,
         RAYCAST,
         ARTICULATED_SYSTEM,
-        HEIGHTMAP
+        HEIGHTMAP,
+        URDF,
+        BOX_STACK
     };
 
     std::vector<std::string> scenario_names = {
@@ -45,7 +51,9 @@ int main(int argc, char *argv[])
         "Collision groups",
         "Raycast",
         "Articulated System",
-        "Heightmap"
+        "Heightmap",
+        "URDF",
+        "Stack of boxes"
     };
 
     int selected_scenario = ScenarioType::COLLISIONS; // Default to collisions scenario
@@ -170,6 +178,16 @@ int main(int argc, char *argv[])
                 break;
             case ScenarioType::HEIGHTMAP:
                 world = heightmap_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
+                break;
+            case ScenarioType::URDF:
+                world = urdf_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
+                break;
+            case ScenarioType::BOX_STACK:
+                world  = box_stack_scenario();
                 step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
                 gui_callback = [](){};
                 break;

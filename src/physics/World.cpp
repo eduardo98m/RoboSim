@@ -17,11 +17,7 @@ void World::step()
 
     for (int i = 0; i < this->substeps; i++)
     {
-        // TODO: Check if this is correct (The we reset the contact lambdas here or outside the substepping loop)
-        for (ContactConstraint &constraint : this->contact_constraints)
-        {
-            constraint.reset_lagrange_multipliers();
-        }
+
         this->update_bodies_position_and_orientation(h);
         this->solve_positions(inv_h, h);
         this->update_bodies_velocities(inv_h);
@@ -47,10 +43,9 @@ void World::update_bodies_velocities(scalar inv_h)
 
 void World::solve_positions(scalar inv_h, scalar h)
 {
-    for (ContactConstraint &constraint : this->contact_constraints)
-    {
-        constraint.apply_constraint(inv_h);
-    }
+    // Solve the contacts first
+    this->narrow_phase_collision_detection_and_response(inv_h);
+
     for (PositionalConstraint &constraint : this->positional_constraints)
     {
         constraint.apply_constraint(inv_h);
@@ -117,35 +112,7 @@ int World::create_body(vec3 position,
     return World::add_body(body);
 }
 
-void World::set_body_plane_collider(int id, vec3 normal, scalar offset)
-{
-    this->bodies[id].set_plane_collider(normal, offset);
-}
 
-void World::set_body_box_collider(int id, vec3 half_extents)
-{
-    this->bodies[id].set_box_collider(half_extents, true);
-}
-
-void World::set_heightmap_collider(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims)
-{
-    this->bodies[id].set_heightmap_collider(x_scale, y_scale, heightdata, x_dims, y_dims);
-}
-
-void World::set_body_cylinder_collider(int id, scalar radius, scalar height)
-{
-    this->bodies[id].set_cylinder_collider(radius, height, true);
-}
-
-void World::set_body_sphere_collider(int id, scalar radius)
-{
-    this->bodies[id].set_sphere_collider(radius, true);
-}
-
-void World::set_body_capsule_collider(int id, scalar radius, scalar height)
-{
-    this->bodies[id].set_capsule_collider(radius, height);
-}
 
 void World::set_body_static_friccion_coefficient(int id, scalar coeff)
 {
@@ -236,17 +203,6 @@ int World::create_revolute_constraint(int body_1_id,
     return (int)(this->revolute_joint_constraints.size() - 1);
 }
 
-int World::create_contact_constraint(int body_1_id,
-                                     int body_2_id)
-{
-
-    ContactConstraint constraint = ContactConstraint(&this->bodies[body_1_id],
-                                                     &this->bodies[body_2_id]);
-
-    this->contact_constraints.push_back(constraint);
-    return (int)(this->contact_constraints.size() - 1);
-}
-
 int World::add_rotational_constraint(RotationalConstraint constraint)
 {
     this->rotational_constraints.push_back(constraint);
@@ -268,14 +224,14 @@ vec3 World::get_body_angular_velocity(int id)
     return this->bodies[id].angular_velocity;
 }
 
-std::shared_ptr<hpp::fcl::CollisionGeometry> World::get_collider_info(int id)
+std::shared_ptr<hpp::fcl::CollisionGeometry> World::get_collider_geometry(int id)
 {
-    return this->bodies[id].collider_info;
+    return this->colliders[id].geom;
 }
 
 AABB World::get_aabb(int id)
 {
-    std::shared_ptr<hpp::fcl::CollisionGeometry> info = this->bodies[id].collider_info;
+    std::shared_ptr<hpp::fcl::CollisionGeometry> info = this->colliders[id].geom;
 
     AABB aabb = compute_AABB(info, this->bodies[id].position, this->bodies[id].orientation);
 
@@ -288,31 +244,21 @@ AABB World::get_aabb(int id)
     return aabb;
 }
 
-void World::collisions_detection_preparations(void)
-{
-
-    int n_bodies = this->get_number_of_bodies();
-
-    for (int i = 0; i < (n_bodies - 1); i++)
-    {
-        for (int j = i + 1; j < n_bodies; j++)
-        {
-            if (this->can_collide(i, j))
-            {
-                int id = this->create_contact_constraint(i, j);
-                this->body_pair_to_contact_constraint_map.insert({{i, j}, id});
-            }
-        }
-    }
-}
 
 bool World::can_collide(size_t bodyA, size_t bodyB) const
 {
+    // Check if the object have a collider attached to them:
+    // if (!this->bodies[bodyA].collider_info || !this->bodies[bodyB].collider_info)
+    // {
+    //     return false;
+    // }
+
     // Check if either body belongs to group 0 (default collision group)
     if (collision_groups.count(bodyA) == 0 || collision_groups.count(bodyB) == 0)
     {
         return true; // Default collision for unassigned bodies or group 0
     }
+
     // Otherwise, check for bit overlap in their group bitsets
 
     // Otherwise, check for bit overlap in their collision group bitsets
@@ -333,14 +279,6 @@ void World::set_collision_group(size_t id, u_int32_t collision_group)
     this->collision_groups[id] = collision_group;
 }
 
-// Collisions
-void World::broad_phase_collision_detection(void)
-{
-    for (auto &constraint : this->contact_constraints)
-    {
-        constraint.check_broad_phase(this->timestep);
-    }
-}
 
 std::vector<vec3> World::raycast(vec3 start, vec3 end)
 {
@@ -369,13 +307,16 @@ std::vector<vec3> World::raycast(vec3 start, vec3 end)
 
     std::vector<vec3> points;
     // Now we need to check the capsule collider with the rest of the bodies of the world
-    for (int i = 0; i < this->bodies.size(); i++)
+    for (int i = 0; i < this->colliders.size(); i++)
     {
 
-        hpp::fcl::CollisionObject *col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
+        hpp::fcl::CollisionObject *col_obj = new hpp::fcl::CollisionObject(this->colliders[i].geom);
+
+        std::pair<vec3, quat> pose = this->get_collider_pose(i);
+
         col_obj->setTransform(
-            ti::get_eigen_transform(this->bodies[i].position,
-                                    this->bodies[i].orientation));
+            ti::get_eigen_transform(pose.first,
+                                    pose.second));
         col_obj->computeAABB();
 
         if (ray->getAABB().contain(col_obj->getAABB()))
@@ -434,13 +375,15 @@ std::vector<vec3> World::disc_raycast(vec3 center, scalar radius, vec3 axis)
 
     std::vector<vec3> points;
     // Now we need to check the capsule collider with the rest of the bodies of the world
-    for (int i = 0; i < this->bodies.size(); i++)
+    for (int i = 0; i < this->colliders.size(); i++)
     {
 
-        hpp::fcl::CollisionObject *col_obj = new hpp::fcl::CollisionObject(this->bodies[i].collider_info);
+        hpp::fcl::CollisionObject *col_obj = new hpp::fcl::CollisionObject(this->colliders[i].geom);
+
+        std::pair<vec3, quat> pose = this->get_collider_pose(i);
         col_obj->setTransform(
-            ti::get_eigen_transform(this->bodies[i].position,
-                                    this->bodies[i].orientation));
+            ti::get_eigen_transform(pose.first,
+                                    pose.second));
         col_obj->computeAABB();
 
         if (disc->getAABB().contain(col_obj->getAABB()))
@@ -484,7 +427,7 @@ int World::add_plane(vec3 normal, scalar offset)
                                                       0.0, 0.0, 1.0),
                                            BodyType::STATIC);
 
-    this->set_body_plane_collider(plane_body_idx, normal, offset);
+    this->attach_plane_collider(plane_body_idx, normal, offset);
 
     return plane_body_idx;
 }
@@ -508,6 +451,11 @@ void World::set_revolute_joint_target_speed(int id, scalar speed)
 int World::get_number_of_bodies()
 {
     return this->bodies.size();
+}
+
+int World::get_number_of_colliders()
+{
+    return this->colliders.size();
 }
 
 int World::get_number_of_revolute_joints(void)

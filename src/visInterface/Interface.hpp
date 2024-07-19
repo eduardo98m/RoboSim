@@ -39,7 +39,7 @@ class Interface
 {
 private:
     std::vector<std::pair<int, int>> body_to_visual_shape;
-    std::vector<std::pair<int, int>> body_to_collision_shape;
+    std::vector<std::pair<int, int>> collider_to_collision_shape;
 
     std::shared_ptr<robosim::World> world_;
     std::shared_ptr<Visualizer> visualizer_;

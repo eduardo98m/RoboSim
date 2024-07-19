@@ -7,6 +7,7 @@
 #include "constraints/ContactConstraint.hpp"
 #include "collisions/broad_phase.hpp"
 #include "collisions/collisions.hpp"
+#include "collisions/collider.hpp"
 #include "physics/articulatedSystem/ArticulatedSystem.hpp"
 #include <vector>
 #include <tuple>
@@ -26,22 +27,31 @@ namespace robosim
     class World
     {
     private:
+        // time-steps
         scalar timestep;
+        // number of sub-steps
         int substeps;
 
         // Vector of bodies of the world
         std::vector<Body> bodies;
+
+        // Vector of colliders
+        std::vector<Collider> colliders;
+
         // Vector of positional constraints
         std::vector<PositionalConstraint> positional_constraints;
         // Vector of rotational constraints
         std::vector<RotationalConstraint> rotational_constraints;
         // // Vector of revolute joint constraints
         std::vector<RevoluteJointConstraint> revolute_joint_constraints;
-        // Map of body pairs to cotnact constraint
-        std::map<std::pair<int, int>, int> body_pair_to_contact_constraint_map;
+
         // Collision groups
         // Unordered map that maps the bodies to collision groups
         std::unordered_map<size_t, uint32_t> collision_groups;
+        
+        // Collision pairs from the aabb
+        std::vector<std::pair<size_t, size_t>> potential_collision_pairs;
+
 
         // Articulated systems
         std::vector<ArticulatedSystem> articulated_systems;
@@ -137,20 +147,37 @@ namespace robosim
                                                    0.0, 1.0, 0.0,
                                                    0.0, 0.0, 1.0),
                         BodyType type = BodyType::DYNAMIC);
+
+        /*
+         * Helper function to add colliders
+         */
+        size_t add_collider(Collider collider);
         /*
          * Sets a box collider for a body in the world.
          *
          * @param id The index of the body.
          * @param half_extents The half extents of the box (i.e., half the dimensions along each axis).
          */
-        void set_body_box_collider(int id, vec3 half_extents);
+        size_t attach_box_collider(size_t id,
+                                   vec3 half_extents,
+                                   vec3 position = {0.0, 0.0, 0.0},
+                                   quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                   scalar restitution = 0.5,
+                                   scalar dynamic_friction = 0.5,
+                                   scalar static_friction = 0.5);
         /*
          * Sets a sphere collider for a body in the world.
          *
          * @param id The index of the body.
          * @param radius The radius of the sphere.
          */
-        void set_body_sphere_collider(int id, scalar radius);
+        size_t attach_sphere_collider(size_t id,
+                                      scalar radius,
+                                      vec3 position = {0.0, 0.0, 0.0},
+                                      quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                      scalar restitution = 0.5,
+                                      scalar dynamic_friction = 0.5,
+                                      scalar static_friction = 0.5);
 
         /*
          * Sets a capsule collider for a body in the world.
@@ -160,7 +187,14 @@ namespace robosim
          * @param height The height of the capsule.
          */
 
-        void set_body_capsule_collider(int id, scalar radius, scalar height);
+        size_t attach_capsule_collider(size_t id,
+                                       scalar radius,
+                                       scalar height,
+                                       vec3 position = {0.0, 0.0, 0.0},
+                                       quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                       scalar restitution = 0.5,
+                                       scalar dynamic_friction = 0.5,
+                                       scalar static_friction = 0.5);
 
         /*
          * Sets a cylinder collider for a body in the world.
@@ -169,7 +203,14 @@ namespace robosim
          * @param radius The radius of the cylinder.
          * @param height The height of the cylinder.
          */
-        void set_body_cylinder_collider(int id, scalar radius, scalar height);
+        size_t attach_cylinder_collider(size_t id,
+                                        scalar radius,
+                                        scalar height,
+                                        vec3 position = {0.0, 0.0, 0.0},
+                                        quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                        scalar restitution = 0.5,
+                                        scalar dynamic_friction = 0.5,
+                                        scalar static_friction = 0.5);
 
         /*
          * Sets a plane collider for a body in the world.
@@ -178,9 +219,12 @@ namespace robosim
          * @param normal The normal vector of the plane.
          * @param offset The offset of the plane from the origin.
          */
-        void set_body_plane_collider(int id, vec3 normal, scalar offset);
-
-
+        size_t attach_plane_collider(size_t id,
+                                     vec3 normal,
+                                     scalar offset,
+                                     scalar restitution = 0.5,
+                                     scalar dynamic_friction = 0.5,
+                                     scalar static_friction = 0.5);
 
         /*
          * Sets a heightmap collider for a body in the world.
@@ -188,12 +232,20 @@ namespace robosim
          */
         void set_heightmap_collider(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims);
 
+
+        bool check_aabb_collision(const Collider &col_1, const Body &body_1, const Collider &col_2, const Body &body_2);
+
+        void narrow_phase_collision_detection_and_response(scalar inverse_time_step);
+
         /*
          * Gets the number of bodies in the world.
          *
          * @return The number of bodies.
          */
         int get_number_of_bodies();
+
+
+        int get_number_of_colliders(void);
 
         /*
          * Gets the position of a body in the world.
@@ -267,7 +319,6 @@ namespace robosim
          */
         void set_body_dynamic_friccion_coefficient(int id, scalar coeff);
 
-
         /*
          * Sets the restitution coefficient of a body
          *
@@ -285,18 +336,21 @@ namespace robosim
         rs::Color get_body_color(int id);
 
         /*
-         * Gets the collider information for a body in the world.
+         * Gets the geometry for a collider in the world.
          *
-         * @param id The index of the body.
-         * @return A shared pointer to the collider geometry of the body.
+         * @param id The index of the collider.
+         * @return A shared pointer to the geometry of the collider.
          */
-        std::shared_ptr<hpp::fcl::CollisionGeometry> get_collider_info(int id);
+        std::shared_ptr<hpp::fcl::CollisionGeometry> get_collider_geometry(int id);
 
+        
+
+        std::pair<vec3, quat> get_collider_pose(size_t id);
         /*
-         * Gets the axis-aligned bounding box (AABB) of a body in the world.
+         * Gets the axis-aligned bounding box (AABB) of a collider in the world.
          *
-         * @param id The index of the body.
-         * @return The AABB of the body.
+         * @param id The index of the collider.
+         * @return The AABB of the collider.
          */
         AABB get_aabb(int id);
 
@@ -364,14 +418,6 @@ namespace robosim
          */
         void set_collision_group(size_t id, u_int32_t collision_group);
 
-        /*
-         * Creates a contact constraint between two bodies in the world.
-         *
-         * @param body_1_id The index of the first body.
-         * @param body_2_id The index of the second body.
-         * @return The index of the created contact constraint.
-         */
-        int create_contact_constraint(int body_1_id, int body_2_id);
 
         /*
          * Creates a positional constraint between two bodies in the world.
@@ -489,9 +535,8 @@ namespace robosim
          */
         int add_plane(vec3 normal, scalar offset);
 
-
         // Functions for the articulates system management
-        
+
         /*
          * Groups a series of (connected) bodies and joints into an articulated system
          *
@@ -500,10 +545,9 @@ namespace robosim
          * @return The index of the articulated system
          */
         size_t create_articulated_system(
-            const std::vector<size_t> &joint_ids, 
+            const std::vector<size_t> &joint_ids,
             const std::vector<JointType> &joint_types,
-            const std::vector<size_t> &link_ids
-        );
+            const std::vector<size_t> &link_ids);
 
         /*
          * Gets the state of the articulated system
@@ -527,13 +571,17 @@ namespace robosim
          */
         void set_articulated_system_joint_targets(size_t id, std::vector<scalar> joint_targets);
 
-
         /*
          * Gets the pose of a link of an articulated sistem
          *
          * @param id The id of the articulated_system
          * @return The pose (position and orientation) of the selected link
          */
-        pose get_articulated_system_link_pose(size_t id,  size_t link_id);
+        pose get_articulated_system_link_pose(size_t id, size_t link_id);
+
+        /*
+         * Loads an urdf file into the robosim world and returns the articulated system id
+         */
+        size_t load_urdf(const std::string &filename, vec3 base_position);
     };
 } // namespace robosim

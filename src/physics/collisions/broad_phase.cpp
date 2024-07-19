@@ -2,6 +2,10 @@
 
 AABB compute_AABB(std::shared_ptr<hpp::fcl::CollisionGeometry> shape, const vec3 &position, const quat &orientation){
     
+    if (!shape){
+        return AABB();
+    }
+    
     hpp::fcl::CollisionObject obj = hpp::fcl::CollisionObject(shape, ti::get_eigen_transform(position, orientation));
     
     obj.computeAABB();

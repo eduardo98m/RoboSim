@@ -109,8 +109,6 @@ public:
     vec3 prev_linear_velocity;
     // Previous angular velocity of the body (at the previous substep)
     vec3 prev_angular_velocity;
-    // Collider information -> shared pointer to hpp::fcl::CollisionGeometry
-    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info;
 
     // Optional string to the path of the visual object (i.e. visual shape) attached to the body
     std::optional<std::string> visual_object_path = std::nullopt;
@@ -227,54 +225,7 @@ public:
      * @param r The position relative to the body's center of mass (in world coordinates)
      */
     void apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r);
-
-    /*
-     * Sets a box collider for the body
-     *
-     * @param half_extents The half extents of the box (i.e., half the dimensions along each axis)
-     * @param recompute_inertia Whether to recompute the inertia tensor based on the collider shape
-     */
-    void set_box_collider(vec3 half_extents, bool recompute_inertia = true);
-
-    /*
-     * Sets a sphere collider for the body
-     *
-     * @param radius The radius of the sphere
-     * @param recompute_inertia Whether to recompute the inertia tensor based on the collider shape
-     */
-    void set_sphere_collider(scalar radius, bool recompute_inertia = true);
-
-    /*
-     * Sets a capsule collider for the body
-     *
-     * @param radius The radius of the capsule
-     * @param height The height of the capsule
-     * @param recompute_inertia Whether to recompute the inertia tensor based on the collider shape
-     */
-    void set_capsule_collider(scalar radius, scalar height, bool recompute_inertia = true);
-
-    /*
-     * Sets a cylinder collider for the body
-     *
-     * @param radius The radius of the cylinder
-     * @param height The height of the cylinder
-     * @param recompute_inertia Whether to recompute the inertia tensor based on the collider shape
-     */
-    void set_cylinder_collider(scalar radius, scalar height, bool recompute_inertia = true);
-
-    /*
-     * Sets a plane collider for the body
-     *
-     * @param normal The normal vector of the plane
-     * @param offset The offset of the plane from the origin
-     */
-    void set_plane_collider(vec3 normal, scalar offset);
-
-    /*
-    * Set
-    */
-    void set_heightmap_collider(scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims);
-
+    
     /*
      * Sets the inertia tensor of the body
      *

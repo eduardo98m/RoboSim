@@ -3,3 +3,4 @@ imgui.ini
 /thirdParty
 /.vscode
 /resources/coral
+/resources/*

@@ -12,10 +12,12 @@ Quaternion quatToQuaternion(const quat &q)
 
 void Interface::add_collision_object(int body_id, int group_id, Color *color)
 {
-    Vector3 position = vec3ToVector3(this->world_->get_body_position(body_id));
-    Quaternion orientation = quatToQuaternion(this->world_->get_body_orientation(body_id));
+    std::pair<vec3, quat> pose = this->world_->get_collider_pose(body_id);
+    
+    Vector3 position = vec3ToVector3(pose.first);
+    Quaternion orientation = quatToQuaternion(pose.second);
     int vis_shape_id = -1;
-    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info = this->world_->get_collider_info(body_id);
+    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info = this->world_->get_collider_geometry(body_id);
 
     if (auto box = std::dynamic_pointer_cast<hpp::fcl::Box>(collider_info))
     {
@@ -102,7 +104,7 @@ void Interface::add_collision_object(int body_id, int group_id, Color *color)
     }
     else if (group_id == COLLISION_SHAPES_GROUP)
     {
-        this->body_to_collision_shape.push_back({body_id, vis_shape_id});
+        this->collider_to_collision_shape.push_back({body_id, vis_shape_id});
     }
 }
 
@@ -111,7 +113,7 @@ void Interface::add_visual_object(int body_id, int group_id)
     Vector3 position = vec3ToVector3(this->world_->get_body_position(body_id));
     Quaternion orientation = quatToQuaternion(this->world_->get_body_orientation(body_id));
     int vis_shape_id = -1;
-    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info = this->world_->get_collider_info(body_id);
+    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info = this->world_->get_collider_geometry(body_id);
 
     std::optional<std::string> path = this->world_->get_body_visual_shape_path(body_id);
 
@@ -138,18 +140,20 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
     this->visualizer_ = visualizer;
 
     this->body_to_visual_shape = {};
-    this->body_to_collision_shape = {};
+    this->collider_to_collision_shape = {};
     int n_bodies = world_->get_number_of_bodies();
 
-    for (int body_id = 0; body_id < n_bodies; body_id++)
+    int n_colliders = world_->get_number_of_colliders();
+
+    for (int col_id = 0; col_id < n_colliders; col_id++)
     {
-        this->add_collision_object(body_id, COLLISION_SHAPES_GROUP, nullptr);
+        this->add_collision_object(col_id, COLLISION_SHAPES_GROUP, nullptr);
     }
 
-    for (int body_id = 0; body_id < n_bodies; body_id++)
-    {
-        this->add_visual_object(body_id, VISUAL_SHAPES_GROUP);
-    }
+    // for (int body_id = 0; body_id < n_bodies; body_id++)
+    // {
+    //     this->add_visual_object(body_id, VISUAL_SHAPES_GROUP);
+    // }
 
     int n_revolue_joints = this->world_->get_number_of_revolute_joints();
     for (int i = 0; i < n_revolue_joints; i++)
@@ -157,8 +161,8 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
         this->settings.enabled_rev_joints.push_back({i, true});
     }
 
-    this->visualizer_->enable_visual_object_group_rendering(VISUAL_SHAPES_GROUP);
-    this->visualizer_->disable_visual_object_group_rendering(COLLISION_SHAPES_GROUP);
+    this->visualizer_->enable_visual_object_group_rendering(COLLISION_SHAPES_GROUP);
+    this->visualizer_->disable_visual_object_group_rendering(VISUAL_SHAPES_GROUP);
 
     auto gui{
         [this, n_revolue_joints](void)
@@ -245,27 +249,28 @@ void Interface::update(void)
         this->settings.render_collision_shapes = !this->settings.render_collision_shapes;
     }
 
-    for (auto pair : this->body_to_visual_shape)
-    {
+    // for (auto pair : this->body_to_visual_shape)
+    // {
 
+    //     this->visualizer_->update_visual_object_position_orientation(
+    //         pair.second,
+    //         vec3ToVector3(this->world_->get_body_position(pair.first)),
+    //         quatToQuaternion(this->world_->get_body_orientation(pair.first)));
+
+    //     if (this->settings.show_bounding_boxes)
+    //     {
+    //         AABB aabb = world_->get_aabb(pair.first);
+    //         this->visualizer_->draw_aabb(vec3ToVector3(aabb.min), vec3ToVector3(aabb.max), GREEN);
+    //     }
+    // }
+
+    for (auto pair : this->collider_to_collision_shape)
+    {
+        std::pair<vec3, quat> pose = this->world_->get_collider_pose(pair.first);
         this->visualizer_->update_visual_object_position_orientation(
             pair.second,
-            vec3ToVector3(this->world_->get_body_position(pair.first)),
-            quatToQuaternion(this->world_->get_body_orientation(pair.first)));
-
-        if (this->settings.show_bounding_boxes)
-        {
-            AABB aabb = world_->get_aabb(pair.first);
-            this->visualizer_->draw_aabb(vec3ToVector3(aabb.min), vec3ToVector3(aabb.max), GREEN);
-        }
-    }
-
-    for (auto pair : this->body_to_collision_shape)
-    {
-        this->visualizer_->update_visual_object_position_orientation(
-            pair.second,
-            vec3ToVector3(this->world_->get_body_position(pair.first)),
-            quatToQuaternion(this->world_->get_body_orientation(pair.first)));
+            vec3ToVector3(pose.first),
+            quatToQuaternion(pose.second));
 
         if (this->settings.show_bounding_boxes)
         {
@@ -320,16 +325,16 @@ void Interface::update(void)
         {
             if (contact.collision)
             {
-                this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_1), 0.05, RED);
-                this->visualizer_->draw_sphere(vec3ToVector3(contact.collision_response.contact_point_2), 0.05, BLUE);
+                this->visualizer_->draw_sphere(vec3ToVector3(contact.p_1), 0.05, RED);
+                this->visualizer_->draw_sphere(vec3ToVector3(contact.p_2), 0.05, BLUE);
 
                 this->visualizer_->draw_arrow(
-                    vec3ToVector3(contact.collision_response.contact_point_1),
-                    vec3ToVector3(+contact.collision_response.normal), 0.05, PURPLE);
+                    vec3ToVector3(contact.p_1),
+                    vec3ToVector3(+contact.normal), 0.05, PURPLE);
 
                 this->visualizer_->draw_arrow(
-                    vec3ToVector3(contact.collision_response.contact_point_2),
-                    vec3ToVector3(-contact.collision_response.normal), 0.05, GREEN);
+                    vec3ToVector3(contact.p_2),
+                    vec3ToVector3(-contact.normal), 0.05, GREEN);
             }
         }
     }
