@@ -34,6 +34,7 @@ set(PHYSICS_SOURCES
     "src/physics/WorldCollisions.cpp"
     "src/physics/WorldArticulatedSystem.cpp"
     "src/physics/WorldURDFLoader.cpp"
+    "src/physics/WorldVisualShapes.cpp"
     #Interface
     "src/visInterface/Interface.cpp"
     )

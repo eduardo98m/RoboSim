@@ -14,57 +14,6 @@ enum BodyType
     DYNAMIC
 };
 
-// TODO : Change this to another file
-namespace rs
-{
-    struct Color
-    {
-        u_int8_t r = 255;
-        u_int8_t g = 255;
-        u_int8_t b = 255;
-        u_int8_t a = 255;
-
-        // Overloading the subscript operator []
-        uint8_t &operator[](size_t index)
-        {
-            // Assuming index is within bounds (0 to 3)
-            switch (index)
-            {
-            case 0:
-                return r;
-            case 1:
-                return g;
-            case 2:
-                return b;
-            case 3:
-                return a;
-            default:
-                throw std::out_of_range("Index out of range");
-            }
-        }
-
-        // Overloading const version of the subscript operator []
-        const uint8_t &operator[](size_t index) const
-        {
-            // Assuming index is within bounds (0 to 3)
-            switch (index)
-            {
-            case 0:
-                return r;
-            case 1:
-                return g;
-            case 2:
-                return b;
-            case 3:
-                return a;
-            default:
-                throw std::out_of_range("Index out of range");
-            }
-        }
-    };
-
-};
-
 class Body
 {
 private:
@@ -109,12 +58,6 @@ public:
     vec3 prev_linear_velocity;
     // Previous angular velocity of the body (at the previous substep)
     vec3 prev_angular_velocity;
-
-    // Optional string to the path of the visual object (i.e. visual shape) attached to the body
-    std::optional<std::string> visual_object_path = std::nullopt;
-
-    // Color of the body
-    rs::Color color = {.r = 255, .g = 95, .b = 31, .a = 255};
     /* linear and angular velocity */
     
 
@@ -232,13 +175,6 @@ public:
      * @param inertia_tensor The new inertia tensor
      */
     void set_intertia_tensor(const mat3 &intertia_tensor);
-
-    /*
-     * Sets the path to a visual object for the body
-     *
-     * @param path The path to the visual object file. (.obj file)
-     */
-    void set_visual_object_path(std::string path);
 
 
     scalar get_mass();

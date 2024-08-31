@@ -37,18 +37,20 @@ robosim::World heightmap_scenario(){
                                      ti::quat_from_axis_angle({1.0, 0.0, 0.0}, -PI/2), 
                                      vec3{0.0, 0.0, 0.0}, 
                                      {0.0, 0.0, 0.0}, 1.0 * mass, inertia_tensor, BodyType::STATIC);
+    
     world.attach_heightmap_collider(floor_id, x_dims, y_dims, heightdata, x_dims, y_dims);
 
-    
     int id = world.create_body({5.0, 4.0, 0.0}, ori, vec3{-0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0 *mass);
+    
     world.attach_sphere_collider(id, 2.1);
 
     rs::Color color = {25, 41, 55, 0};
-    world.set_body_color(id, color);
+    
+    size_t hm_vs_id = world.attach_heightmap_visual_shape(floor_id, x_dims, y_dims, heightdata, x_dims, y_dims);
+    
+    world.set_visual_shape_color(hm_vs_id, color);
 
     world.set_gravity({0.0, -9.8, 0.0});
     
-
-
     return world;
 }

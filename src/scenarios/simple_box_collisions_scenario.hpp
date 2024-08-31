@@ -32,9 +32,9 @@ robosim::World simple_box_collisions_scenario(){
     int id = world.create_body({5.0, 4.0, 0.0}, ori, vec3{-0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0 *mass);
     world.attach_box_collider(id, {1.0, 1.0, 1.0});
 
-    rs::Color color = {25, 41, 55, 0};
-    world.set_body_color(id, color);
-    world.set_body_visual_shape_path(id, "../resources/coral/coral.obj");
+    world.attach_mesh_visual_shape(id, "../resources/coral/coral.obj", vec3{-0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 0.0, 1.0}, .0));
+    //world.set_visual_shape_color(id, (rs::Color){25, 41, 55, 0});
+
 
     world.set_gravity({0.0, -9.8, 0.0});
     

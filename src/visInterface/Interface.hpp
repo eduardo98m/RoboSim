@@ -53,7 +53,7 @@ public:
 
     void update(void);
 
-    void add_collision_object(int body_id, int group_id,  Color* color);
+    void add_collision_object(int body_id, int group_id,  Color* color, bool visual_shape = false);
     
     void add_visual_object(int body_id, int group_id);
 };

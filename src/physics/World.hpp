@@ -1,4 +1,5 @@
 #pragma once
+// Internal imports
 #include "physics/math/math.hpp"
 #include "bodies/Body.hpp"
 #include "constraints/PositionalConstraint.hpp"
@@ -9,16 +10,23 @@
 #include "collisions/collisions.hpp"
 #include "collisions/collider.hpp"
 #include "physics/articulatedSystem/ArticulatedSystem.hpp"
+#include "aabb_tree.hpp"
+#include "hpp/fcl/broadphase/broadphase_collision_manager.h"
+#include "visualShapes/VisualShape.hpp"
+
+// Standart library
 #include <vector>
 #include <tuple>
 #include <map>
 #include <memory>
 #include <limits>
-#include "aabb_tree.hpp"
-#include "hpp/fcl/broadphase/broadphase_collision_manager.h"
+#include <optional>
+
+// HPP-FCL (Human path planner fast collision library)
 #include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree_array.h>
 #include <hpp/fcl/broadphase/default_broadphase_callbacks.h>
 
+// URDF loading library
 #include "urdf/model.h"
 #include "urdf/link.h"
 #include "urdf/joint.h"
@@ -40,6 +48,8 @@ namespace robosim
         std::vector<Body> bodies;
         // Vector of colliders
         std::vector<Collider> colliders;
+        // Vector of visual shapes
+        std::vector<VisualShape> visual_shapes;
         // Vector of positional constraints
         std::vector<PositionalConstraint> positional_constraints;
         // Vector of rotational constraints
@@ -84,7 +94,6 @@ namespace robosim
         void solve_velocities(scalar inv_h);
 
     public:
-
         // AABB Collision Tree
         AABBTree aabb_tree;
         // Contact constraints
@@ -237,20 +246,19 @@ namespace robosim
          *
          */
         size_t attach_heightmap_collider(size_t id,
-                                     scalar x_scale, 
-                                     scalar y_scale, 
-                                     std::vector<scalar> heightdata, 
-                                     size_t x_dims, 
-                                     size_t y_dims,
-                                     scalar restitution = 0.5,
-                                     scalar dynamic_friction = 0.5,
-                                     scalar static_friction = 0.5);
-        
-        /*
-        * Recalculate the inertia matrix of 
-        */
-        void recalculate_inertia_with_colliders(size_t body_id);
+                                         scalar x_scale,
+                                         scalar y_scale,
+                                         std::vector<scalar> heightdata,
+                                         size_t x_dims,
+                                         size_t y_dims,
+                                         scalar restitution = 0.5,
+                                         scalar dynamic_friction = 0.5,
+                                         scalar static_friction = 0.5);
 
+        /*
+         * Recalculate the inertia matrix of
+         */
+        void recalculate_inertia_with_colliders(size_t body_id);
 
         bool check_aabb_collision(const Collider &col_1, const Body &body_1, const Collider &col_2, const Body &body_2);
 
@@ -262,7 +270,6 @@ namespace robosim
          * @return The number of bodies.
          */
         int get_number_of_bodies();
-
 
         int get_number_of_colliders(void);
 
@@ -296,15 +303,9 @@ namespace robosim
          * @param id The index of the body.
          * @return The path to the visual shape of the body, or nullopt if not set.
          */
-        std::optional<std::string> get_body_visual_shape_path(int id);
-        /*
-         * Sets the path to the visual shape of a body in the world.
-         *
-         * @param id The index of the body.
-         * @param path The path to the visual shape.
-         */
-        void set_body_visual_shape_path(int id, std::string path);
-        /*
+        std::optional<std::string> get_visual_shape_path(int id);
+
+        /**
          * Sets the color of a body in the world.
          *
          * @param id The index of the body.
@@ -312,25 +313,25 @@ namespace robosim
          * @param g The green component of the color (0-255).
          * @param b The blue component of the color (0-255).
          * @param alpha The alpha component of the color (0-255).
-         */
-        void set_body_color(int id, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255);
+         **/
+        void set_visual_shape_color(int id, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255);
         /*
          * Sets the color of a body in the world.
          *
          * @param id The index of the body.
          * @param color The color to set.
          */
-        void set_body_color(int id, const rs::Color &color);
+        void set_visual_shape_color(int id, const rs::Color &color);
 
-        /*
+        /**
          * Sets the static fricction coefficient of a body
          *
          * @param id The index of the body.
          * @param coeff The static fricction coefficient of the body.
-         */
+         **/
         void set_body_static_friccion_coefficient(int id, scalar coeff);
 
-        /*
+        /**
          * Sets the dynamic fricction coefficient of a body
          *
          * @param id The index of the body.
@@ -338,7 +339,7 @@ namespace robosim
          */
         void set_body_dynamic_friccion_coefficient(int id, scalar coeff);
 
-        /*
+        /**
          * Sets the restitution coefficient of a body
          *
          * @param id The index of the body.
@@ -346,15 +347,15 @@ namespace robosim
          */
         void set_body_restitution_coefficient(int id, scalar coeff);
 
-        /*
+        /**
          * Gets the color of a body in the world.
          *
          * @param id The index of the body.
          * @return The color of the body.
          */
-        rs::Color get_body_color(int id);
+        rs::Color get_visual_shape_color(int id);
 
-        /*
+        /**
          * Gets the geometry for a collider in the world.
          *
          * @param id The index of the collider.
@@ -362,10 +363,8 @@ namespace robosim
          */
         std::shared_ptr<hpp::fcl::CollisionGeometry> get_collider_geometry(int id);
 
-        
-
         std::pair<vec3, quat> get_collider_pose(size_t id);
-        /*
+        /**
          * Gets the axis-aligned bounding box (AABB) of a collider in the world.
          *
          * @param id The index of the collider.
@@ -375,12 +374,12 @@ namespace robosim
 
         // Collisions
 
-        /*
-         * Prepares the world for collision detection by creating contact constraints between potentially colliding bodies.
+        /**
+         * @brief Prepares the world for collision detection by creating contact constraints between potentially colliding bodies.
          */
         void collisions_detection_preparations(void);
-        /*
-         * Performs broad-phase collision detection for all bodies in the world.
+        /**
+         * @brief Performs broad-phase collision detection for all bodies in the world.
          * Currently is performed as an O(n^2) operation.
          */
         void broad_phase_collision_detection(void);
@@ -436,7 +435,6 @@ namespace robosim
          * @param collision_group The collision group to set.
          */
         void set_collision_group(size_t id, u_int32_t collision_group);
-
 
         /*
          * Creates a positional constraint between two bodies in the world.
@@ -603,12 +601,54 @@ namespace robosim
          */
         size_t load_urdf(const std::string &filename, vec3 base_position);
 
-        size_t add_urdf_link(const std::shared_ptr<urdf::Link> &link, 
-                            std::map<std::string, size_t> &link_name_to_body_id,
-                            std::string filepath,
-                            vec3 *base_position = nullptr,
-                            bool root_link = false);
+        size_t add_urdf_link(const std::shared_ptr<urdf::Link> &link,
+                             std::map<std::string, size_t> &link_name_to_body_id,
+                             std::string filepath,
+                             vec3 *base_position = nullptr,
+                             bool root_link = false);
 
+        // Visual shapes
+        /**
+         * @brief Adds a visual shape to the visual shape vector
+         * **/
+        size_t add_visual_shape(VisualShape visual_shape);
 
+        size_t get_number_of_visual_shapes(void);
+
+        /**
+         * @brief Attaches mesh to a body
+         * @param id The id of the body
+         * @param mesh_path The path to the mesh file (currently only .obj files)
+         * **/
+        size_t attach_mesh_visual_shape(size_t id, std::string mesh_path,
+                                        vec3 position = {0.0, 0.0, 0.0},
+                                        quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                        rs::Color color = {.r = 255, .g = 95, .b = 31, .a = 255} );
+
+        size_t attach_box_visual_shape(size_t id, vec3 half_extents,
+                                       vec3 position = {0.0, 0.0, 0.0},
+                                       quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                       rs::Color color = {.r = 0, .g = 240, .b = 0, .a = 255});
+
+        size_t attach_sphere_visual_shape(size_t id, scalar radius,
+                                          vec3 position = {0.0, 0.0, 0.0},
+                                          quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                          rs::Color color = {.r = 150, .g = 0, .b = 200, .a = 255});
+
+        size_t attach_capsule_visual_shape(size_t id, scalar radius, scalar height,
+                                           vec3 position = {0.0, 0.0, 0.0},
+                                           quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                           rs::Color color = {.r = 0, .g = 150, .b = 200, .a = 255});
+
+        size_t attach_cylinder_visual_shape(size_t id, scalar radius, scalar height,
+                                            vec3 position = {0.0, 0.0, 0.0},
+                                            quat orientation = {1.0, 0.0, 0.0, 0.0},
+                                            rs::Color color = {.r = 0, .g = 100, .b = 150, .a = 255});
+
+        size_t attach_plane_visual_shape(size_t id, vec3 normal, scalar offset, rs::Color color = {.r = 100, .g = 100, .b = 100, .a = 255});
+
+        size_t attach_heightmap_visual_shape(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims, rs::Color color = {.r = 100, .g = 100, .b = 100, .a = 255});
+
+        std::pair<vec3, quat> get_visual_shape_pose(size_t id);
     };
 } // namespace robosim
