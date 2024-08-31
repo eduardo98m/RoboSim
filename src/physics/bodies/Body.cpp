@@ -190,3 +190,7 @@ void Body::set_intertia_tensor(const mat3 &intertia_tensor){
 void Body::set_visual_object_path(std::string path){
     this->visual_object_path = std::make_optional(path);
 }
+
+scalar Body::get_mass(void){
+    return this->mass;
+}

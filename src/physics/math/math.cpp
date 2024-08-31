@@ -31,7 +31,7 @@ namespace ti
         return (vec3){v[0], v[1], v[2]};
     }
 
-    mat3 mar3_from_eigen(const hpp::fcl::Matrix3f &mat){
+    mat3 mat3_from_eigen(const hpp::fcl::Matrix3f &mat){
         return (mat3){
             mat(0, 0), mat(0, 1), mat(0, 2),
             mat(0, 1), mat(1, 1), mat(1, 2),

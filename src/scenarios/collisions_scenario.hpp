@@ -21,7 +21,7 @@ robosim::World collisions_scenario()
     const float Y_MIN = 0.1f, Y_MAX = 5.1f;
     const float Z_MIN = -2.5f, Z_MAX = 2.5f;
     const float RADIUS = 0.4f;
-    const int GRID_SIZE = 2;
+    const int GRID_SIZE = 5;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> disX(X_MIN, X_MAX);
@@ -62,8 +62,8 @@ robosim::World collisions_scenario()
         0.0000, 0.0700, 0.0000,
         0.0000, 0.0000, 0.7000};
 
-    // uint plane_id = world.add_plane({0.0, 1.0, 0}, 0.0);
-    int plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500 * mass, 500 * (10.0 / 12) * inertia_tensor, STATIC);
+    //size_t plane_id = world.add_plane({0.0, 1.0, 0}, 0.0);
+    size_t plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500 * mass, 500 * (10.0 / 12) * inertia_tensor, STATIC);
     world.attach_box_collider(plane_id, {50.0, 0.2, 50.0});
 
     // world.attach_sphere_collider(ball_id, 1.0);
@@ -71,12 +71,12 @@ robosim::World collisions_scenario()
     for (const auto &position : ball_positions)
     {
         int ball_id = world.create_body(position, ti::quat_from_axis_angle({1.0, 0.0, 0.0}, PI / 2), vec3{0.0, 0.01, 0.0}, ang_vel, 1 * mass, mass * cursed_cylinder_inertia, DYNAMIC);
-        if (i % 2 == 0)
+        if (i % 2 == 3)
         {
-            world.attach_box_collider(ball_id, {RADIUS, 1.5 * RADIUS, RADIUS});
-             world.attach_box_collider(ball_id, {1.5 * RADIUS, 0.5 * RADIUS, RADIUS});
+            //world.attach_box_collider(ball_id, {RADIUS, 1.5 * RADIUS, RADIUS});
+            world.attach_box_collider(ball_id, {1.5 * RADIUS, 0.5 * RADIUS, RADIUS});
         }
-        else if (i % 2 == 1)
+        else if (i % 2 == 1 || true)
         {
             world.attach_sphere_collider(ball_id, RADIUS);
         }
@@ -84,7 +84,7 @@ robosim::World collisions_scenario()
         {
             world.attach_cylinder_collider(ball_id, RADIUS, 1.5 * RADIUS);
         }
-        // world.attach_sphere_collider(ball_id, RADIUS);
+        //world.attach_sphere_collider(ball_id, RADIUS);
         i++;
     }
 

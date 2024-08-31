@@ -13,10 +13,15 @@
 #include <tuple>
 #include <map>
 #include <memory>
+#include <limits>
 #include "aabb_tree.hpp"
 #include "hpp/fcl/broadphase/broadphase_collision_manager.h"
 #include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree_array.h>
 #include <hpp/fcl/broadphase/default_broadphase_callbacks.h>
+
+#include "urdf/model.h"
+#include "urdf/link.h"
+#include "urdf/joint.h"
 
 // Create a blank class called World
 namespace robosim
@@ -31,31 +36,25 @@ namespace robosim
         scalar timestep;
         // number of sub-steps
         int substeps;
-
         // Vector of bodies of the world
         std::vector<Body> bodies;
-
         // Vector of colliders
         std::vector<Collider> colliders;
-
         // Vector of positional constraints
         std::vector<PositionalConstraint> positional_constraints;
         // Vector of rotational constraints
         std::vector<RotationalConstraint> rotational_constraints;
         // // Vector of revolute joint constraints
         std::vector<RevoluteJointConstraint> revolute_joint_constraints;
-
         // Collision groups
         // Unordered map that maps the bodies to collision groups
         std::unordered_map<size_t, uint32_t> collision_groups;
-        
+        // Adjacent links collision filter
+        std::map<std::pair<size_t, size_t>, bool> adajacent_links_filter;
         // Collision pairs from the aabb
         std::vector<std::pair<size_t, size_t>> potential_collision_pairs;
-
-
         // Articulated systems
         std::vector<ArticulatedSystem> articulated_systems;
-
         /*
          * Updates the positions and orientations of all bodies in the world based on their velocities and the given time step.
          *
@@ -85,6 +84,9 @@ namespace robosim
         void solve_velocities(scalar inv_h);
 
     public:
+
+        // AABB Collision Tree
+        AABBTree aabb_tree;
         // Contact constraints
         std::vector<ContactConstraint> contact_constraints;
         // Constructor
@@ -164,7 +166,8 @@ namespace robosim
                                    quat orientation = {1.0, 0.0, 0.0, 0.0},
                                    scalar restitution = 0.5,
                                    scalar dynamic_friction = 0.5,
-                                   scalar static_friction = 0.5);
+                                   scalar static_friction = 0.5,
+                                   bool update_inertia = true);
         /*
          * Sets a sphere collider for a body in the world.
          *
@@ -177,7 +180,8 @@ namespace robosim
                                       quat orientation = {1.0, 0.0, 0.0, 0.0},
                                       scalar restitution = 0.5,
                                       scalar dynamic_friction = 0.5,
-                                      scalar static_friction = 0.5);
+                                      scalar static_friction = 0.5,
+                                      bool update_inertia = true);
 
         /*
          * Sets a capsule collider for a body in the world.
@@ -194,7 +198,8 @@ namespace robosim
                                        quat orientation = {1.0, 0.0, 0.0, 0.0},
                                        scalar restitution = 0.5,
                                        scalar dynamic_friction = 0.5,
-                                       scalar static_friction = 0.5);
+                                       scalar static_friction = 0.5,
+                                       bool update_inertia = true);
 
         /*
          * Sets a cylinder collider for a body in the world.
@@ -210,7 +215,8 @@ namespace robosim
                                         quat orientation = {1.0, 0.0, 0.0, 0.0},
                                         scalar restitution = 0.5,
                                         scalar dynamic_friction = 0.5,
-                                        scalar static_friction = 0.5);
+                                        scalar static_friction = 0.5,
+                                        bool update_inertia = true);
 
         /*
          * Sets a plane collider for a body in the world.
@@ -230,7 +236,20 @@ namespace robosim
          * Sets a heightmap collider for a body in the world.
          *
          */
-        void set_heightmap_collider(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims);
+        size_t attach_heightmap_collider(size_t id,
+                                     scalar x_scale, 
+                                     scalar y_scale, 
+                                     std::vector<scalar> heightdata, 
+                                     size_t x_dims, 
+                                     size_t y_dims,
+                                     scalar restitution = 0.5,
+                                     scalar dynamic_friction = 0.5,
+                                     scalar static_friction = 0.5);
+        
+        /*
+        * Recalculate the inertia matrix of 
+        */
+        void recalculate_inertia_with_colliders(size_t body_id);
 
 
         bool check_aabb_collision(const Collider &col_1, const Body &body_1, const Collider &col_2, const Body &body_2);
@@ -583,5 +602,13 @@ namespace robosim
          * Loads an urdf file into the robosim world and returns the articulated system id
          */
         size_t load_urdf(const std::string &filename, vec3 base_position);
+
+        size_t add_urdf_link(const std::shared_ptr<urdf::Link> &link, 
+                            std::map<std::string, size_t> &link_name_to_body_id,
+                            std::string filepath,
+                            vec3 *base_position = nullptr,
+                            bool root_link = false);
+
+
     };
 } // namespace robosim

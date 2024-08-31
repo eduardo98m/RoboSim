@@ -252,6 +252,9 @@ bool World::can_collide(size_t bodyA, size_t bodyB) const
     // {
     //     return false;
     // }
+    if (adajacent_links_filter.count({bodyA, bodyB})){
+        return false;
+    }
 
     // Check if either body belongs to group 0 (default collision group)
     if (collision_groups.count(bodyA) == 0 || collision_groups.count(bodyB) == 0)

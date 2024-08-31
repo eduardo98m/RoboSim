@@ -109,10 +109,11 @@ make
             * [x] Position driven
             * [-] Speed driven (It is implemented but there are errors on the implementation: target speed doesnt match the actual speed). 
         * [x] Damped
-    * [ ] Spherica joint
+    * [ ] Spherical joint
         * [ ] Limited
         * [ ] Damped
 * [ ] URDF importer
+  * [ ] Loading and placement of componets ok -> Problems with contacts and joints
 * [ ] Paralelization with OpenMP
 
     

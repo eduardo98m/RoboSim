@@ -18,10 +18,6 @@ struct Collider{
     scalar static_fricition = 0.5;
     // Dynamic friction
     scalar dynamic_friction = 0.5;
-
     // Body id to which the collider is attached to.
-    size_t body_id;
-
-
-    void update_geometry_pose(vec3 body_position, quat body_orientation);   
+    size_t body_id;  
 };

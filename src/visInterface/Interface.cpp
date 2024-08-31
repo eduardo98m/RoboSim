@@ -13,7 +13,7 @@ Quaternion quatToQuaternion(const quat &q)
 void Interface::add_collision_object(int body_id, int group_id, Color *color)
 {
     std::pair<vec3, quat> pose = this->world_->get_collider_pose(body_id);
-    
+
     Vector3 position = vec3ToVector3(pose.first);
     Quaternion orientation = quatToQuaternion(pose.second);
     int vis_shape_id = -1;
@@ -170,6 +170,8 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
             ImGui::Begin("Visualization Settings");
             ImGui::Checkbox("Show bounding boxes", &this->settings.show_bounding_boxes);
 
+            ImGui::Checkbox("Show AABB tree", &this->settings.show_aabb_tree);
+
             ImGui::BeginGroup();
 
             if (ImGui::Button("Toggle visual objects"))
@@ -272,11 +274,26 @@ void Interface::update(void)
             vec3ToVector3(pose.first),
             quatToQuaternion(pose.second));
 
-        if (this->settings.show_bounding_boxes)
-        {
-            AABB aabb = world_->get_aabb(pair.first);
-            this->visualizer_->draw_aabb(vec3ToVector3(aabb.min), vec3ToVector3(aabb.max), GREEN);
-        }
+        // if (this->settings.show_bounding_boxes)
+        // {
+        //     AABB aabb = world_->get_aabb(pair.first);
+        //     this->visualizer_->draw_aabb(vec3ToVector3(aabb.min), vec3ToVector3(aabb.max), GREEN);
+        // }
+    }
+
+    if (this->settings.show_aabb_tree)
+    {
+        for (Node *node : this->world_->aabb_tree.nodes)
+            this->visualizer_->draw_aabb(vec3ToVector3(node->aabb.min), vec3ToVector3(node->aabb.max), node->is_leaf() ? GREEN : BLUE);
+    }
+
+    if (this->settings.show_bounding_boxes)
+    {
+        for (Node *node : this->world_->aabb_tree.nodes)
+            if (node->is_leaf())
+            {
+                this->visualizer_->draw_aabb(vec3ToVector3(node->aabb.min), vec3ToVector3(node->aabb.max), GREEN);
+            }
     }
 
     // Revolute Joints

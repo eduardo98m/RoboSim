@@ -28,6 +28,8 @@ struct VisualizationSettings{
     bool render_visual_objects = true;
     bool render_collision_shapes = false;
 
+    bool show_aabb_tree = false;
+
     bool toggle_visual_objects = false;
     bool toggle_collision_shapes = false;
 

@@ -18,7 +18,7 @@
 
 robosim::World heightmap_scenario(){
     
-    robosim::World world = robosim::World(0.01, 1);
+    robosim::World world = robosim::World(0.01, 20);
     quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0);
     scalar mass = 1.0;
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
@@ -31,13 +31,13 @@ robosim::World heightmap_scenario(){
     size_t y_dims = 50;
     std::vector<scalar> heightdata(x_dims * y_dims);
     for (size_t i = 0; i < x_dims * y_dims; ++i) {
-        heightdata[i] = 0.0;
+        heightdata[i] = 0.4;
     }
     int floor_id = world.create_body({0.0, 0.0, 0.0}, 
                                      ti::quat_from_axis_angle({1.0, 0.0, 0.0}, -PI/2), 
                                      vec3{0.0, 0.0, 0.0}, 
                                      {0.0, 0.0, 0.0}, 1.0 * mass, inertia_tensor, BodyType::STATIC);
-    //world.set_heightmap_collider(floor_id, x_dims, y_dims, heightdata, x_dims, y_dims);
+    world.attach_heightmap_collider(floor_id, x_dims, y_dims, heightdata, x_dims, y_dims);
 
     
     int id = world.create_body({5.0, 4.0, 0.0}, ori, vec3{-0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1.0 *mass);

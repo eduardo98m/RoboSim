@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         "Stack of boxes"
     };
 
-    int selected_scenario = ScenarioType::COLLISIONS; // Default to collisions scenario
+    int selected_scenario = ScenarioType::ARTICULATED_SYSTEM; // Default to collisions scenario
 
     auto gui_interface{
         [&pause_simulation, &reset_scenario, &selected_scenario, scenario_names](void)
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     //robosim::World world;
     std::function<void(std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>)> step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
     std::function<void()> gui_callback = [](){};
-    robosim::World world  = collisions_scenario();
+    robosim::World world  = robot_arm_scenario();
 
 
 
@@ -118,6 +118,8 @@ int main(int argc, char *argv[])
     visualizer.set_up_camera();
 
     visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
+
+    
 
     visualizer.set_imgui_interfaces(gui_interface);
     visualizer.set_imgui_interfaces(gui_callback);
@@ -137,6 +139,10 @@ int main(int argc, char *argv[])
             world_ptr->step();
             step_callback(world_ptr, vis_ptr);
         }
+
+        visualizer.draw_arrow({0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, 0.01, RED);
+        visualizer.draw_arrow({0.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, 0.01, BLUE);
+        visualizer.draw_arrow({0.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, 0.01, GREEN);
 
         interface->update();
 

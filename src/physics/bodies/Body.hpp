@@ -239,4 +239,7 @@ public:
      * @param path The path to the visual object file. (.obj file)
      */
     void set_visual_object_path(std::string path);
+
+
+    scalar get_mass();
 };
