@@ -63,7 +63,8 @@ struct VisualShape{
     vec3 pos = {0.0, 0.0, 0.0};
     // Orientation (rotation) of the visual shape relative to the body center
     quat rot = {1.0, 0.0, 0.0, 0.0};
-
+    // Scale of the visual shape mesh
+    vec3 scale = {1.0, 1.0, 1.0};
     // Color of the body
     rs::Color color = {.r = 255, .g = 95, .b = 31, .a = 255};
     // Body id to which the collider is attached to.

@@ -14,18 +14,23 @@ void Interface::add_collision_object(int body_id, int group_id, Color *color, bo
 {   
 
     std::pair<vec3, quat> pose;
+    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info;
     if (visual_shape){
         pose = this->world_->get_visual_shape_pose(body_id);
+        collider_info =  this->world_->get_visual_shape_geometry(body_id);
     }
     else{
         pose = this->world_->get_collider_pose(body_id);
+        collider_info =  this->world_->get_collider_geometry(body_id);
     }
+
+    if (!collider_info){return;}
         
 
     Vector3 position = vec3ToVector3(pose.first);
     Quaternion orientation = quatToQuaternion(pose.second);
     int vis_shape_id = -1;
-    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info = this->world_->get_collider_geometry(body_id);
+     
 
     if (auto box = std::dynamic_pointer_cast<hpp::fcl::Box>(collider_info))
     {
@@ -118,12 +123,13 @@ void Interface::add_collision_object(int body_id, int group_id, Color *color, bo
 
 void Interface::add_visual_object(int visual_shape_id, int group_id)
 {
-    Vector3 position = vec3ToVector3(this->world_->get_body_position(visual_shape_id));
-    Quaternion orientation = quatToQuaternion(this->world_->get_body_orientation(visual_shape_id));
+    std::pair<vec3, quat> pose =  this->world_->get_visual_shape_pose(visual_shape_id);
+    Vector3 position = vec3ToVector3(pose.first);
+    Quaternion orientation = quatToQuaternion(pose.second);
     int vis_shape_id = -1;
-    std::shared_ptr<hpp::fcl::CollisionGeometry> collider_info = this->world_->get_collider_geometry(visual_shape_id);
 
     std::optional<std::string> path = this->world_->get_visual_shape_path(visual_shape_id);
+    vec3 scale = this->world_->get_visual_shape_scale(visual_shape_id);
 
     rs::Color c = this->world_->get_visual_shape_color(visual_shape_id);
     Color color = {static_cast<unsigned char>(c[0]),
@@ -133,7 +139,7 @@ void Interface::add_visual_object(int visual_shape_id, int group_id)
 
     if (path.has_value())
     {
-        int vis_shape_id = this->visualizer_->add_mesh(path.value().c_str(), position, orientation, color, 1.0, VISUAL_SHAPES_GROUP);
+        int vis_shape_id = this->visualizer_->add_mesh(path.value().c_str(), position, orientation, color, scale.x, scale.y, scale.z, VISUAL_SHAPES_GROUP);
         this->body_to_visual_shape.push_back({visual_shape_id, vis_shape_id});
     }
     else

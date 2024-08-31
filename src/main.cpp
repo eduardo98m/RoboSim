@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
             visualizer.unload_models();
             visualizer.set_imgui_interfaces(gui_interface);
             visualizer.set_imgui_interfaces(gui_callback);
-            world_ptr->step();
+            //world_ptr->step();
 
             delete interface; // This is to avoid a memory leak
             interface = new Interface(world_ptr, vis_ptr);

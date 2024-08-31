@@ -12,8 +12,9 @@ size_t World::add_visual_shape(VisualShape visual_shape)
 
 size_t World::attach_mesh_visual_shape(size_t id,
                                       std::string mesh_path,
+                                      vec3 scale,
                                       vec3 position,
-                                      quat orientation, 
+                                      quat orientation,
                                       rs::Color color
                                       )
 {
@@ -22,6 +23,7 @@ size_t World::attach_mesh_visual_shape(size_t id,
         .visual_object_path = std::make_optional(mesh_path),
         .pos = position,
         .rot = orientation,
+        .scale = scale,
         .color = color,
         .body_id = id};
 
@@ -201,4 +203,19 @@ std::pair<vec3, quat> World::get_visual_shape_pose(size_t id)
 
     return std::make_pair(pos, ori);
 }
+
+std::shared_ptr<hpp::fcl::CollisionGeometry>  World::get_visual_shape_geometry(size_t id){
+    if (this->visual_shapes[id].geom.has_value()){
+        return this->visual_shapes[id].geom.emplace();
+    }
+    else{
+        return nullptr;
+    }
+}
+
+vec3 World::get_visual_shape_scale(size_t id){
+    return this->visual_shapes[id].scale;
+    
+}
+
 

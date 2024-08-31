@@ -620,7 +620,9 @@ namespace robosim
          * @param id The id of the body
          * @param mesh_path The path to the mesh file (currently only .obj files)
          * **/
-        size_t attach_mesh_visual_shape(size_t id, std::string mesh_path,
+        size_t attach_mesh_visual_shape(size_t id, 
+                                        std::string mesh_path,
+                                        vec3 scale = {1.0, 1.0, 1.0},
                                         vec3 position = {0.0, 0.0, 0.0},
                                         quat orientation = {1.0, 0.0, 0.0, 0.0},
                                         rs::Color color = {.r = 255, .g = 95, .b = 31, .a = 255} );
@@ -650,5 +652,15 @@ namespace robosim
         size_t attach_heightmap_visual_shape(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims, rs::Color color = {.r = 100, .g = 100, .b = 100, .a = 255});
 
         std::pair<vec3, quat> get_visual_shape_pose(size_t id);
+
+        /**
+         * @brief returns a pointer to the geometry of the visual shape
+        */
+        std::shared_ptr<hpp::fcl::CollisionGeometry>  get_visual_shape_geometry(size_t id);
+
+        /**
+         * @brief returns the scaling vector of the visual shape 
+        */
+        vec3 get_visual_shape_scale(size_t id);
     };
 } // namespace robosim
