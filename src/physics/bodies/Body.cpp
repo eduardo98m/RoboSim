@@ -165,28 +165,28 @@ void Body::set_intertia_tensor(const mat3 &intertia_tensor){
     this->update_inertia_tensor_world();
 }
 
-// void Body::set_heightmap_collider(scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims){
-
-//     // Create an Eigen matrix to hold the height data
-//     hpp::fcl::MatrixXf heightdata_mat(x_dims, y_dims);
-
-//     // Populate the matrix with the provided height data
-//     for (size_t i = 0; i < x_dims; ++i) {
-//         for (size_t j = 0; j < y_dims; ++j) {
-//             // Assuming the heightdata is stored in row-major order
-//             heightdata_mat(i, j) = heightdata[i * y_dims + j];
-//         }
-//     }
-
-//     this->collider_info =  std::make_shared<hpp::fcl::HeightField<hpp::fcl::AABB>>(x_scale, y_scale, heightdata_mat);
-
-// }
-
-
-// void Body::set_plane_collider(vec3 normal, scalar offset){
-//     this->collider_info =  std::make_shared<hpp::fcl::Halfspace>(normal.x, normal.y, normal.z, offset);
-// }
 
 scalar Body::get_mass(void){
     return this->mass;
+}
+
+std::string Body::to_string(void){
+
+    std::stringstream ss;
+
+    ss << "Body Type: " << (this->type == BodyType::STATIC ? "STATIC" : "DYNAMIC") << "\n";
+    ss << "Position: " << this->position << "\n";
+    ss << "Orientation: " << this->orientation << "\n";
+    ss << "Linear Velocity: " << this->linear_velocity << "\n";
+    ss << "Angular Velocity: " << this->angular_velocity << "\n";
+    ss << "Mass: " << this->mass << "\n";
+    ss << "Invers Mass" << this->inverse_mass << "\n";
+    ss << "Inertia Tensor: " << this->inertia_tensor << "\n";
+    ss << "Inverse Inertia Tensor: " << this->inverse_inertia_tensor << "\n";
+    ss << "Inertia Tensor World: " << this->inertia_tensor_world << "\n";
+    ss << "Inverse Inertia Tensor World: " << this->inverse_inertia_tensor_world << "\n";
+    ss << "Inverse Mass: " << this->inverse_mass << "\n";
+    ss << "Collision Group: " << this->collision_group << "\n";
+    // Add more fields as needed
+    return ss.str();
 }

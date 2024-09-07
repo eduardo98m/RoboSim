@@ -1,8 +1,8 @@
 #include <PositionalConstraint.hpp>
 
 
-PositionalConstraint::PositionalConstraint(Body *body_1,
-                                           Body *body_2,
+PositionalConstraint::PositionalConstraint(std::shared_ptr<Body> body_1,
+                                           std::shared_ptr<Body> body_2,
                                            vec3 r_1,
                                            vec3 r_2,
                                            scalar compliance,

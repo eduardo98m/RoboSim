@@ -23,7 +23,7 @@ void World::broad_phase_collision_detection(void)
             continue;
         }
         
-        Body *body = &this->bodies[col->body_id];
+        std::shared_ptr<Body> body = this->bodies[col->body_id];
 
         AABB aabb = compute_AABB(col->geom,
                          body->position + ti::rotate(body->orientation, col->pos),
@@ -134,8 +134,8 @@ void World::narrow_phase_collision_detection_and_response(scalar inverse_time_st
         if (!this->can_collide(col_1->body_id, col_2->body_id) ||  col_1->body_id == col_2->body_id){
             continue;
         }
-        Body *body_1 = &this->bodies[col_1->body_id];
-        Body *body_2 = &this->bodies[col_2->body_id];
+        std::shared_ptr<Body> body_1 = this->bodies[col_1->body_id];
+        std::shared_ptr<Body> body_2 = this->bodies[col_2->body_id];
 
         hpp::fcl::CollisionResult col_res;
         hpp::fcl::CollisionRequest col_req = hpp::fcl::CollisionRequest(hpp::fcl::CollisionRequestFlag::CONTACT, 16);

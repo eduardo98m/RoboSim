@@ -1,7 +1,7 @@
 #include "RevoluteJointConstraint.hpp"
 
-RevoluteJointConstraint::RevoluteJointConstraint(Body *body_1,
-                                                 Body *body_2,
+RevoluteJointConstraint::RevoluteJointConstraint(std::shared_ptr<Body> body_1,
+                                                 std::shared_ptr<Body> body_2,
                                                  vec3 aligned_axis,
                                                  vec3 limit_axis,
                                                  vec3 r_1,
@@ -30,11 +30,11 @@ RevoluteJointConstraint::RevoluteJointConstraint(Body *body_1,
     this->type = type;
 
     // Initialize the contsraints
-    this->attachment_point_constraint = new PositionalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
-    this->drive_joint_constraint = new RotationalConstraint(body_1, body_2, r_1, r_2, compliance, damping);
+    this->attachment_point_constraint = std::make_shared<PositionalConstraint>(body_1, body_2, r_1, r_2, 0.0, 0.0);
+    this->drive_joint_constraint = std::make_shared<RotationalConstraint>(body_1, body_2, r_1, r_2, compliance, damping);
 
-    this->angle_limit_constraint = new RotationalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
-    this->aligned_constraint = new RotationalConstraint(body_1, body_2, r_1, r_2, 0.0, 0.0);
+    this->angle_limit_constraint = std::make_shared<RotationalConstraint>(body_1, body_2, r_1, r_2, 0.0, 0.0);
+    this->aligned_constraint = std::make_shared<RotationalConstraint>(body_1, body_2, r_1, r_2, 0.0, 0.0);
 }
 
 void RevoluteJointConstraint::apply_constraint(scalar inverse_time_step, scalar time_step)

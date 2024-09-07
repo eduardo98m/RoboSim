@@ -1,7 +1,7 @@
 #include "ContactConstraint.hpp"
 
-ContactConstraint::ContactConstraint(Body *body_1,
-                                     Body *body_2,
+ContactConstraint::ContactConstraint(std::shared_ptr<Body> body_1,
+                                     std::shared_ptr<Body> body_2,
                                      vec3 normal,
                                      vec3 p_1,
                                      vec3 p_2,

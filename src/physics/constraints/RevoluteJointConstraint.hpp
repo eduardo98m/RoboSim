@@ -3,6 +3,7 @@
 #include "physics/bodies/Body.hpp"
 #include "PositionalConstraint.hpp"
 #include "RotationalConstraint.hpp"
+#include <memory>
 #include "Utils.hpp"
 
 enum RevoluteJointType{
@@ -22,11 +23,11 @@ struct RevoluteJointInfo{
 };
 
 class RevoluteJointConstraint{
-    private:
+    public:
         // Reference to the first body
-        Body *body_1;
+        std::shared_ptr<Body> body_1;
         // Reference to the second body
-        Body *body_2;
+        std::shared_ptr<Body> body_2;
 
         // Axes of the first and second body
         vec3 aligned_axis;
@@ -61,17 +62,17 @@ class RevoluteJointConstraint{
         scalar previous_angle;
 
         // Constraints
-        RotationalConstraint *aligned_constraint;
-        RotationalConstraint *angle_limit_constraint;
-        RotationalConstraint *drive_joint_constraint;
+        std::shared_ptr<RotationalConstraint> aligned_constraint;
+        std::shared_ptr<RotationalConstraint> angle_limit_constraint;
+        std::shared_ptr<RotationalConstraint> drive_joint_constraint;
         
-        PositionalConstraint *attachment_point_constraint;
+        std::shared_ptr<PositionalConstraint> attachment_point_constraint;
     public:
         // Joint type (FREE - DRIVEN_BY_POSITION - DRIVEN_BY_SPEED)
         RevoluteJointType type;
 
-        RevoluteJointConstraint(Body * body_1, 
-                             Body * body_2,
+        RevoluteJointConstraint(std::shared_ptr<Body> body_1, 
+                             std::shared_ptr<Body> body_2,
                              vec3 aligned_axis = vec3(1.0, 0.0, 0.0),
                              vec3 limit_axis = vec3(0.0, 1.0, 0.0),
                              vec3 r_1 = vec3{0.0, 0.0, 0.0}, 

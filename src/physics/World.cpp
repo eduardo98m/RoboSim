@@ -27,17 +27,17 @@ void World::step()
 
 void World::update_bodies_position_and_orientation(scalar h)
 {
-    for (Body &body : this->bodies)
+    for (std::shared_ptr<Body>& body : this->bodies)
     {
-        body.update_position_and_orientation(h);
+        body->update_position_and_orientation(h);
     }
 }
 
 void World::update_bodies_velocities(scalar inv_h)
 {
-    for (Body &body : this->bodies)
+    for (std::shared_ptr<Body>& body: this->bodies)
     {
-        body.update_velocities(inv_h);
+        body->update_velocities(inv_h);
     }
 }
 
@@ -46,18 +46,18 @@ void World::solve_positions(scalar inv_h, scalar h)
     // Solve the contacts first
     this->narrow_phase_collision_detection_and_response(inv_h);
 
-    for (PositionalConstraint &constraint : this->positional_constraints)
+    for (const std::shared_ptr<PositionalConstraint> &constraint : this->positional_constraints)
     {
-        constraint.apply_constraint(inv_h);
+        constraint->apply_constraint(inv_h);
     }
-    for (RotationalConstraint &constraint : this->rotational_constraints)
+    for (const std::shared_ptr<RotationalConstraint> &constraint : this->rotational_constraints)
     {
-        constraint.apply_constraint(inv_h);
+        constraint->apply_constraint(inv_h);
     }
 
-    for (RevoluteJointConstraint &constraint : this->revolute_joint_constraints)
+    for (const std::shared_ptr<RevoluteJointConstraint> &constraint : this->revolute_joint_constraints)
     {
-        constraint.apply_constraint(inv_h, h);
+        constraint->apply_constraint(inv_h, h);
     }
 }
 void World::solve_velocities(scalar h)
@@ -67,9 +67,9 @@ void World::solve_velocities(scalar h)
         constraint.apply_constraint_velocity_level(h);
     }
 
-    for (RevoluteJointConstraint &constraint : this->revolute_joint_constraints)
+    for (const std::shared_ptr<RevoluteJointConstraint>  &constraint : this->revolute_joint_constraints)
     {
-        constraint.apply_joint_damping(h);
+        constraint->apply_joint_damping(h);
     }
 }
 
@@ -82,18 +82,18 @@ void World::set_gravity(vec3 gravity)
 {
     for (auto &body : this->bodies)
     {
-        body.set_gravity(gravity);
+        body->set_gravity(gravity);
     }
 }
 
-int World::add_body(Body body)
+size_t World::add_body(std::shared_ptr<Body> body)
 {
     this->bodies.push_back(body);
 
-    return (int)(this->bodies.size() - 1);
+    return (this->bodies.size() - 1);
 }
 
-int World::create_body(vec3 position,
+size_t World::create_body(vec3 position,
                        quat orientation,
                        vec3 linear_velocity,
                        vec3 angular_velocity,
@@ -101,7 +101,7 @@ int World::create_body(vec3 position,
                        mat3 inertia_tensor,
                        BodyType type)
 {
-    Body body = Body(position,
+    std::shared_ptr<Body> body = std::make_shared<Body>(position,
                      orientation,
                      linear_velocity,
                      angular_velocity,
@@ -113,27 +113,11 @@ int World::create_body(vec3 position,
 }
 
 
-
-void World::set_body_static_friccion_coefficient(int id, scalar coeff)
-{
-    this->bodies[id].static_fricction_coeff = coeff;
-}
-
-void World::set_body_dynamic_friccion_coefficient(int id, scalar coeff)
-{
-    this->bodies[id].dynamic_fricction_coeff = coeff;
-}
-
-void World::set_body_restitution_coefficient(int id, scalar coeff)
-{
-    this->bodies[id].restitution = coeff;
-}
-
 int World::create_positional_constraint(int body_1_id, int body_2_id, vec3 r_1, vec3 r_2, scalar compliance, scalar damping)
 {
 
-    PositionalConstraint constraint = PositionalConstraint(&this->bodies[body_1_id],
-                                                           &this->bodies[body_2_id],
+    std::shared_ptr<PositionalConstraint> constraint = std::make_shared<PositionalConstraint>(this->bodies[body_1_id],
+                                                           this->bodies[body_2_id],
                                                            r_1,
                                                            r_2,
                                                            compliance,
@@ -146,8 +130,8 @@ int World::create_positional_constraint(int body_1_id, int body_2_id, vec3 r_1, 
 int World::create_rotational_constraint(int body_1_id, int body_2_id, vec3 r_1, vec3 r_2, scalar compliance, scalar damping)
 {
 
-    RotationalConstraint constraint = RotationalConstraint(&this->bodies[body_1_id],
-                                                           &this->bodies[body_2_id],
+    std::shared_ptr<RotationalConstraint> constraint = std::make_shared<RotationalConstraint>(this->bodies[body_1_id],
+                                                           this->bodies[body_2_id],
                                                            r_1,
                                                            r_2,
                                                            compliance,
@@ -186,8 +170,8 @@ int World::create_revolute_constraint(int body_1_id,
     }
     assert(ti::magnitude(limit_axis) > EPSILON && "Invalid limit axis `limit_axis` must be perpendicular to the `aligned_axis`");
 
-    RevoluteJointConstraint constraint = RevoluteJointConstraint(&this->bodies[body_1_id],
-                                                                 &this->bodies[body_2_id],
+    std::shared_ptr<RevoluteJointConstraint> constraint = std::make_shared<RevoluteJointConstraint>(this->bodies[body_1_id],
+                                                                 this->bodies[body_2_id],
                                                                  ti::normalize(aligned_axis),
                                                                  limit_axis,
                                                                  r_1,
@@ -203,7 +187,7 @@ int World::create_revolute_constraint(int body_1_id,
     return (int)(this->revolute_joint_constraints.size() - 1);
 }
 
-int World::add_rotational_constraint(RotationalConstraint constraint)
+int World::add_rotational_constraint(std::shared_ptr<RotationalConstraint> constraint)
 {
     this->rotational_constraints.push_back(constraint);
     return (int)(this->rotational_constraints.size() - 1);
@@ -211,17 +195,17 @@ int World::add_rotational_constraint(RotationalConstraint constraint)
 
 vec3 World::get_body_position(int id)
 {
-    return this->bodies[id].position;
+    return this->bodies[id]->position;
 }
 
 quat World::get_body_orientation(int id)
 {
-    return this->bodies[id].orientation;
+    return this->bodies[id]->orientation;
 }
 
 vec3 World::get_body_angular_velocity(int id)
 {
-    return this->bodies[id].angular_velocity;
+    return this->bodies[id]->angular_velocity;
 }
 
 std::shared_ptr<hpp::fcl::CollisionGeometry> World::get_collider_geometry(int id)
@@ -233,9 +217,9 @@ AABB World::get_aabb(int id)
 {
     std::shared_ptr<hpp::fcl::CollisionGeometry> info = this->colliders[id].geom;
 
-    AABB aabb = compute_AABB(info, this->bodies[id].position, this->bodies[id].orientation);
+    AABB aabb = compute_AABB(info, this->bodies[id]->position, this->bodies[id]->orientation);
 
-    vec3 expansion_factor = ti::abs(2.0 * this->bodies[id].linear_velocity * this->timestep);
+    vec3 expansion_factor = ti::abs(2.0 * this->bodies[id]->linear_velocity * this->timestep);
     aabb = AABB{
         .min = aabb.min - expansion_factor,
         .max = aabb.max + expansion_factor,
@@ -438,17 +422,17 @@ int World::add_plane(vec3 normal, scalar offset)
 // Revolute joints
 RevoluteJointInfo World::get_revolute_joint_info(int id)
 {
-    return this->revolute_joint_constraints[id].get_info();
+    return this->revolute_joint_constraints[id]->get_info();
 }
 
 void World::set_revolute_joint_target_angle(int id, scalar angle)
 {
-    this->revolute_joint_constraints[id].set_traget_angle(angle);
+    this->revolute_joint_constraints[id]->set_traget_angle(angle);
 }
 
 void World::set_revolute_joint_target_speed(int id, scalar speed)
 {
-    this->revolute_joint_constraints[id].set_target_speed(speed);
+    this->revolute_joint_constraints[id]->set_target_speed(speed);
 }
 
 int World::get_number_of_bodies()
@@ -466,4 +450,8 @@ int World::get_number_of_revolute_joints(void)
     return this->revolute_joint_constraints.size();
 }
 
+
+std::string World::get_body_info_str(int id){
+    return this->bodies[id]->to_string();
+}
 

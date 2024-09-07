@@ -12,9 +12,9 @@ class ContactConstraint
 {
 private:
     // Reference to the first body
-    Body *body_1;
+    std::shared_ptr<Body> body_1;
     // Reference to the second body
-    Body *body_2;
+    std::shared_ptr<Body> body_2;
 
     // Material properties of the contact
     // (Calculated by combining the material proerties of the colliders)
@@ -44,8 +44,8 @@ public:
     // Contact point in the second body
     vec3 p_2;
 
-    ContactConstraint(Body *body_1,
-                      Body *body_2,
+    ContactConstraint(std::shared_ptr<Body> body_1,
+                      std::shared_ptr<Body> body_2,
                       vec3 normal,
                       vec3 p_1,
                       vec3 p_2,

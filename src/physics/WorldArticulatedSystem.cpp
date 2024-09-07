@@ -41,7 +41,7 @@ std::vector<scalar> World::get_articulated_system_state(size_t id){
         switch (articulated_system.joint_types[i])
         {
         case JointType::HINGE:{
-            scalar  angle = this->revolute_joint_constraints[joint_id].get_current_angle();
+            scalar  angle = this->revolute_joint_constraints[joint_id]->get_current_angle();
             state.push_back(angle);
             break;
         }      
@@ -75,14 +75,14 @@ void World::set_articulated_system_joint_targets(size_t id, std::vector<scalar> 
         switch (articulated_system.joint_types[i])
         {
         case JointType::HINGE:{
-            switch (this->revolute_joint_constraints[i].type)
+            switch (this->revolute_joint_constraints[i]->type)
             {
             case RevoluteJointType::DRIVEN_BY_POSITION:
-                this->revolute_joint_constraints[i].set_traget_angle(target);
+                this->revolute_joint_constraints[i]->set_traget_angle(target);
                 i++;
                 break;
             case RevoluteJointType::DRIVEN_BY_SPEED:
-                this->revolute_joint_constraints[i].set_target_speed(target);
+                this->revolute_joint_constraints[i]->set_target_speed(target);
                 i++;
                 break;
             default:

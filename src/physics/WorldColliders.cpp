@@ -200,8 +200,8 @@ void World::recalculate_inertia_with_colliders(size_t body_id)
         volume += V;
     }
 
-    scalar density = this->bodies[body_id].get_mass() / volume;
-    this->bodies[body_id].set_intertia_tensor(intertia * density);
+    scalar density = this->bodies[body_id]->get_mass() / volume;
+    this->bodies[body_id]->set_intertia_tensor(intertia * density);
 }
 
 // TODO : Fix this one
@@ -214,7 +214,7 @@ std::pair<vec3, quat> World::get_collider_pose(size_t id)
 {
 
     Collider *col = &this->colliders[id];
-    Body *body = &this->bodies[col->body_id];
+    std::shared_ptr<Body> body = this->bodies[col->body_id];
 
     quat ori = body->orientation * col->rot;
     vec3 pos = body->position + ti::rotate(body->orientation, col->pos);

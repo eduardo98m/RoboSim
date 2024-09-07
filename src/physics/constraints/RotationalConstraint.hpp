@@ -6,9 +6,9 @@
 class RotationalConstraint{
     private:
         // Reference to the first body
-        Body * body_1;
+        std::shared_ptr<Body>  body_1;
         // Reference to the second body
-        Body * body_2;
+        std::shared_ptr<Body>  body_2;
         // Constraint position relative to the first body
         vec3 r_1;
         // Constraint position relative to the second body
@@ -36,8 +36,8 @@ class RotationalConstraint{
         * @param compliance The compliance of the constraint
         * @param damping The damping of the constraint
         */
-        RotationalConstraint(Body * body_1, 
-                             Body * body_2, 
+        RotationalConstraint(std::shared_ptr<Body>  body_1, 
+                             std::shared_ptr<Body>  body_2, 
                              vec3 r_1 = vec3{0.0, 0.0, 0.0}, 
                              vec3 r_2 = vec3{0.0, 0.0, 0.0}, 
                              scalar compliance = 0.0, 

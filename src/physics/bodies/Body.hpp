@@ -30,15 +30,14 @@ private:
     mat3 inertia_tensor;
     // Inverse inertia tensor (In local coordinates)
     mat3 inverse_inertia_tensor;
-    // Inertia tensor in world cooridantes 
+    // Inertia tensor in world cooridantes
     mat3 inertia_tensor_world;
-    // Inverse inertia tensor in world cooridantes 
+    // Inverse inertia tensor in world cooridantes
     mat3 inverse_inertia_tensor_world;
-    // Collision group. Collision groups function with bitwise operations 
-    // (To learn more please check this stack overflow tread: 
+    // Collision group. Collision groups function with bitwise operations
+    // (To learn more please check this stack overflow tread:
     // https://stackoverflow.com/questions/39063949/cant-understand-how-collision-bit-mask-works)
     int collision_group;
-
 public:
     // Type of the body
     BodyType type;
@@ -59,15 +58,14 @@ public:
     // Previous angular velocity of the body (at the previous substep)
     vec3 prev_angular_velocity;
     /* linear and angular velocity */
-    
 
     /* Material properties */
-    // Dynamic fricction coeficient
-    scalar dynamic_fricction_coeff = 0.48;
-    // Static fricction coefficient
-    scalar static_fricction_coeff = 0.5;
-    // Restitution coeficient of the body
-    scalar restitution = 0.7;
+    // // Dynamic fricction coeficient
+    // scalar dynamic_fricction_coeff = 0.48;
+    // // Static fricction coefficient
+    // scalar static_fricction_coeff = 0.5;
+    // // Restitution coeficient of the body
+    // scalar restitution = 0.7;
 
     /*
      * Class constructor
@@ -168,7 +166,7 @@ public:
      * @param r The position relative to the body's center of mass (in world coordinates)
      */
     void apply_positional_velocity_constraint_impulse(vec3 impulse, vec3 r);
-    
+
     /*
      * Sets the inertia tensor of the body
      *
@@ -176,6 +174,7 @@ public:
      */
     void set_intertia_tensor(const mat3 &intertia_tensor);
 
-
     scalar get_mass();
+
+    std::string to_string(void);
 };

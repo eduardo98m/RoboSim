@@ -45,17 +45,17 @@ namespace robosim
         // number of sub-steps
         int substeps;
         // Vector of bodies of the world
-        std::vector<Body> bodies;
+        std::vector<std::shared_ptr<Body>> bodies;
         // Vector of colliders
         std::vector<Collider> colliders;
         // Vector of visual shapes
         std::vector<VisualShape> visual_shapes;
         // Vector of positional constraints
-        std::vector<PositionalConstraint> positional_constraints;
+        std::vector<std::shared_ptr<PositionalConstraint>> positional_constraints;
         // Vector of rotational constraints
-        std::vector<RotationalConstraint> rotational_constraints;
+        std::vector<std::shared_ptr<RotationalConstraint>> rotational_constraints;
         // // Vector of revolute joint constraints
-        std::vector<RevoluteJointConstraint> revolute_joint_constraints;
+        std::vector<std::shared_ptr<RevoluteJointConstraint>> revolute_joint_constraints;
         // Collision groups
         // Unordered map that maps the bodies to collision groups
         std::unordered_map<size_t, uint32_t> collision_groups;
@@ -109,7 +109,7 @@ namespace robosim
         // Destructor
         //~World();
 
-        /*
+        /**
          * Performs a single simulation step.
          */
         void step();
@@ -122,23 +122,23 @@ namespace robosim
          */
         scalar get_time_step();
 
-        /*
+        /**
          * Sets the gravity acceleration for all bodies in the world.
          *
          * @param gravity The gravity acceleration vector.
          */
         void set_gravity(vec3 gravity);
 
-        /*
+        /**
          * Adds a body to the world.
          *
          * @param body The body to add.
          * @return The index of the added body.
          */
-        int add_body(Body body);
+        size_t add_body(std::shared_ptr<Body> body);
 
-        /*
-         * Creates a new body in the world.
+        /**
+         * @brief Creates a new body in the world.
          *
          * @param position The initial position of the body.
          * @param orientation The initial orientation of the body.
@@ -149,7 +149,7 @@ namespace robosim
          * @param type The type of the body (STATIC or DYNAMIC).
          * @return The index of the created body.
          */
-        int create_body(vec3 position = vec3(0.0, 0.0, 0.0),
+        size_t create_body(vec3 position = vec3(0.0, 0.0, 0.0),
                         quat orientation = quat(1.0, 0.0, 0.0, 0.0),
                         vec3 linear_velocity = vec3(0.0, 0.0, 0.0),
                         vec3 angular_velocity = vec3(0.0, 0.0, 0.0),
@@ -158,6 +158,9 @@ namespace robosim
                                                    0.0, 1.0, 0.0,
                                                    0.0, 0.0, 1.0),
                         BodyType type = BodyType::DYNAMIC);
+        
+
+        std::string get_body_info_str(int id);
 
         /*
          * Helper function to add colliders
@@ -517,7 +520,7 @@ namespace robosim
          * @param constraint The rotational constraint to add.
          * @return The index of the added rotational constraint.
          */
-        int add_rotational_constraint(RotationalConstraint cosntraint);
+        int add_rotational_constraint(std::shared_ptr<RotationalConstraint> cosntraint);
 
         /*
          * Gets the information about a revolute joint constraint in the world.

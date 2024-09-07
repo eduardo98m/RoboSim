@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         "Stack of boxes"
     };
 
-    int selected_scenario = ScenarioType::ARTICULATED_SYSTEM; // Default to collisions scenario
+    int selected_scenario = ScenarioType::URDF; // Default to collisions scenario
 
     auto gui_interface{
         [&pause_simulation, &reset_scenario, &selected_scenario, scenario_names](void)
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     //robosim::World world;
     std::function<void(std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>)> step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
     std::function<void()> gui_callback = [](){};
-    robosim::World world  = articulated_system_scenario();
+    robosim::World world  = urdf_scenario();
 
 
 

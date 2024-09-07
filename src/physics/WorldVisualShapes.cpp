@@ -195,7 +195,7 @@ std::pair<vec3, quat> World::get_visual_shape_pose(size_t id)
 {
 
     VisualShape *vis_sh = &this->visual_shapes[id];
-    Body *body = &this->bodies[vis_sh->body_id];
+    std::shared_ptr<Body> body = this->bodies[vis_sh->body_id];
 
     quat ori = body->orientation * vis_sh->rot;
     vec3 pos = body->position + ti::rotate(body->orientation, vis_sh->pos);

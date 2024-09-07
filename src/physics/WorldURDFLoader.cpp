@@ -118,7 +118,7 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
         {0.0, 0.0, 0.0},
         mass,
         intertia,
-        root_link ? BodyType::STATIC : BodyType::DYNAMIC);
+        root_link ? BodyType::STATIC : BodyType::DYNAMIC); // 
 
     link_name_to_body_id.insert({link->name, id});
 
@@ -135,50 +135,37 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                     joint->parent_to_joint_transform.rotation.y,
                     joint->parent_to_joint_transform.rotation.z};
 
-        this->bodies[id].position = this->bodies[parent_id].position + ti::rotate(this->bodies[parent_id].orientation, pos);
-        this->bodies[id].orientation = ori * this->bodies[parent_id].orientation;
+        this->bodies[id]->position = this->bodies[parent_id]->position + ti::rotate(this->bodies[parent_id]->orientation, pos);
+        this->bodies[id]->orientation = ori * this->bodies[parent_id]->orientation;
 
         this->adajacent_links_filter.insert({{id, parent_id}, true});
         this->adajacent_links_filter.insert({{parent_id, id}, true});
 
         vec3 axis = {joint->axis.x, joint->axis.y, joint->axis.z};
 
-        // std::cerr << "Parent : " <<  parent_key << "\n";
-        // std::cerr << "Child : " <<  link->name << "\n";
-        // std::cerr << "xyz : " <<  pos << "\n";
-        // std::cerr << "rpy : " <<  glm::eulerAngles(this->bodies[id].orientation) << "\n";
-        // std::cerr << "rpy : " <<  glm::eulerAngles(ori) << "\n";
-        // std::cerr << "rpy : " <<  glm::eulerAngles(this->bodies[parent_id].orientation ) << "\n";
-
-        // std::cerr << "rpy : " <<  this->bodies[id].orientation << "\n";
-        // std::cerr << "rpy : " <<  ori << "\n";
-        // std::cerr << "rpy : " <<  this->bodies[parent_id].orientation  << "\n";
-
         switch (joint->type)
         {
         case urdf::JointType::REVOLUTE:
+            {
 
-            std::cerr << "Axis : " << axis << "\n";
-            std::cerr << "Pos : " << pos << "\n";
-            std::cerr << "----------------------\n";
-
-            // this->create_revolute_constraint(
-            //     id,
-            //     parent_id,
-            //     axis,
-            //     pos,
-            //     {0.0, 0.0, 0.0},
-            //     1000.1,
-            //     1000.1,
-            //     RevoluteJointType::FREE,
-            //     false,
-            //     0.0, 0.0, true);
-            // break;
+            this->create_revolute_constraint(
+                id,
+                parent_id,
+                axis,
+                pos,
+                {0.0, 0.0, 0.0},
+                1000.1,
+                1000.1,
+                RevoluteJointType::FREE,
+                false,
+                0.0, 0.0, true);
+            break;
+            }
 
         case urdf::JointType::FIXED:
-            std::cerr << pos << "\n";
-            std::cerr << parent_id << "\n";
-            std::cerr << id << "\n";
+            // std::cerr << pos << "\n";
+            // std::cerr << parent_id << "\n";
+            // std::cerr << id << "\n";
             // this->create_positional_constraint(
             //     parent_id,
             //     id,
@@ -235,8 +222,6 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                           vis->origin.rotation.y,
                           vis->origin.rotation.z};
         
-        std::cerr << "Vis ob \n pos : "<<pos << "\n or " << ori << '\n';
-
         std::shared_ptr<urdf::Material> material = vis->material.value_or(nullptr);
         rs::Color color;
         if (material)

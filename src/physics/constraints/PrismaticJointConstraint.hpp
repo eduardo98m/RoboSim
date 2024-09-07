@@ -3,6 +3,7 @@
 #include "physics/bodies/Body.hpp"
 #include "PositionalConstraint.hpp"
 #include "RotationalConstraint.hpp"
+#include <memory>
 
 enum PrismaticJointType{
     FREE,
@@ -10,12 +11,12 @@ enum PrismaticJointType{
     DRIVEN_BY_SPEED
 };
 
-class PrismaticJointType{
+class PrismaticJoint{
     private:
         // Reference to the first body
-        Body *body_1;
+        std::shared_ptr<Body> body_1;
         // Reference to the second body
-        Body *body_2;
+        std::shared_ptr<Body> body_2;
 
         // Axes of the first and second body
         vec3 aligned_axis;
