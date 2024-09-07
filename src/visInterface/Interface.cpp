@@ -55,7 +55,8 @@ void Interface::add_collision_object(int body_id, int group_id, Color *color, bo
                                                        orientation,
                                                        color ? *color : ORANGE,
                                                        capsule->radius,
-                                                       capsule->halfLength * 2.0);
+                                                       capsule->halfLength * 2.0,
+                                                       group_id);
     }
     else if (auto cylinder = std::dynamic_pointer_cast<hpp::fcl::Cylinder>(collider_info))
     {
@@ -178,8 +179,8 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
         this->settings.enabled_rev_joints.push_back({i, true});
     }
 
-    this->visualizer_->enable_visual_object_group_rendering(COLLISION_SHAPES_GROUP);
-    this->visualizer_->disable_visual_object_group_rendering(VISUAL_SHAPES_GROUP);
+    this->visualizer_->enable_visual_object_group_rendering(VISUAL_SHAPES_GROUP);
+    this->visualizer_->disable_visual_object_group_rendering(COLLISION_SHAPES_GROUP);
 
     auto gui{
         [this, n_revolue_joints](void)

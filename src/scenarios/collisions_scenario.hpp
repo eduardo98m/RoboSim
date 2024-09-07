@@ -62,7 +62,7 @@ robosim::World collisions_scenario()
         0.0000, 0.0700, 0.0000,
         0.0000, 0.0000, 0.7000};
 
-    //size_t plane_id = world.add_plane({0.0, 1.0, 0}, 0.0);
+    // size_t plane_id = world.add_plane({0.0, 1.0, 0}, 0.0);
     size_t plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500 * mass, 500 * (10.0 / 12) * inertia_tensor, STATIC);
     world.attach_box_collider(plane_id, {50.0, 0.2, 50.0});
 
@@ -73,7 +73,7 @@ robosim::World collisions_scenario()
         int ball_id = world.create_body(position, ti::quat_from_axis_angle({1.0, 0.0, 0.0}, PI / 2), vec3{0.0, 0.01, 0.0}, ang_vel, 1 * mass, mass * cursed_cylinder_inertia, DYNAMIC);
         if (i % 2 == 3)
         {
-            //world.attach_box_collider(ball_id, {RADIUS, 1.5 * RADIUS, RADIUS});
+            // world.attach_box_collider(ball_id, {RADIUS, 1.5 * RADIUS, RADIUS});
             world.attach_box_collider(ball_id, {1.5 * RADIUS, 0.5 * RADIUS, RADIUS});
         }
         else if (i % 2 == 1 || true)
@@ -84,16 +84,15 @@ robosim::World collisions_scenario()
         {
             world.attach_cylinder_collider(ball_id, RADIUS, 1.5 * RADIUS);
         }
-        //world.attach_sphere_collider(ball_id, RADIUS);
+        // world.attach_sphere_collider(ball_id, RADIUS);
         i++;
     }
 
     int ball_id = world.create_body({-10.0, 2.0, 0.0}, ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0), vec3{20.1, 0.0, 0.0}, {0.0, 0.0, 0.0}, 50 * mass, 5.0 * (10.0 / 12) * inertia_tensor, DYNAMIC);
     world.attach_sphere_collider(ball_id, 2.0 * RADIUS, {0.0, -RADIUS, 0.0});
-    world.attach_sphere_collider(ball_id, 0.5 * RADIUS, {0.0, 2.0*RADIUS, 0.0});
+    world.attach_sphere_collider(ball_id, 0.5 * RADIUS, {0.0, 2.0 * RADIUS, 0.0});
 
     world.set_gravity({0.0, -9.8, 0.0});
-    
 
     return world;
 }

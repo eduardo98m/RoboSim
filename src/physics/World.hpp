@@ -599,12 +599,13 @@ namespace robosim
         /*
          * Loads an urdf file into the robosim world and returns the articulated system id
          */
-        size_t load_urdf(const std::string &filename, vec3 base_position);
+        size_t load_urdf(const std::string &filename, const vec3 &base_position, const quat &base_orientation);
 
         size_t add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                              std::map<std::string, size_t> &link_name_to_body_id,
                              std::string filepath,
-                             vec3 *base_position = nullptr,
+                             const vec3 *base_position = nullptr,
+                             const quat *base_orientation = nullptr,
                              bool root_link = false);
 
         // Visual shapes
@@ -625,31 +626,31 @@ namespace robosim
                                         vec3 scale = {1.0, 1.0, 1.0},
                                         vec3 position = {0.0, 0.0, 0.0},
                                         quat orientation = {1.0, 0.0, 0.0, 0.0},
-                                        rs::Color color = {.r = 255, .g = 95, .b = 31, .a = 255} );
+                                        rs::Color color = {.r = 51, .g = 103, .b = 59, .a = 255} ); 
 
         size_t attach_box_visual_shape(size_t id, vec3 half_extents,
                                        vec3 position = {0.0, 0.0, 0.0},
                                        quat orientation = {1.0, 0.0, 0.0, 0.0},
-                                       rs::Color color = {.r = 0, .g = 240, .b = 0, .a = 255});
+                                       rs::Color color = {.r = 208, .g = 83, .b = 83, .a = 255});
 
         size_t attach_sphere_visual_shape(size_t id, scalar radius,
                                           vec3 position = {0.0, 0.0, 0.0},
                                           quat orientation = {1.0, 0.0, 0.0, 0.0},
-                                          rs::Color color = {.r = 150, .g = 0, .b = 200, .a = 255});
+                                          rs::Color color = {.r = 249, .g = 231, .b = 132, .a = 255});
 
         size_t attach_capsule_visual_shape(size_t id, scalar radius, scalar height,
                                            vec3 position = {0.0, 0.0, 0.0},
                                            quat orientation = {1.0, 0.0, 0.0, 0.0},
-                                           rs::Color color = {.r = 0, .g = 150, .b = 200, .a = 255});
+                                           rs::Color color = {.r = 229, .g = 143, .b = 101, .a = 255});
 
         size_t attach_cylinder_visual_shape(size_t id, scalar radius, scalar height,
                                             vec3 position = {0.0, 0.0, 0.0},
                                             quat orientation = {1.0, 0.0, 0.0, 0.0},
-                                            rs::Color color = {.r = 0, .g = 100, .b = 150, .a = 255});
+                                            rs::Color color = {.r = 0, .g = 159, .b = 183, .a = 255});
 
-        size_t attach_plane_visual_shape(size_t id, vec3 normal, scalar offset, rs::Color color = {.r = 100, .g = 100, .b = 100, .a = 255});
+        size_t attach_plane_visual_shape(size_t id, vec3 normal, scalar offset, rs::Color color = {.r = 125, .g = 195, .b = 158, .a = 255});
 
-        size_t attach_heightmap_visual_shape(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims, rs::Color color = {.r = 100, .g = 100, .b = 100, .a = 255});
+        size_t attach_heightmap_visual_shape(size_t id, scalar x_scale, scalar y_scale, std::vector<scalar> heightdata, size_t x_dims, size_t y_dims, rs::Color color = {.r = 26, .g = 131, .b = 121, .a = 255});
 
         std::pair<vec3, quat> get_visual_shape_pose(size_t id);
 

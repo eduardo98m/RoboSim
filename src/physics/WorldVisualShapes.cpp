@@ -206,7 +206,7 @@ std::pair<vec3, quat> World::get_visual_shape_pose(size_t id)
 
 std::shared_ptr<hpp::fcl::CollisionGeometry>  World::get_visual_shape_geometry(size_t id){
     if (this->visual_shapes[id].geom.has_value()){
-        return this->visual_shapes[id].geom.emplace();
+        return this->visual_shapes[id].geom.value();
     }
     else{
         return nullptr;

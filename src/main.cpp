@@ -110,14 +110,14 @@ int main(int argc, char *argv[])
     //robosim::World world;
     std::function<void(std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>)> step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
     std::function<void()> gui_callback = [](){};
-    robosim::World world  = robot_arm_scenario();
+    robosim::World world  = articulated_system_scenario();
 
 
 
     Visualizer visualizer(1920, 1080, "RoboVis");
     visualizer.set_up_camera();
 
-    visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
+    //visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
 
     
 

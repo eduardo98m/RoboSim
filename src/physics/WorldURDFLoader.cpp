@@ -2,7 +2,7 @@
 #include <fstream>
 using namespace robosim;
 
-size_t World::load_urdf(const std::string &filename, vec3 base_position)
+size_t World::load_urdf(const std::string &filename, const vec3 &base_position, const quat &base_orientation)
 {
 
     // Open the file and check if it is opened successfully
@@ -66,7 +66,7 @@ size_t World::load_urdf(const std::string &filename, vec3 base_position)
         filepath = filename.substr(0, found + 1);
     }
     // We add a base link
-    this->add_urdf_link(link, link_name_to_body_id, filepath, &base_position, true);
+    this->add_urdf_link(link, link_name_to_body_id, filepath, &base_position, &base_orientation, true);
 
     // Iterate over material_map
     std::cout << "\nMaterial Map:\n";
@@ -82,12 +82,13 @@ size_t World::load_urdf(const std::string &filename, vec3 base_position)
 
 /**
  *
- * **/
+ */
 
 size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                             std::map<std::string, size_t> &link_name_to_body_id,
                             std::string filepath,
-                            vec3 *base_position,
+                            const vec3 *base_position,
+                            const quat *base_orientation,
                             bool root_link)
 {
 
@@ -107,7 +108,8 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
             {link->inertial->ixz, link->inertial->iyz, link->inertial->izz}};
     }
 
-    pos = (base_position != nullptr) ? (*base_position) : (vec3){0.0, 0.0, 0.0};
+    pos = (base_position != nullptr) ? (*base_position) : pos;
+    ori = (base_orientation != nullptr) ? (*base_orientation) : ori;
 
     size_t id = this->create_body(
         pos,
@@ -245,12 +247,6 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                 .b = material->color.b * 255,
                 .a = material->color.a * 255,
             };
-            // color = {
-            //     .r = 102,
-            //     .g = 102,
-            //     .b = 102,
-            //     .a = 255,
-            // };
         }
         else
         {
