@@ -12,6 +12,7 @@
 #include "scenarios/heightmap.hpp"
 #include "scenarios/urdf_scenario.hpp"
 #include "scenarios/box_stack.hpp"
+#include "scenarios/prismatic_joint_test.hpp"
 
 // Import the sine function from the standard library
 #include <math.h>
@@ -41,7 +42,8 @@ int main(int argc, char *argv[])
         ARTICULATED_SYSTEM,
         HEIGHTMAP,
         URDF,
-        BOX_STACK
+        BOX_STACK,
+        PRISMATIC_JOINTS
     };
 
     std::vector<std::string> scenario_names = {
@@ -53,10 +55,11 @@ int main(int argc, char *argv[])
         "Articulated System",
         "Heightmap",
         "URDF",
-        "Stack of boxes"
+        "Stack of boxes",
+        "Prismatic Joints"
     };
 
-    int selected_scenario = ScenarioType::URDF; // Default to collisions scenario
+    int selected_scenario = ScenarioType::PRISMATIC_JOINTS; // Default to collisions scenario
 
     auto gui_interface{
         [&pause_simulation, &reset_scenario, &selected_scenario, scenario_names](void)
@@ -110,14 +113,14 @@ int main(int argc, char *argv[])
     //robosim::World world;
     std::function<void(std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>)> step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
     std::function<void()> gui_callback = [](){};
-    robosim::World world  = urdf_scenario();
+    robosim::World world  = prismatic_joint_test_scenario();
 
 
 
     Visualizer visualizer(1920, 1080, "RoboVis");
     visualizer.set_up_camera();
 
-    //visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
+    visualizer.load_shader(0, "../src/RoboVis/shaders/hybrid_raymarch.fs", 0);
 
     
 
@@ -197,6 +200,12 @@ int main(int argc, char *argv[])
                 step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
                 gui_callback = [](){};
                 break;
+            case ScenarioType::PRISMATIC_JOINTS:
+                world  = prismatic_joint_test_scenario();
+                step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
+                gui_callback = [](){};
+                break;
+
             default:
                 break;
             }

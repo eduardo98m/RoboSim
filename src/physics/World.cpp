@@ -59,6 +59,11 @@ void World::solve_positions(scalar inv_h, scalar h)
     {
         constraint->apply_constraint(inv_h, h);
     }
+
+    for (const std::shared_ptr<PrismaticJointConstraint> &constraint : this->prismatic_joint_constraints)
+    {
+        constraint->apply_constraint(inv_h, h);
+    }
 }
 void World::solve_velocities(scalar h)
 {
@@ -68,6 +73,11 @@ void World::solve_velocities(scalar h)
     }
 
     for (const std::shared_ptr<RevoluteJointConstraint>  &constraint : this->revolute_joint_constraints)
+    {
+        constraint->apply_joint_damping(h);
+    }
+
+    for (const std::shared_ptr<PrismaticJointConstraint> &constraint : this->prismatic_joint_constraints)
     {
         constraint->apply_joint_damping(h);
     }
@@ -148,7 +158,7 @@ int World::create_revolute_constraint(int body_1_id,
                                       vec3 r_2,
                                       scalar compliance,
                                       scalar damping,
-                                      RevoluteJointType type,
+                                      JointControlType type,
                                       bool limited,
                                       scalar lower_limit,
                                       scalar upper_limit,

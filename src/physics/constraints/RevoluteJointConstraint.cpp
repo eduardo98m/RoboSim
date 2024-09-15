@@ -8,7 +8,7 @@ RevoluteJointConstraint::RevoluteJointConstraint(std::shared_ptr<Body> body_1,
                                                  vec3 r_2,
                                                  scalar compliance,
                                                  scalar damping,
-                                                 RevoluteJointType type,
+                                                 JointControlType type,
                                                  bool limited,
                                                  scalar lower_limit,
                                                  scalar upper_limit)

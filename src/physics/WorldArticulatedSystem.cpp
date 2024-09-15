@@ -77,11 +77,11 @@ void World::set_articulated_system_joint_targets(size_t id, std::vector<scalar> 
         case JointType::HINGE:{
             switch (this->revolute_joint_constraints[i]->type)
             {
-            case RevoluteJointType::DRIVEN_BY_POSITION:
+            case JointControlType::DRIVEN_BY_POSITION:
                 this->revolute_joint_constraints[i]->set_traget_angle(target);
                 i++;
                 break;
-            case RevoluteJointType::DRIVEN_BY_SPEED:
+            case JointControlType::DRIVEN_BY_SPEED:
                 this->revolute_joint_constraints[i]->set_target_speed(target);
                 i++;
                 break;

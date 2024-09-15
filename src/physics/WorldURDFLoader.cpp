@@ -156,7 +156,7 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                 {0.0, 0.0, 0.0},
                 1000.1,
                 1000.1,
-                RevoluteJointType::FREE,
+                JointControlType::FREE,
                 false,
                 0.0, 0.0, true);
             break;

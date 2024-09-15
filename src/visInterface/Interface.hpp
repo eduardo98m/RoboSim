@@ -24,7 +24,7 @@ struct VisualizationSettings{
 
     bool show_revolute_joints = false;
     bool show_bounding_boxes = false;
-    bool show_contact_points = true;
+    bool show_contact_points = false;
     bool render_visual_objects = true;
     bool render_collision_shapes = false;
 

@@ -5,6 +5,7 @@
 #include "constraints/PositionalConstraint.hpp"
 #include "constraints/RotationalConstraint.hpp"
 #include "constraints/RevoluteJointConstraint.hpp"
+#include "constraints/PrismaticJointConstraint.hpp"
 #include "constraints/ContactConstraint.hpp"
 #include "collisions/broad_phase.hpp"
 #include "collisions/collisions.hpp"
@@ -56,6 +57,8 @@ namespace robosim
         std::vector<std::shared_ptr<RotationalConstraint>> rotational_constraints;
         // // Vector of revolute joint constraints
         std::vector<std::shared_ptr<RevoluteJointConstraint>> revolute_joint_constraints;
+         // // Vector of prismatic joint constraints
+        std::vector<std::shared_ptr<PrismaticJointConstraint>> prismatic_joint_constraints;
         // Collision groups
         // Unordered map that maps the bodies to collision groups
         std::unordered_map<size_t, uint32_t> collision_groups;
@@ -457,7 +460,7 @@ namespace robosim
                                          scalar compliance = 0.0,
                                          scalar damping = 0.0);
 
-        /*
+        /**
          * Creates a revolute joint constraint between two bodies in the world.
          *
          * @param body_1_id The index of the first body.
@@ -482,7 +485,7 @@ namespace robosim
                                        vec3 r_2,
                                        scalar compliance = 0.0,
                                        scalar damping = 0.0,
-                                       RevoluteJointType type = FREE,
+                                       JointControlType type = JointControlType::FREE,
                                        bool limited = false,
                                        scalar lower_limit = 0.0,
                                        scalar upper_limit = 0.0,
@@ -546,6 +549,35 @@ namespace robosim
          */
         void set_revolute_joint_target_speed(int id, scalar speed);
 
+
+        /**
+         * Creates a revolute joint constraint between two bodies in the world.
+         *
+         * @param body_1_id The index of the first body.
+         * @param body_2_id The index of the second body.
+         * @param moving_axis The axis in which the joint moves.
+         * @param r_1 The constraint position relative to the first body (in the local coordinates of the first body).
+         * @param r_2 The constraint position relative to the second body (in the local coordinates of the second body).
+         * @param compliance The compliance of the constraint.
+         * @param damping The damping of the constraint.
+         * @param type The type of the revolute joint (FREE, LIMITED_ANGLE, or SPEED_CONTROLLED).
+         * @param limited Whether the joint has angle limits or not.
+         * @param lower_limit The lower angle limit (if limited).
+         * @param upper_limit The upper angle limit (if limited).
+         * @return The index of the created prismatic joint constraint.
+         */
+        int create_prismatic_joint_constraint(int body_1_id,
+                                       int body_2_id,
+                                       vec3 moving_axis,
+                                       vec3 r_1,
+                                       vec3 r_2,
+                                       scalar compliance = 0.0,
+                                       scalar damping = 0.0,
+                                       JointControlType type = JointControlType::FREE,
+                                       bool limited = false,
+                                       scalar lower_limit = 0.0,
+                                       scalar upper_limit = 0.0);
+
         /*
          * Adds a plane to the world.
          *
@@ -591,7 +623,7 @@ namespace robosim
          */
         void set_articulated_system_joint_targets(size_t id, std::vector<scalar> joint_targets);
 
-        /*
+        /**
          * Gets the pose of a link of an articulated sistem
          *
          * @param id The id of the articulated_system

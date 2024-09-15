@@ -5,12 +5,7 @@
 #include "RotationalConstraint.hpp"
 #include <memory>
 #include "Utils.hpp"
-
-enum RevoluteJointType{
-    FREE,
-    DRIVEN_BY_POSITION,
-    DRIVEN_BY_SPEED
-};
+#include "JointsCommon.hpp"
 
 struct RevoluteJointInfo{
     vec3 position;
@@ -69,7 +64,7 @@ class RevoluteJointConstraint{
         std::shared_ptr<PositionalConstraint> attachment_point_constraint;
     public:
         // Joint type (FREE - DRIVEN_BY_POSITION - DRIVEN_BY_SPEED)
-        RevoluteJointType type;
+        JointControlType type;
 
         RevoluteJointConstraint(std::shared_ptr<Body> body_1, 
                              std::shared_ptr<Body> body_2,
@@ -79,7 +74,7 @@ class RevoluteJointConstraint{
                              vec3 r_2 = vec3{0.0, 0.0, 0.0},
                              scalar compliance = 0.0, 
                              scalar damping = 0.0,
-                             RevoluteJointType type = FREE,
+                             JointControlType type = JointControlType::FREE,
                              bool limited = false,
                              scalar lower_limit = 0.0 ,
                              scalar upper_limit = 0.0);

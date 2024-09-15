@@ -22,6 +22,7 @@ set(PHYSICS_SOURCES
     "src/physics/constraints/PositionalConstraint.cpp"
     "src/physics/constraints/RotationalConstraint.cpp"
     "src/physics/constraints/RevoluteJointConstraint.cpp"
+    "src/physics/constraints/PrismaticJointConstraint.cpp"
     "src/physics/constraints/ContactConstraint.cpp"
     "src/physics/constraints/Utils.cpp"
     # Collisions
@@ -35,6 +36,7 @@ set(PHYSICS_SOURCES
     "src/physics/WorldArticulatedSystem.cpp"
     "src/physics/WorldURDFLoader.cpp"
     "src/physics/WorldVisualShapes.cpp"
+    "src/physics/WorldJoints.cpp"
     #Interface
     "src/visInterface/Interface.cpp"
     )
