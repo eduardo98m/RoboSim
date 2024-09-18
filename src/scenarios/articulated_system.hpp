@@ -31,45 +31,45 @@ robosim::World articulated_system_scenario()
     world.attach_box_collider(base_id, vec3(0.1, 0.5, 0.1));
     world.attach_box_visual_shape(base_id, vec3(0.1, 0.5, 0.1));
 
-    size_t ball_1_id = world.create_body({0.0, 5.0, 0.0}, ori, lin_vel, ang_vel, 12.0 * mass, (.7 * mass / 12) * inertia_tensor, DYNAMIC);
-    world.attach_box_collider(ball_1_id, vec3(0.1, 0.3, 0.1));
-    world.attach_box_visual_shape(ball_1_id, vec3(0.1, 0.3, 0.1));
+    size_t link_1_id = world.create_body({0.0, 5.0, 0.0}, ori, lin_vel, ang_vel, 12.0 * mass, (.7 * mass / 12) * inertia_tensor, DYNAMIC);
+    world.attach_box_collider(link_1_id, vec3(0.1, 0.3, 0.1));
+    world.attach_box_visual_shape(link_1_id, vec3(0.1, 0.3, 0.1));
 
-    size_t ball_2_id = world.create_body({0.0, 3.0, 0.0}, ori, lin_vel, ang_vel, mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
-    world.attach_cylinder_collider(ball_2_id, 0.1,  0.4);
-    world.attach_cylinder_visual_shape(ball_2_id, 0.1,  0.4);
+    size_t link_2_id = world.create_body({0.0, 3.0, 0.0}, ori, lin_vel, ang_vel, mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
+    world.attach_cylinder_collider(link_2_id, 0.1,  0.4);
+    world.attach_cylinder_visual_shape(link_2_id, 0.1,  0.4);
 
-    size_t ball_3_id = world.create_body({0.0, 6.0, 0.0}, ori, lin_vel, ang_vel, .6 * mass, (.6 * mass / 12) * inertia_tensor, DYNAMIC);
-    world.attach_box_collider(ball_3_id, vec3(0.1, 0.3, 0.1));
-    world.attach_box_visual_shape(ball_3_id, vec3(0.1, 0.3, 0.1));
+    size_t link_3_id = world.create_body({0.0, 6.0, 0.0}, ori, lin_vel, ang_vel, .6 * mass, (.6 * mass / 12) * inertia_tensor, DYNAMIC);
+    world.attach_box_collider(link_3_id, vec3(0.1, 0.3, 0.1));
+    world.attach_box_visual_shape(link_3_id, vec3(0.1, 0.3, 0.1));
 
-    size_t ball_4_id = world.create_body({0.0, 6.5, 0.0}, ori, lin_vel, ang_vel, 0.5 * mass, (0.5 * mass / 12) * inertia_tensor, DYNAMIC);
-    world.attach_box_collider(ball_4_id, vec3(0.1, 0.5, 0.1));
-    world.attach_box_visual_shape(ball_4_id, vec3(0.1, 0.5, 0.1));
+    size_t link_4_id = world.create_body({0.0, 6.5, 0.0}, ori, lin_vel, ang_vel, 0.5 * mass, (0.5 * mass / 12) * inertia_tensor, DYNAMIC);
+    world.attach_box_collider(link_4_id, vec3(0.1, 0.5, 0.1));
+    world.attach_box_visual_shape(link_4_id, vec3(0.1, 0.5, 0.1));
 
-    size_t ball_5_id = world.create_body({0.0, 7.0, 0.0}, ori, lin_vel, ang_vel, 0.2 * mass, (0.2 * mass / 12) * inertia_tensor, DYNAMIC);
-    world.attach_sphere_collider(ball_5_id, 0.2);
-    world.attach_sphere_visual_shape(ball_5_id, 0.2);
+    size_t link_5_id = world.create_body({0.0, 7.0, 0.0}, ori, lin_vel, ang_vel, 0.2 * mass, (0.2 * mass / 12) * inertia_tensor, DYNAMIC);
+    world.attach_sphere_collider(link_5_id, 0.2);
+    world.attach_sphere_visual_shape(link_5_id, 0.2);
 
-    size_t ball_6_id = world.create_body({0.0, 8.0, 0.0}, ori, lin_vel, ang_vel, 0.3 * mass, (0.3 * mass / 12) * inertia_tensor, DYNAMIC);
-    world.attach_sphere_collider(ball_6_id, 0.2);
-    world.attach_sphere_visual_shape(ball_6_id, 0.2);
+    size_t link_6_id = world.create_body({0.0, 8.0, 0.0}, ori, lin_vel, ang_vel, 0.3 * mass, (0.3 * mass / 12) * inertia_tensor, DYNAMIC);
+    world.attach_sphere_collider(link_6_id, 0.2);
+    world.attach_sphere_visual_shape(link_6_id, 0.2);
 
-    size_t ball_7_id = world.create_body({0.0, 9.0, 0.0}, ori, lin_vel, ang_vel, mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
-    world.attach_sphere_collider(ball_7_id, 0.2);
-    world.attach_sphere_visual_shape(ball_7_id, 0.2);
+    size_t link_7_id = world.create_body({0.0, 9.0, 0.0}, ori, lin_vel, ang_vel, mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
+    world.attach_sphere_collider(link_7_id, 0.2);
+    world.attach_sphere_visual_shape(link_7_id, 0.2);
 
-    size_t ball_8_id = world.create_body({0.0, 10.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
-    world.attach_sphere_collider(ball_8_id, 0.2);
-    world.attach_sphere_visual_shape(ball_8_id, 0.2);
+    size_t link_8_id = world.create_body({0.0, 10.0, 0.0}, ori, lin_vel, ang_vel, 4.0 * mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
+    world.attach_sphere_collider(link_8_id, 0.2);
+    world.attach_sphere_visual_shape(link_8_id, 0.2);
 
-    size_t ball_9_id = world.create_body({0.0, 11.0, 0.0}, ori, lin_vel, ang_vel, 0.1 * mass, (00.1 / 12) * inertia_tensor, DYNAMIC);
-    world.attach_sphere_collider(ball_9_id, 0.2);
-    world.attach_sphere_visual_shape(ball_9_id, 0.2);
+    size_t link_9_id = world.create_body({0.0, 11.0, 0.0}, ori, lin_vel, ang_vel, 0.1 * mass, (00.1 / 12) * inertia_tensor, DYNAMIC);
+    world.attach_sphere_collider(link_9_id, 0.2);
+    world.attach_sphere_visual_shape(link_9_id, 0.2);
 
-    size_t ball_10_id = world.create_body({0.0, 12.0, 0.1}, ori, lin_vel, ang_vel, 1 * mass, (10.0 / 12) * inertia_tensor, DYNAMIC);
-    world.attach_sphere_collider(ball_10_id, 0.2);
-    world.attach_sphere_visual_shape(ball_10_id, 0.2);
+    size_t link_10_id = world.create_body({0.0, 12.0, 0.1}, ori, lin_vel, ang_vel, 1 * mass, (10.0 / 12) * inertia_tensor, DYNAMIC);
+    world.attach_sphere_collider(link_10_id, 0.2);
+    world.attach_sphere_visual_shape(link_10_id, 0.2);
 
     int plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500 * mass, 500 * (10.0 / 12) * inertia_tensor, STATIC);
     world.attach_box_collider(plane_id, {50.0, 0.2, 50.0});
@@ -78,16 +78,18 @@ robosim::World articulated_system_scenario()
     world.set_gravity({0.0, -9.8, 0.0});
     
 
-    size_t joint_0 = world.create_revolute_constraint(base_id, ball_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.8, 0.8);
-    size_t joint_1 = world.create_revolute_constraint(ball_1_id, ball_2_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true   , -0.5, 0.5);
-    size_t joint_2 = world.create_revolute_constraint(ball_2_id, ball_3_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    size_t joint_3 = world.create_revolute_constraint(ball_3_id, ball_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    size_t joint_4 = world.create_revolute_constraint(ball_4_id, ball_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    size_t joint_0 = world.create_revolute_constraint(base_id, link_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.8, 0.8);
+    size_t joint_1 = world.create_revolute_constraint(link_1_id, link_2_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true   , -0.5, 0.5);
+    size_t joint_2 = world.create_revolute_constraint(link_2_id, link_3_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    //size_t joint_3 = world.create_revolute_constraint(link_3_id, link_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    size_t joint_3 = world.create_prismatic_joint_constraint(link_3_id, link_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 200.0, FREE, true, -0.2, 0.2);
+    size_t joint_4 = world.create_revolute_constraint(link_4_id, link_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
+    size_t joint_6 = world.create_prismatic_joint_constraint(link_5_id, link_6_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true, -PI, PI);
 
     // Lets create the articulates systems:
-    std::vector<size_t> joint_ids = {joint_0, joint_1, joint_2, joint_3, joint_4};
-    std::vector<JointType> joint_types = {JointType::HINGE, JointType::HINGE, JointType::HINGE, JointType::HINGE, JointType::HINGE};
-    std::vector<size_t> link_ids = {base_id, ball_1_id, ball_2_id, ball_3_id, ball_4_id, ball_5_id};
+    std::vector<size_t> joint_ids = {joint_0, joint_1, joint_2, joint_3, joint_4, joint_6};
+    std::vector<JointType> joint_types = {JointType::HINGE, JointType::HINGE, JointType::HINGE, JointType::PRISMATIC, JointType::HINGE, JointType::PRISMATIC};
+    std::vector<size_t> link_ids = {base_id, link_1_id, link_2_id, link_3_id, link_4_id, link_5_id, link_6_id};
 
     size_t articulated_system_id = world.create_articulated_system(joint_ids, joint_types, link_ids);
 
@@ -123,10 +125,10 @@ create_functions(std::shared_ptr<robosim::World> world_ptr)
     auto step_callback{
         [](std::shared_ptr<robosim::World> world_ptr, std::shared_ptr<Visualizer> vis_ptr)
         {
-            std::vector<scalar> target_scalars = {};
+            std::vector<scalar> target_scalars(target_values.size());
             for (int i = 0; i < target_values.size(); i++)
             {
-                target_scalars.push_back(target_values[i] * PI/180.0);
+                target_scalars[i] =  target_values[i] * PI/180.0;
             }
 
             world_ptr->set_articulated_system_joint_targets(0, target_scalars);

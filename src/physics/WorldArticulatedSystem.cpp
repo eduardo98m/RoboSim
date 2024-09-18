@@ -44,6 +44,11 @@ std::vector<scalar> World::get_articulated_system_state(size_t id){
             scalar  angle = this->revolute_joint_constraints[joint_id]->get_current_angle();
             state.push_back(angle);
             break;
+        }
+        case JointType::PRISMATIC:{
+            scalar  position = this->prismatic_joint_constraints[joint_id]->get_current_position();
+            state.push_back(position);
+            break;
         }      
         default:
             break;
@@ -67,23 +72,39 @@ pose World::get_articulated_system_link_pose(size_t id,  size_t link_id){
 }
 
 void World::set_articulated_system_joint_targets(size_t id, std::vector<scalar> joint_targets){
-
     ArticulatedSystem &articulated_system = this->articulated_systems[id];
 
-    size_t i = 0;
-    for (scalar target : joint_targets){
+    assert(joint_targets.size() == articulated_system.joint_ids.size());
+
+    for (size_t i = 0; i < joint_targets.size(); i++){
+        size_t joint_id = articulated_system.joint_ids[i];
+        scalar target  = joint_targets[i];
+
+        
         switch (articulated_system.joint_types[i])
         {
         case JointType::HINGE:{
-            switch (this->revolute_joint_constraints[i]->type)
+            switch (this->revolute_joint_constraints[joint_id]->type)
             {
             case JointControlType::DRIVEN_BY_POSITION:
-                this->revolute_joint_constraints[i]->set_traget_angle(target);
-                i++;
+                this->set_revolute_joint_target_angle(joint_id, target);
                 break;
             case JointControlType::DRIVEN_BY_SPEED:
-                this->revolute_joint_constraints[i]->set_target_speed(target);
-                i++;
+                this->set_revolute_joint_target_speed(joint_id, target);
+                break;
+            default:
+                break;
+            }
+            break;
+        }
+        case JointType::PRISMATIC:{
+            switch (this->prismatic_joint_constraints[joint_id]->type)
+            {
+            case JointControlType::DRIVEN_BY_POSITION:
+                this->set_prismatic_joint_target_position(joint_id, target);
+                break;
+            case JointControlType::DRIVEN_BY_SPEED:
+                this->set_prismatic_joint_target_speed(joint_id, target);
                 break;
             default:
                 break;
@@ -93,7 +114,6 @@ void World::set_articulated_system_joint_targets(size_t id, std::vector<scalar> 
         default:
             break;
         }
-        
     }
 
 }

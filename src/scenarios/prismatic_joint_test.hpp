@@ -17,7 +17,7 @@
 robosim::World prismatic_joint_test_scenario()
 {
 
-    robosim::World world = robosim::World(0.01, 120);
+    robosim::World world = robosim::World(0.013, 20);
     quat ori = ti::quat_from_axis_angle({0.0, 0.0, 1.0}, 0.0);
     scalar mass = 0.05;
     mat3 inertia_tensor = mat3{1.0, 0.0, 0.0,
@@ -54,8 +54,9 @@ robosim::World prismatic_joint_test_scenario()
     world.set_gravity({0.0, -9.8, 0.0});
     
 
-    size_t joint_0 = world.create_prismatic_joint_constraint(base_id, link_2_id, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 220.1);
-    size_t joint_1 = world.create_prismatic_joint_constraint(link_2_id, link_1_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0);
-   
+    size_t joint_0 = world.create_prismatic_joint_constraint(base_id, link_2_id, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.1, 220.1, FREE, true, -.2, .2);
+    size_t joint_1 = world.create_prismatic_joint_constraint(link_2_id, link_1_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4, 0.0, DRIVEN_BY_POSITION, true, -2.2, 2.2);
+    
+    world.set_prismatic_joint_target_position(joint_1, -1.0);
     return world;
 }

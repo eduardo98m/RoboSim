@@ -29,16 +29,12 @@ PrismaticJointConstraint::PrismaticJointConstraint(std::shared_ptr<Body> body_1,
 
     // Initialize the contsraints
     this->attachment_point_constraint = std::make_shared<PositionalConstraint>(body_1, body_2, r_1, r_2, 0.0, 0.0);
-    this->drive_joint_constraint = std::make_shared<RotationalConstraint>(body_1, body_2, r_1, r_2, compliance, damping);
+    this->drive_joint_constraint = std::make_shared<PositionalConstraint>(body_1, body_2, r_1, r_2, compliance, damping);
     this->aligned_constraint = std::make_shared<RotationalConstraint>(body_1, body_2, r_1, r_2, 0.0, 0.0);
 }
 
 void PrismaticJointConstraint::apply_constraint(scalar inverse_time_step, scalar time_step)
 {
-
-    // Get the axes:
-    // vec3 a_1 = ti::rotate(this->body_1->orientation, this->moving_axis );
-    // vec3 a_2 = ti::rotate(this->body_2->orientation, this->moving_axis );
 
     quat dq = this->body_1->orientation * ti::conjugate(this->body_2->orientation);
     vec3 delta_q = 2.0 * vec3{dq.x, dq.y, dq.z};
@@ -51,78 +47,73 @@ void PrismaticJointConstraint::apply_constraint(scalar inverse_time_step, scalar
     vec3 r_1_wc = ti::rotate(this->body_1->orientation, this->r_1);
     vec3 r_2_wc = ti::rotate(this->body_2->orientation, this->r_2);
 
-    // // Attachement point constraint
+    // We convert the moving (sliding) axis into world coordinates 
+    vec3 moving_axis_wc = ti::rotate(this->body_1->orientation, this->moving_axis);
+
+
     vec3 p_1 = this->body_1->position + r_1_wc;
     vec3 p_2 = this->body_2->position + r_2_wc;
     vec3 delta_p = p_1 - p_2;
-    this->current_position = ti::dot(delta_p, this->moving_axis);
+    this->current_position = ti::dot(delta_p, moving_axis_wc);
     scalar overshoot = 0.0;
     if (this->limited){
         overshoot =  this->current_position - ti::clamp(this->current_position, this->lower_limit, this->upper_limit);
     }
+
     
-    vec3 correction  = delta_p - this->moving_axis * this->current_position  + this->moving_axis * overshoot;
+    vec3 correction  = delta_p - moving_axis_wc * this->current_position  + moving_axis_wc * overshoot;
 
     // // Apply the constraints
     this->attachment_point_constraint->set_value(correction);
     this->attachment_point_constraint->apply_constraint(inverse_time_step);
 
-    // a_1 = ti::rotate(this->body_1->orientation, this->aligned_axis) ;
-    // vec3 b_1 = ti::rotate(this->body_1->orientation, this->limit_axis) ;//body_1_ax[1];
-    // vec3 b_2 = ti::rotate(this->body_2->orientation, this->limit_axis) ;//body_2_ax[1];
 
-
-
-    // Calculate the constraint if nessesary
-    // if (this->limited)
-    // {
-    //     auto response = compute_angle_limit_constraint_value(this->current_position, a_1, b_1, b_2, this->lower_limit, this->upper_limit);
-
-    //     this->current_position = response.angle;
-
-    //     this->joint_limit_constraint->set_value(-response.delta_q);
-
-    //     this->joint_limit_constraint->apply_constraint(inverse_time_step);
-    // }
-
-    // if (this->type != FREE)
-    // {
+    r_1_wc = ti::rotate(this->body_1->orientation, this->r_1);
+    r_2_wc = ti::rotate(this->body_2->orientation, this->r_2);
+    p_1 = this->body_1->position + r_1_wc;
+    p_2 = this->body_2->position + r_2_wc;
+    delta_p = p_2 - p_1;
+    this->current_position = ti::dot(delta_p, moving_axis_wc);
+    if (this->type != FREE)
+    {
         
-    //     if(this->limited){// Recalculate the axes if a previous correction was applied
-    //         a_1 = ti::rotate(this->body_1->orientation, this->aligned_axis ) ;
-    //         b_1 = ti::rotate(this->body_1->orientation, this->limit_axis);
-    //         b_2 = ti::rotate(this->body_2->orientation, this->limit_axis);
-    //         this->current_position = ti::atan2(ti::dot(ti::cross(b_1, b_2), a_1), ti::dot(b_1, b_2));
-            
-    //     }
-    //     if (this->type == DRIVEN_BY_SPEED){
-    //         this->target_position = this->current_position + this->target_speed* time_step;
-    //     }
+        if (this->type == DRIVEN_BY_SPEED){
+            this->target_position = this->current_position + this->target_speed* time_step;
+        }
 
-    //     vec3 b_target = b_1 * ti::cos(this->target_position + PI) +
-    //                     ti::cross(a_1, b_1) * ti::sin(this->target_position+ PI) +
-    //                     a_1 * ti::dot(a_1, b_1) * (1 - ti::cos(this->target_position+ PI));
+        vec3 delta_x = (this->target_position - this->current_position) * moving_axis_wc;
 
-    //     vec3 delta_q_target = ti::cross(b_target, b_2);
+        this->drive_joint_constraint->set_value(delta_x);
 
-    //     this->drive_joint_constraint->set_value(delta_q_target);
+        this->drive_joint_constraint->apply_constraint(inverse_time_step);
 
-    //     this->drive_joint_constraint->apply_constraint(inverse_time_step);
-
-    // }
+    }
+    
 }
 
 void PrismaticJointConstraint::apply_joint_damping(scalar time_step){
     
     vec3 delta_v = (this->body_2->linear_velocity - this->body_1->linear_velocity) * std::min(this->damping * time_step, 1.0);
 
-    this->body_1->linear_velocity += delta_v;
-    this->body_2->linear_velocity -= delta_v;
+    if (ti::magnitude(delta_v) < EPSILON) {return ;}
+
+    vec3 r_1_wc = ti::rotate(this->body_1->orientation, this->r_1);
+    vec3 r_2_wc = ti::rotate(this->body_2->orientation, this->r_2);
+
+    vec3 n = ti::normalize(delta_v);
+
+    scalar w_1 = this->body_1->get_positional_generalized_inverse_mass(r_1_wc, n);
+    scalar w_2 = this->body_2->get_positional_generalized_inverse_mass(r_2_wc, n);
+
+    vec3 impulse = delta_v / (w_1 + w_2);
+
+    this->body_1->apply_positional_velocity_constraint_impulse(impulse, r_1_wc);
+    this->body_2->apply_positional_velocity_constraint_impulse(-impulse, r_2_wc);
     
 }
 
-void PrismaticJointConstraint::set_traget_position(scalar angle){
-    this->target_position = angle;
+void PrismaticJointConstraint::set_traget_position(scalar position){
+    this->target_position = position;
 }
 
 void PrismaticJointConstraint::set_target_speed(scalar speed){
@@ -135,18 +126,16 @@ void PrismaticJointConstraint::reset_lagrange_multipliers(){
     this->aligned_constraint->reset_lagrange_multiplier();
 }
 
-// PrismaticJointInfo PrismaticJointConstraint::get_info(void){
-//     PrismaticJointInfo info= PrismaticJointInfo{
-//         .position = this->body_1->position + ti::rotate(this->body_1->orientation, this->r_1),
-//         .rotation_axis = ti::rotate(this->body_1->orientation, this->aligned_axis),
-//         .body_1_limit_axis = ti::rotate(this->body_1->orientation, this->limit_axis),
-//         .body_2_limit_axis = ti::rotate(this->body_2->orientation, this->limit_axis),
-//         .force = this->force,
-//         .torque = this->torque,
-//         .current_position = this->current_position};
+PrismaticJointInfo PrismaticJointConstraint::get_info(void){
+    PrismaticJointInfo info= PrismaticJointInfo{
+        .position = this->body_1->position + ti::rotate(this->body_1->orientation, this->r_1),
+        .moving_axis = ti::rotate(this->body_1->orientation, this->moving_axis),
+        .force = this->force,
+        .torque = this->torque,
+        .current_position = this->current_position};
 
-//     return info;
-// }
+    return info;
+}
 
 scalar PrismaticJointConstraint::get_current_position(void){
     return this->current_position;

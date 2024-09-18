@@ -10,9 +10,7 @@
 
 struct PrismaticJointInfo{
     vec3 position;
-    vec3 rotation_axis;
-    vec3 body_1_limit_axis;
-    vec3 body_2_limit_axis;
+    vec3 moving_axis;
     vec3 force;
     vec3 torque;
     scalar current_position;
@@ -58,7 +56,7 @@ class PrismaticJointConstraint{
 
         // Constraints
         std::shared_ptr<RotationalConstraint> aligned_constraint;
-        std::shared_ptr<RotationalConstraint> drive_joint_constraint;
+        std::shared_ptr<PositionalConstraint> drive_joint_constraint;
         
         std::shared_ptr<PositionalConstraint> attachment_point_constraint;
     public:

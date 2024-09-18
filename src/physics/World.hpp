@@ -533,6 +533,13 @@ namespace robosim
          */
         RevoluteJointInfo get_revolute_joint_info(int id);
 
+
+        PrismaticJointInfo get_prismatic_joint_info(int id);
+
+        void set_prismatic_joint_target_position(int id, scalar position);
+
+        void set_prismatic_joint_target_speed(int id, scalar speed);
+
         /*
          * Sets the target angle for a revolute joint constraint in the world.
          *
