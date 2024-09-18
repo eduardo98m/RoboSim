@@ -6,6 +6,7 @@
 #include "constraints/RotationalConstraint.hpp"
 #include "constraints/RevoluteJointConstraint.hpp"
 #include "constraints/PrismaticJointConstraint.hpp"
+#include "constraints/FixedJointConstraint.hpp"
 #include "constraints/ContactConstraint.hpp"
 #include "collisions/broad_phase.hpp"
 #include "collisions/collisions.hpp"
@@ -55,10 +56,13 @@ namespace robosim
         std::vector<std::shared_ptr<PositionalConstraint>> positional_constraints;
         // Vector of rotational constraints
         std::vector<std::shared_ptr<RotationalConstraint>> rotational_constraints;
-        // // Vector of revolute joint constraints
+        // Vector of revolute joint constraints
         std::vector<std::shared_ptr<RevoluteJointConstraint>> revolute_joint_constraints;
-         // // Vector of prismatic joint constraints
+        // Vector of prismatic joint constraints
         std::vector<std::shared_ptr<PrismaticJointConstraint>> prismatic_joint_constraints;
+        // Vector of jixed joint constraints
+        std::vector<std::shared_ptr<FixedJointConstraint>> fixed_joint_constraints;
+        
         // Collision groups
         // Unordered map that maps the bodies to collision groups
         std::unordered_map<size_t, uint32_t> collision_groups;
@@ -499,7 +503,7 @@ namespace robosim
          */
         int get_number_of_revolute_joints(void);
 
-        /*
+        /**
          * Creates a rotational constraint between two bodies in the world.
          *
          * @param body_1_id The index of the first body.
@@ -525,7 +529,7 @@ namespace robosim
          */
         int add_rotational_constraint(std::shared_ptr<RotationalConstraint> cosntraint);
 
-        /*
+        /**
          * Gets the information about a revolute joint constraint in the world.
          *
          * @param id The index of the revolute joint constraint.
@@ -539,6 +543,27 @@ namespace robosim
         void set_prismatic_joint_target_position(int id, scalar position);
 
         void set_prismatic_joint_target_speed(int id, scalar speed);
+
+        /**
+         * Creates a fixed constraint between two bodies in the world.
+         *
+         * @param body_1_id The index of the first body.
+         * @param body_2_id The index of the second body.
+         * @param r_1 The constraint position relative to the first body (in the local coordinates of the first body).
+         * @param r_2 The constraint position relative to the second body (in the local coordinates of the second body).
+         * @return The index of the created rotational constraint.
+         */
+        int create_fixed_joint_constraint(int body_1_id,
+                                         int body_2_id,
+                                         vec3 r_1,
+                                         vec3 r_2);
+
+        /**
+         * @brief Returns the information struct a the fixed joint given its id.
+         * 
+         * @param id The id oh the joint you want to get the info.
+        */
+        FixedJointInfo get_fixed_joint_info(int id);
 
         /*
          * Sets the target angle for a revolute joint constraint in the world.

@@ -154,7 +154,7 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                 axis,
                 pos,
                 {0.0, 0.0, 0.0},
-                1000.1,
+                1e-8,
                 1000.1,
                 JointControlType::FREE,
                 false,
@@ -163,15 +163,27 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
             }
 
         case urdf::JointType::FIXED:
-            // std::cerr << pos << "\n";
-            // std::cerr << parent_id << "\n";
-            // std::cerr << id << "\n";
-            // this->create_positional_constraint(
-            //     parent_id,
-            //     id,
-            //     pos,
-            //     {0.0, 0.0, 0.0},
-            //     0.0, 0.0);
+            this->create_fixed_joint_constraint(
+                parent_id,
+                id,
+                pos,
+                {0.0, 0.0, 0.0});
+            break;
+        
+        case urdf::JointType::PRISMATIC:
+            this->create_prismatic_joint_constraint(
+                parent_id,
+                id,
+                axis,
+                pos,
+                {0.0, 0.0, 0.0},
+                1e-8,
+                1000.1,
+                JointControlType::FREE,
+                false,
+                0.0,
+                0.0
+                );
             break;
 
         default:
@@ -227,10 +239,10 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
         if (material)
         {
             color = {
-                .r = material->color.r * 255,
-                .g = material->color.g * 255,
-                .b = material->color.b * 255,
-                .a = material->color.a * 255,
+                .r = (u_int8_t)(material->color.r * 255),
+                .g = (u_int8_t)(material->color.g * 255),
+                .b = (u_int8_t)(material->color.b * 255),
+                .a = (u_int8_t)(material->color.a * 255),
             };
         }
         else

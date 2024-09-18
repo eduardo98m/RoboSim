@@ -86,6 +86,8 @@ robosim::World articulated_system_scenario()
     size_t joint_4 = world.create_revolute_constraint(link_4_id, link_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
     size_t joint_6 = world.create_prismatic_joint_constraint(link_5_id, link_6_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true, -PI, PI);
 
+    size_t joint_7 = world.create_fixed_joint_constraint(link_3_id, link_10_id, {0.3, 0.0, 0.0}, {0.0, 0.0, 0.0});
+
     // Lets create the articulates systems:
     std::vector<size_t> joint_ids = {joint_0, joint_1, joint_2, joint_3, joint_4, joint_6};
     std::vector<JointType> joint_types = {JointType::HINGE, JointType::HINGE, JointType::HINGE, JointType::PRISMATIC, JointType::HINGE, JointType::PRISMATIC};

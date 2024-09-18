@@ -31,9 +31,11 @@ robosim::World urdf_scenario()
     
     //size_t articulated_system_id = world.load_urdf("../resources/husky.urdf", {0.0, 5.0, 0.0});
 
-    // size_t aminitaur_id = world.load_urdf("../resources/minitaur.urdf", {5.0, 00.0, 0.0});
+    //size_t aminitaur_id = world.load_urdf("../resources/minitaur.urdf", {5.0, 1.0, 0.0}, ori);
 
-    //size_t r2d2_id = world.load_urdf("../resources/r2d2.urdf", {-5.0, 00.0, 0.0});
+    //size_t r2d2_id = world.load_urdf("../resources/r2d2.urdf", {-5.0, 1.0, 0.0}, ori);
+
+    // size_t kuka_id = world.load_urdf("../resources/kuka_lwr/kuka.urdf", {0.0, 0.0, 5.0}, ori);
 
     size_t plane_id = world.create_body({0.0, 0.0, 0.0}, ti::quat_from_axis_angle({0.0, 1.0, 0.0}, 0.0), vec3{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 500 * mass, 500 * (10.0 / 12) * inertia_tensor, STATIC);
     world.attach_box_collider(plane_id, {50.0, 0.2, 50.0});

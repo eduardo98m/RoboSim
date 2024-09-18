@@ -23,6 +23,7 @@ set(PHYSICS_SOURCES
     "src/physics/constraints/RotationalConstraint.cpp"
     "src/physics/constraints/RevoluteJointConstraint.cpp"
     "src/physics/constraints/PrismaticJointConstraint.cpp"
+    "src/physics/constraints/FixedJointConstraint.cpp"
     "src/physics/constraints/ContactConstraint.cpp"
     "src/physics/constraints/Utils.cpp"
     # Collisions

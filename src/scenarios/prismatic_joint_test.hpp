@@ -49,6 +49,10 @@ robosim::World prismatic_joint_test_scenario()
     world.attach_sphere_collider(ball_2_id, 0.1);
     world.attach_sphere_visual_shape(ball_2_id, 0.1);
 
+    size_t ball_3_id = world.create_body({0.0, 3.0, -1.2}, ori, lin_vel, ang_vel, mass, (1.0 / 12) * inertia_tensor, DYNAMIC);
+    world.attach_sphere_collider(ball_3_id, 0.1);
+    world.attach_sphere_visual_shape(ball_3_id, 0.1);
+
 
 
     world.set_gravity({0.0, -9.8, 0.0});
@@ -57,6 +61,10 @@ robosim::World prismatic_joint_test_scenario()
     size_t joint_0 = world.create_prismatic_joint_constraint(base_id, link_2_id, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.1, 220.1, FREE, true, -.2, .2);
     size_t joint_1 = world.create_prismatic_joint_constraint(link_2_id, link_1_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 1e-4, 0.0, DRIVEN_BY_POSITION, true, -2.2, 2.2);
     
+
+    size_t joint_2 = world.create_fixed_joint_constraint(link_1_id, ball_3_id, {0.0, 0.4, 0.0}, {0.0, 0.0, 0.0});
+
+
     world.set_prismatic_joint_target_position(joint_1, -1.0);
     return world;
 }

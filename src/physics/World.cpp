@@ -64,6 +64,11 @@ void World::solve_positions(scalar inv_h, scalar h)
     {
         constraint->apply_constraint(inv_h, h);
     }
+
+    for (const std::shared_ptr<FixedJointConstraint> &constraint : this->fixed_joint_constraints)
+    {
+        constraint->apply_constraint(inv_h, h);
+    }
 }
 void World::solve_velocities(scalar h)
 {
