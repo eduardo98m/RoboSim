@@ -132,7 +132,10 @@ PrismaticJointInfo PrismaticJointConstraint::get_info(void){
         .moving_axis = ti::rotate(this->body_1->orientation, this->moving_axis),
         .force = this->force,
         .torque = this->torque,
-        .current_position = this->current_position};
+        .current_position = this->current_position,
+        .limited = this->limited,
+        .upper_limit = this->upper_limit,
+        .lower_limit = this->lower_limit};
 
     return info;
 }

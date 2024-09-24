@@ -176,14 +176,20 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
     int n_revolue_joints = this->world_->get_number_of_revolute_joints();
     for (int i = 0; i < n_revolue_joints; i++)
     {
-        this->settings.enabled_rev_joints.push_back({i, true});
+        this->settings.rev_joints.push_back(std::make_shared<RevoluteJointSettings>((RevoluteJointSettings){i,true,1.0}));
     }
 
     this->visualizer_->enable_visual_object_group_rendering(VISUAL_SHAPES_GROUP);
     this->visualizer_->disable_visual_object_group_rendering(COLLISION_SHAPES_GROUP);
 
+    int n_prismatic_joints = this->world_->get_number_of_prismatic_joints();
+    for (int i = 0; i < n_prismatic_joints; i++)
+    {
+        this->settings.pris_joints.push_back(std::make_shared<PrismaticJointSettings>((PrismaticJointSettings){i,true,1.0}));
+    }
+
     auto gui{
-        [this, n_revolue_joints](void)
+        [this, n_revolue_joints, n_prismatic_joints](void)
         {
             ImGui::Begin("Visualization Settings");
             ImGui::Checkbox("Show bounding boxes", &this->settings.show_bounding_boxes);
@@ -225,9 +231,28 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
             {
                 ImGui::Indent();
                 for (int i = 0; i < n_revolue_joints; i++)
+                {   
+                    std::shared_ptr<RevoluteJointSettings> setting = this->settings.rev_joints[i];
+                    std::string text = "Revolute Joint " + std::to_string(setting->index);
+                    std::string scale_label = "Scale rj " + std::to_string(setting->index);
+                    
+                    ImGui::Checkbox(text.c_str(), &setting->enabled);
+                    ImGui::SliderFloat(scale_label.c_str(), &setting->scale, 0.0, 10.0);
+                }
+                ImGui::Unindent();
+            }
+
+            if (ImGui::CollapsingHeader("Prismatic Joints"))
+            {
+            ImGui::Checkbox("Show prismatic joints", &this->settings.show_prismatic_joints);
+                ImGui::Indent();
+                for (int i = 0; i < n_prismatic_joints; i++)
                 {
-                    std::string text = "Joint " + std::to_string(i);
-                    ImGui::Checkbox(text.c_str(), &this->settings.enabled_rev_joints[i].second);
+                    std::shared_ptr<PrismaticJointSettings> setting = this->settings.pris_joints[i];
+                    std::string text = "Revolute Joint " + std::to_string(setting->index);
+                    std::string scale_label = "Scale pj " + std::to_string(setting->index);
+                    ImGui::Checkbox(text.c_str(), &setting->enabled);
+                    ImGui::SliderFloat(scale_label.c_str(), &setting->scale, 0.0, 10.0);
                 }
                 ImGui::Unindent();
             }
@@ -319,17 +344,19 @@ void Interface::update(void)
     int n_revolue_joints = this->world_->get_number_of_revolute_joints();
     if (this->settings.show_revolute_joints)
     {
-        for (auto elem : this->settings.enabled_rev_joints)
+        for (shared_ptr<RevoluteJointSettings> joint_setting : this->settings.rev_joints)
         {
-            if (!elem.second)
+            if (!joint_setting->enabled)
             {
                 continue;
             }
-            RevoluteJointInfo info = this->world_->get_revolute_joint_info(elem.first);
+            RevoluteJointInfo info = this->world_->get_revolute_joint_info(joint_setting->index);
 
-            double arrow_radius = 0.06 * (this->settings.size / 100.0);
-            double arrow_lenght = 2.0 * (this->settings.size / 100.0);
-            int text_size = 400 * (this->settings.size / 100.0);
+            float scale  = joint_setting->scale * this->settings.size / 50.0;
+
+            double arrow_radius = 0.06 * (scale);
+            double arrow_lenght = 2.0 * (scale);
+            
             this->visualizer_->draw_arrow(
                 vec3ToVector3(info.position),
                 vec3ToVector3(info.rotation_axis * arrow_lenght),
@@ -348,10 +375,47 @@ void Interface::update(void)
                 arrow_radius,
                 ORANGE);
 
+            int text_size = 200 * (scale);
             std::ostringstream angleStream;
             angleStream << std::fixed << std::setprecision(1) << info.current_angle * 180.0 / PI << "°";
 
             this->visualizer_->draw_text(angleStream.str(), vec3ToVector3(info.position), text_size);
+        }
+    }
+
+    if (this->settings.show_prismatic_joints){
+        for (shared_ptr<PrismaticJointSettings> joint_setting : this->settings.pris_joints){
+            // Skip the joints that are not enabled
+            if (!joint_setting->enabled){continue;}
+
+            float scale  = joint_setting->scale * this->settings.size / 50.0;
+
+            PrismaticJointInfo info = this->world_->get_prismatic_joint_info(joint_setting->index);
+            if(info.limited){
+                vec3 p_1 = info.position + info.moving_axis * info.lower_limit;
+                vec3 p_2 = info.position + info.moving_axis * info.upper_limit;
+                this->visualizer_->draw_segment(ti::to_raylib(p_1), 
+                                            ti::to_raylib(p_2), 
+                                            scale, 
+                                            RED);   
+
+            }
+
+            vec3 p_o = info.position;
+            vec3 p_f = info.position + info.moving_axis * info.current_position;
+            this->visualizer_->draw_segment(ti::to_raylib(p_o), 
+                                        ti::to_raylib(p_f), 
+                                        scale * 1.05, 
+                                        BLUE); 
+
+            std::ostringstream infoStream;
+            infoStream << std::fixed << std::setprecision(2) << info.current_position  << "[m]";
+
+            int text_size = 200 * (scale);
+
+            this->visualizer_->draw_text(infoStream.str(), vec3ToVector3(p_f), text_size);
+
+            
         }
     }
     // Contact points:

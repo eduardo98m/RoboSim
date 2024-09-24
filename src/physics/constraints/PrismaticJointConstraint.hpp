@@ -14,6 +14,9 @@ struct PrismaticJointInfo{
     vec3 force;
     vec3 torque;
     scalar current_position;
+    bool limited;
+    scalar upper_limit;
+    scalar lower_limit;
 };
 
 class PrismaticJointConstraint{

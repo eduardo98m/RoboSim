@@ -496,12 +496,19 @@ namespace robosim
                                        bool set_limit_axis = false,
                                        vec3 limit_axis = {1.0, 0.0, 0.0});
 
-        /*
+        /**
          * Gets the number of revolute joint constraints in the world.
          *
          * @return The number of revolute joint constraints.
          */
         int get_number_of_revolute_joints(void);
+        
+        /**
+         * Gets the number of prismatic joint constraints in the world.
+         *
+         * @return The number of prismatic joint constraints.
+         */
+        int get_number_of_prismatic_joints(void);
 
         /**
          * Creates a rotational constraint between two bodies in the world.

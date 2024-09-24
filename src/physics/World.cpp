@@ -465,6 +465,11 @@ int World::get_number_of_revolute_joints(void)
     return this->revolute_joint_constraints.size();
 }
 
+int World::get_number_of_prismatic_joints(void)
+{
+    return this->prismatic_joint_constraints.size();
+}
+
 
 std::string World::get_body_info_str(int id){
     return this->bodies[id]->to_string();

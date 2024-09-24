@@ -20,9 +20,23 @@
 
 #define COLLISION_SHAPES_GROUP 2
 
+
+struct PrismaticJointSettings{
+    int index;
+    bool enabled;
+    float scale;
+};
+// We make a seccond struct just in case we need to differentiate them in the future
+struct RevoluteJointSettings{
+    int index;
+    bool enabled;
+    float scale;
+};
+
 struct VisualizationSettings{
 
     bool show_revolute_joints = false;
+    bool show_prismatic_joints = false;
     bool show_bounding_boxes = false;
     bool show_contact_points = false;
     bool render_visual_objects = true;
@@ -34,8 +48,11 @@ struct VisualizationSettings{
     bool toggle_collision_shapes = false;
 
     int size = 50;
-    std::vector<std::pair<int, bool>> enabled_rev_joints;
+    std::vector<std::shared_ptr<RevoluteJointSettings>> rev_joints;
+
+    std::vector<std::shared_ptr<PrismaticJointSettings>> pris_joints;
 };
+
 
 class Interface
 {
