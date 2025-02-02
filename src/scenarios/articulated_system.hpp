@@ -78,18 +78,17 @@ robosim::World articulated_system_scenario()
     world.set_gravity({0.0, -9.8, 0.0});
     
 
-    size_t joint_0 = world.create_revolute_constraint(base_id, link_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.8, 0.8);
+    size_t joint_0 = world.create_revolute_constraint(base_id, link_1_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true, -PI/2, PI/2);
     size_t joint_1 = world.create_revolute_constraint(link_1_id, link_2_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true   , -0.5, 0.5);
     size_t joint_2 = world.create_revolute_constraint(link_2_id, link_3_id, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    //size_t joint_3 = world.create_revolute_constraint(link_3_id, link_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
     size_t joint_3 = world.create_prismatic_joint_constraint(link_3_id, link_4_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 200.0, FREE, true, -0.2, 0.2);
     size_t joint_4 = world.create_revolute_constraint(link_4_id, link_5_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, false, -0.0, 0.0);
-    size_t joint_6 = world.create_prismatic_joint_constraint(link_5_id, link_6_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true, -PI, PI);
+    size_t joint_5 = world.create_prismatic_joint_constraint(link_5_id, link_6_id, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, DRIVEN_BY_POSITION, true, -PI, PI);
 
-    size_t joint_7 = world.create_fixed_joint_constraint(link_3_id, link_10_id, {0.3, 0.0, 0.0}, {0.0, 0.0, 0.0});
+    size_t joint_6 = world.create_fixed_joint_constraint(link_3_id, link_10_id, {0.3, 0.0, 0.0}, {0.0, 0.0, 0.0});
 
     // Lets create the articulates systems:
-    std::vector<size_t> joint_ids = {joint_0, joint_1, joint_2, joint_3, joint_4, joint_6};
+    std::vector<size_t> joint_ids = {joint_0, joint_1, joint_2, joint_3, joint_4, joint_5};
     std::vector<JointType> joint_types = {JointType::HINGE, JointType::HINGE, JointType::HINGE, JointType::PRISMATIC, JointType::HINGE, JointType::PRISMATIC};
     std::vector<size_t> link_ids = {base_id, link_1_id, link_2_id, link_3_id, link_4_id, link_5_id, link_6_id};
 

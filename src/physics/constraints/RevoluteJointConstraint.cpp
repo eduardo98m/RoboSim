@@ -140,7 +140,13 @@ RevoluteJointInfo RevoluteJointConstraint::get_info(void){
         .body_2_limit_axis = ti::rotate(this->body_2->orientation, this->limit_axis),
         .force = this->force,
         .torque = this->torque,
-        .current_angle = this->current_angle};
+        .r_1 = ti::rotate(this->body_1->orientation, this->r_1),
+        .r_2 = ti::rotate(this->body_2->orientation, this->r_2),
+        .current_angle = this->current_angle,
+        .limited = this->limited,
+        .upper_limit = this->upper_limit,
+        .lower_limit = this->lower_limit,
+        };
 
     return info;
 }

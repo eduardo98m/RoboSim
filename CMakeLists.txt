@@ -62,6 +62,14 @@ set(
     "scenarios"
 )
 
+# IMplot
+
+set(
+    IMPLOT_SOURCES
+    "thirdParty/implot/implot.cpp"
+    "thirdParty/implot/implot_items.cpp"
+)
+
 # GLEW
 find_package(GLEW REQUIRED) # Im using GLEW 2.2.0
 find_package(raylib REQUIRED)
@@ -73,7 +81,11 @@ include_directories(${hpp-fcl_INCLUDE_DIRS})
 # add_subdirectory("thirdParty/assimp")
 
 
-include_directories("src/RoboVis/src" "src/RoboVis/thirdParty/rlImGui" "src/RoboVis/thirdParty/imgui" "src/RoboVis/thirdParty/rlights")
+include_directories("src/RoboVis/src" 
+                    "src/RoboVis/thirdParty/rlImGui" 
+                    "src/RoboVis/thirdParty/imgui" 
+                    "thirdParty/implot"
+                    "src/RoboVis/thirdParty/rlights")
 add_subdirectory("src/RoboVis")
 add_subdirectory("thirdParty/URDF_Parser")
 

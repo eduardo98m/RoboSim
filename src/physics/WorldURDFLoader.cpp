@@ -142,21 +142,29 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
         this->adajacent_links_filter.insert({{parent_id, id}, true});
 
         vec3 axis = {joint->axis.x, joint->axis.y, joint->axis.z};
-
+        
         switch (joint->type)
         {
         case urdf::JointType::REVOLUTE:
             {
+            // bool limited = joint->limits.has_value();
+            // float lower_limit = 0.0;
+            // float upper_limit = 0.0;
+
+            // if (limited){
+            //     lower_limit = joint->safety.value()->lower_limit;
+            //     upper_limit = joint->safety.value()->upper_limit;
+            // }
 
             this->create_revolute_constraint(
-                id,
                 parent_id,
+                id,
                 axis,
                 pos,
                 {0.0, 0.0, 0.0},
-                1e-8,
-                1000.1,
-                JointControlType::FREE,
+                1.0e-2,
+                1.0e6,
+                JointControlType::DRIVEN_BY_POSITION,
                 false,
                 0.0, 0.0, true);
             break;
@@ -177,8 +185,8 @@ size_t World::add_urdf_link(const std::shared_ptr<urdf::Link> &link,
                 axis,
                 pos,
                 {0.0, 0.0, 0.0},
-                1e-8,
-                1000.1,
+                1.0e-2,
+                1.0e6,
                 JointControlType::FREE,
                 false,
                 0.0,

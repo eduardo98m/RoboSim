@@ -216,10 +216,9 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
 
             ImGui::Checkbox(" ", &this->settings.render_collision_shapes);
 
-            ImGui::Text("Revolute Joints");
+            ImGui::Text("Joints");
             ImGui::Separator();
-            ImGui::Checkbox("Show Info", &this->settings.show_revolute_joints);
-            ImGui::SliderInt("IndicatorSize", &this->settings.size, 1, 100);
+            ImGui::SliderInt("Indicator Size", &this->settings.size, 1, 100);
 
             ImGui::Text("Contacts");
             ImGui::Separator();
@@ -227,8 +226,9 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
 
             ImGui::Separator();
 
-            if (ImGui::CollapsingHeader("Joints"))
+            if (ImGui::CollapsingHeader("Revolute Joints"))
             {
+            ImGui::Checkbox("Show Revolute Joints", &this->settings.show_revolute_joints);
                 ImGui::Indent();
                 for (int i = 0; i < n_revolue_joints; i++)
                 {   
@@ -249,7 +249,7 @@ Interface::Interface(std::shared_ptr<robosim::World> world, std::shared_ptr<Visu
                 for (int i = 0; i < n_prismatic_joints; i++)
                 {
                     std::shared_ptr<PrismaticJointSettings> setting = this->settings.pris_joints[i];
-                    std::string text = "Revolute Joint " + std::to_string(setting->index);
+                    std::string text = "Prismatic Joint " + std::to_string(setting->index);
                     std::string scale_label = "Scale pj " + std::to_string(setting->index);
                     ImGui::Checkbox(text.c_str(), &setting->enabled);
                     ImGui::SliderFloat(scale_label.c_str(), &setting->scale, 0.0, 10.0);
@@ -374,6 +374,41 @@ void Interface::update(void)
                 vec3ToVector3(info.body_2_limit_axis * arrow_lenght),
                 arrow_radius,
                 ORANGE);
+
+            float radius = ti::magnitude(info.r_2 - info.r_1);
+            
+            float upper_lim = 2 * PI;
+            float lower_lim = 0.0;
+            if (info.limited){
+                // This is because how the angles are meassured in the visualizer
+                upper_lim = info.upper_limit + PI/2;
+                lower_lim = info.lower_limit + PI/2;
+            }
+
+            this->visualizer_->draw_ring_section(ti::to_raylib(info.position), 
+                                                 ti::to_raylib(info.rotation_axis), 
+                                                 radius * 1.05,
+                                                 radius * 0.95,
+                                                upper_lim,
+                                                lower_lim,
+                                                 Color{ 120, 121, 241, 255 });
+            
+            this->visualizer_->draw_ring_section(ti::to_raylib(info.position), 
+                                                 ti::to_raylib(info.rotation_axis), 
+                                                 radius * 1.07,
+                                                 radius * 1.05,
+                                                upper_lim,
+                                                lower_lim,
+                                                 Color{ 90, 90, 255, 255 });
+            
+            this->visualizer_->draw_ring_section(ti::to_raylib(info.position), 
+                                                 ti::to_raylib(info.rotation_axis), 
+                                                 radius * 0.95,
+                                                 radius * 0.92,
+                                                upper_lim,
+                                                lower_lim,
+                                                 Color{ 90, 90, 255, 255 });
+            
 
             int text_size = 200 * (scale);
             std::ostringstream angleStream;

@@ -13,6 +13,8 @@
 #include "scenarios/urdf_scenario.hpp"
 #include "scenarios/box_stack.hpp"
 #include "scenarios/prismatic_joint_test.hpp"
+#include "scenarios/simple_pendulum.hpp"
+#include "scenarios/box_slides.hpp"
 
 // Import the sine function from the standard library
 #include <math.h>
@@ -43,7 +45,9 @@ int main(int argc, char *argv[])
         HEIGHTMAP,
         URDF,
         BOX_STACK,
-        PRISMATIC_JOINTS
+        PRISMATIC_JOINTS,
+        PENDULUM,
+        BOX_SLIDE
     };
 
     std::vector<std::string> scenario_names = {
@@ -56,7 +60,9 @@ int main(int argc, char *argv[])
         "Heightmap",
         "URDF",
         "Stack of boxes",
-        "Prismatic Joints"
+        "Prismatic Joints",
+        "Pendulum",
+        "Box Slides"
     };
 
     int selected_scenario = ScenarioType::PRISMATIC_JOINTS; // Default to collisions scenario
@@ -205,7 +211,14 @@ int main(int argc, char *argv[])
                 step_callback = [](std::shared_ptr<robosim::World>, std::shared_ptr<Visualizer>){};
                 gui_callback = [](){};
                 break;
-
+            case ScenarioType::PENDULUM:
+                world  = pendulum_scenario();
+                std::tie(step_callback, gui_callback) = pendulum_functions(world_ptr);
+                break;
+            case ScenarioType::BOX_SLIDE:
+                world = box_sliding_scenario();
+                std::tie(step_callback, gui_callback) = box_sliding_functions(world_ptr);
+                break;
             default:
                 break;
             }

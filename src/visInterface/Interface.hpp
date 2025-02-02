@@ -17,7 +17,6 @@
 
 
 #define VISUAL_SHAPES_GROUP 1
-
 #define COLLISION_SHAPES_GROUP 2
 
 

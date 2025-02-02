@@ -14,7 +14,12 @@ struct RevoluteJointInfo{
     vec3 body_2_limit_axis;
     vec3 force;
     vec3 torque;
+    vec3 r_1;
+    vec3 r_2;
     scalar current_angle;
+    bool limited;
+    scalar upper_limit;
+    scalar lower_limit;
 };
 
 class RevoluteJointConstraint{
@@ -38,8 +43,10 @@ class RevoluteJointConstraint{
         // Damping 
         scalar damping;
 
-        
+        // Target speed (For speed drive)
         scalar target_speed = 0.0;
+
+        // Target angle (For position driven)
         scalar target_angle = 0.0;
         
         // Limited Joint

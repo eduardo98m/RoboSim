@@ -218,6 +218,11 @@ quat World::get_body_orientation(int id)
     return this->bodies[id]->orientation;
 }
 
+vec3 World::get_body_velocity(int id)
+{
+    return this->bodies[id]->linear_velocity;
+}
+
 vec3 World::get_body_angular_velocity(int id)
 {
     return this->bodies[id]->angular_velocity;
