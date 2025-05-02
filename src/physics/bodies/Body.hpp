@@ -16,7 +16,7 @@ enum BodyType
 
 class Body
 {
-private:
+private:    
     /* linear and angular force */
     vec3 force = {0.0, 0.0, 0.0};
     vec3 torque = {0.0, 0.0, 0.0};
@@ -67,7 +67,7 @@ public:
     // // Restitution coeficient of the body
     // scalar restitution = 0.7;
 
-    /*
+    /**
      * Class constructor
      *
      * @param position The initial position of the body
