@@ -62,6 +62,13 @@ void apply_rotational_constraint_impulse(BodyCollection &bc, size_t i, vec3 impu
     bc.orientation[i] = ti::normalize(bc.orientation[i]);
 }
 
+void apply_positional_velocity_constraint_impulse(BodyCollection &bc, size_t i, vec3 impulse, vec3 r)
+{
+    if (bc.type[i] == BodyType::STATIC) return;
+    bc.linear_velocity[i] += impulse * bc.inverse_mass[i];
+    bc.angular_velocity[i] += bc.inverse_inertia_tensor_world[i] * ti::cross(r, impulse);
+}
+
 scalar get_positional_generalized_inverse_mass(BodyCollection &bc, size_t i, vec3 r, vec3 n)
 {
     if (bc.type[i] == BodyType::STATIC) return 0.0;

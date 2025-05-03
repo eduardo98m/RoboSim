@@ -103,6 +103,24 @@ void apply_positional_constraint_impulse(BodyCollection &bc, size_t i, vec3 impu
 void apply_rotational_constraint_impulse(BodyCollection &bc, size_t i, vec3 impulse);
 
 /**
+ * @brief Applies an impulse directly to a body's velocity.
+ *
+ * This function enforces a velocity‐level positional constraint by adjusting
+ * both linear and angular velocities based on a specified impulse applied
+ * at an offset from the center of mass.
+ *
+ * @param bc      The BodyCollection containing body states.
+ * @param i       Index of the body to which the impulse is applied.
+ * @param impulse Impulse vector in world coordinates.
+ * @param r       Lever arm from the body's center of mass to the application point, in world coordinates.
+ *
+ * If the body is static (type == BodyType::STATIC), no changes are made.
+ * Otherwise:
+ * - The body's linear velocity is incremented by impulse * inverse_mass.
+ * - The body's angular velocity is incremented by inverse_inertia_tensor_world × (r × impulse).
+ */
+void apply_positional_velocity_constraint_impulse(BodyCollection &bc, size_t i, vec3 impulse, vec3 r);
+/**
  * @brief Computes the generalized inverse mass for positional constraint resolution.
  *
  * This scalar combines the body’s inverse mass and inverse inertia
