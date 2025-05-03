@@ -32,7 +32,6 @@ struct ConstraintCollection
     std::vector<vec3> force;          // Positional constraint force
     std::vector<vec3> torque;         // Rotational constraint torque
     std::vector<scalar> compliance;   // Constraint compliance (softness)
-    std::vector<scalar> damping;      // Constraint damping coefficient
     std::vector<ConstraintType> type; // Position vs. rotation constraint
     std::vector<vec3> impulse;        // Constraint impulse applied
 };
