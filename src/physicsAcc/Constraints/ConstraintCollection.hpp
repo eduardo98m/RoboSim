@@ -58,7 +58,7 @@ void set_value(ConstraintCollection &cc, size_t i, vec3 value);
  * @param inverse_time_step Inverse of the time step (1/Δt).
  * @return                  Change in Lagrange multiplier Δλ.
  */
-scalar compute_delta_lambda(ConstraintCollection &cc, size_t i, scalar w_1, scalar w_2, scalar inverse_time_step);
+scalar compute_delta_lambda(const ConstraintCollection &cc, size_t i, scalar w_1, scalar w_2, scalar inverse_time_step);
 
 /**
  * @brief Solves and applies a rotational constraint impulse between two bodies.
@@ -115,7 +115,7 @@ void set_constraint_positions(ConstraintCollection &cc,size_t i, const vec3 &r_1
  * @param i  Index of the constraint.
  * @return   Current λ value.
  */
-scalar get_lagrange_multiplier(ConstraintCollection &cc, size_t i);
+scalar get_lagrange_multiplier(const ConstraintCollection &cc, size_t i);
 
 /**
  * @brief Computes the updated Lagrange multiplier for a single constraint.

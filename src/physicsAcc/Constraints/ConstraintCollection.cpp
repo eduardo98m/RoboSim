@@ -10,7 +10,7 @@ void set_value(ConstraintCollection &cc, size_t i, vec3 value)
                           : vec3{0.0, 0.0, 0.0};
 };
 
-scalar compute_delta_lambda(ConstraintCollection &cc, size_t i, scalar w_1, scalar w_2, scalar inverse_time_step)
+scalar compute_delta_lambda(const ConstraintCollection &cc, size_t i, scalar w_1, scalar w_2, scalar inverse_time_step)
 {
     scalar alpha_p = cc.compliance[i] * inverse_time_step * inverse_time_step;
     return (-cc.magnitude[i] - alpha_p * cc.lambda[i]) / (w_1 + w_2 + alpha_p);
@@ -61,7 +61,7 @@ void set_constraint_positions(ConstraintCollection &cc,
 }
 
 
-scalar get_lagrange_multiplier(ConstraintCollection &cc, size_t i)
+scalar get_lagrange_multiplier(const ConstraintCollection &cc, size_t i)
 {
     return cc.lambda[i];
 };
