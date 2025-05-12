@@ -21,7 +21,7 @@ enum ConstraintType
  */
 struct ConstraintCollection
 {
-    size_t n_constraints;             // Number of constraints in the collection
+    size_t n_constraints = 0;             // Number of constraints in the collection
     std::vector<size_t> body_1;       // Index of the first body in each constraint
     std::vector<size_t> body_2;       // Index of the second body in each constraint
     std::vector<vec3> r_1;            // Local contact point on body 1
@@ -128,3 +128,26 @@ scalar get_lagrange_multiplier(const ConstraintCollection &cc, size_t i);
  * @return                  Updated Lagrange multiplier.
  */
 scalar compute_lagrange_multiplier(BodyCollection &bc, ConstraintCollection &cc, size_t i, scalar inverse_time_step);
+
+
+/**
+ * @brief Solves the constraints (i.e. applies impulses to the bodies)
+ */
+
+ void solve_constraints(BodyCollection &bc, ConstraintCollection &cc, scalar inverse_time_step){
+    
+    for (size_t i = 0; i < cc.n_constraints; ++i)
+    {
+        switch (cc.type[i])
+        {
+        case ConstraintType::POSITIONAL:
+            compute_positional_constraint_impulse(bc, cc, i, inverse_time_step);
+            break;
+        case ConstraintType::ROTATIONAL:
+            compute_rotational_constraint_impulse(bc, cc, i, inverse_time_step);
+        break;
+        default:
+            break;
+        }
+    }
+ }

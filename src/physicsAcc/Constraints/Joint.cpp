@@ -192,3 +192,50 @@ void apply_revolute_joint_damping(JointCollection &jc,
     bc.angular_velocity[b1] += delta_omega;
     bc.angular_velocity[b2] -= delta_omega;
 };
+
+void compute_joint_errors(JointCollection &jc,
+                          BodyCollection &bc,
+                          ConstraintCollection &cc,
+                          scalar time_step)
+{
+    for (size_t i = 0; i < jc.n_joints; ++i)
+    {
+        switch (jc.type[i])
+        {
+        case PRISMATIC:
+            compute_prismatic_joint_errors(jc, i, bc, cc, time_step);
+            break;
+        case REVOLUTE:
+            compute_revolute_joint_errors(jc, i, bc, cc, time_step);
+            break;
+        case FIXED:
+            compute_fixed_joint_errors(jc, i, bc, cc, time_step);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+/**
+ * @brief Applies joint damping
+ */
+void apply_joint_damping(JointCollection &jc,
+                          BodyCollection &bc,
+                          scalar time_step)
+{
+    for (size_t i = 0; i < jc.n_joints; ++i)
+    {
+        switch (jc.type[i])
+        {
+        case PRISMATIC:
+            apply_prismatic_joint_damping(jc, i, bc, time_step);
+            break;
+        case REVOLUTE:
+            apply_revolute_joint_damping(jc, i, bc, time_step);
+            break;
+        default:
+            break;
+        }
+    }
+}

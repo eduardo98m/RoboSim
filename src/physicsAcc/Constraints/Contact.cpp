@@ -70,7 +70,7 @@ void solve_tangencial_constraint(ContactCollection &cc, size_t i, BodyCollection
     scalar lambda_t = cc.tangencial_constraint_lagrange_multiplier[i];
     scalar lambda_n = cc.normal_constraint_lagrange_multiplier[i];
     // Only apply the if the condition is satisfied
-    if (lambda_t > lambda_n * cc.static_fricction[i])
+    if (lambda_t > lambda_n * cc.static_friction[i])
     {
         vec3 impulse = delta_lambda * n;
         cc.tangencial_force[i] = n * cc.tangencial_constraint_lagrange_multiplier[i] * inverse_time_step * inverse_time_step;
@@ -100,7 +100,7 @@ void apply_constraint_velocity_level(ContactCollection &cc, size_t i, BodyCollec
     vec3 v_t = v - cc.normal[i] * v_n;
     if (ti::magnitude(v_t) > EPSILON)
     {
-        scalar friction = ti::min(-cc.dynamic_fricction[i] * cc.normal_constraint_lagrange_multiplier[i] / time_step,
+        scalar friction = ti::min(-cc.dynamic_friction[i] * cc.normal_constraint_lagrange_multiplier[i] / time_step,
                                   ti::magnitude(v_t));
         delta_v += -ti::normalize(v_t) * friction;
     }

@@ -21,9 +21,9 @@ enum JointActuationType
 
 struct JointCollection
 {
-    size_t n_joints;
+    size_t n_joints = 0;
     std::vector<JointType> type;
-    std::vector<JointType> actuation_type;
+    std::vector<JointActuationType> actuation_type;
 
     // bodies
     std::vector<size_t> body_1;
@@ -199,11 +199,29 @@ void apply_prismatic_joint_damping(JointCollection &jc,
 void apply_revolute_joint_damping(JointCollection &jc,
                                   size_t i,
                                   BodyCollection &bc,
-                                  scalar time_step)
-{
-    const size_t b1 = jc.body_1[i];
-    const size_t b2 = jc.body_2[i];
-    vec3 delta_omega = (bc.angular_velocity[b2] - bc.angular_velocity[b1]) * std::min(jc.damping[i] * time_step, 1.0);
-    bc.angular_velocity[b1] += delta_omega;
-    bc.angular_velocity[b2] -= delta_omega;
-};
+                                  scalar time_step);
+
+/**
+ * @brief Computes joint errors.
+ *
+ * This function calculates the errors for each joint contraint
+ * The errors represent the degree to which the joint constraints are violated.
+ * These errors are then used to apply corrective impulses to satisfy the constraints.
+ *
+ * @param jc JointCollection reference
+ * @param bc BodyCollection
+ * @param cc ConstraintCollection
+ * @param time_step timestep
+ */
+void compute_joint_errors(JointCollection &jc,
+                          BodyCollection &bc,
+                          ConstraintCollection &cc,
+                          scalar time_step);
+
+
+/**
+ * @brief Applies joint damping to all the joints 
+ */
+void apply_joint_damping(JointCollection &jc,
+                         BodyCollection &bc,
+                         scalar time_step);

@@ -16,7 +16,7 @@ enum BodyType
  */
 struct BodyCollection
 {
-    size_t n_bodies;
+    size_t n_bodies = 0;
     std::vector<vec3> force;
     std::vector<vec3> torque;
     std::vector<scalar> mass;
@@ -25,7 +25,6 @@ struct BodyCollection
     std::vector<mat3> inverse_inertia_tensor;
     std::vector<mat3> inertia_tensor_world;
     std::vector<mat3> inverse_inertia_tensor_world;
-    std::vector<int> collision_group;
     std::vector<BodyType> type;
     std::vector<vec3> position;
     std::vector<quat> orientation;
