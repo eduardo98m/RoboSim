@@ -1,3 +1,4 @@
+#pragma once
 #include "physicsAcc/Constraints/Joint.hpp"
 #include "physicsAcc/API/ConstraintsAPI.hpp"
 
@@ -62,30 +63,31 @@ size_t create_prismatic_joint(JointCollection &jc, ConstraintCollection &cc, Pri
     size_t c_1 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = 0.0,
+        .type = ConstraintType::ROTATIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::ROTATIONAL
+        .compliance = 0.0
     });
 
     // Attachment
     size_t c_2 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = 0.0,
+        .type = ConstraintType::POSITIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::POSITIONAL
+        .compliance = 0.0
     });
 
     // Drive
     size_t c_3 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = params.compliance,
+        .type = ConstraintType::POSITIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::POSITIONAL
+        .compliance = params.compliance,
+
     });
 
     jc.constraint_count.push_back(3);
@@ -129,40 +131,41 @@ size_t create_revolute_joint(JointCollection &jc, ConstraintCollection &cc, Revo
     size_t c_1 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = 0.0,
+        .type = ConstraintType::ROTATIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::ROTATIONAL
+        .compliance = 0.0,
     });
 
     // Attachment constraint
     size_t c_2 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = 0.0,
+        .type = ConstraintType::POSITIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::POSITIONAL
+        .compliance = 0.0,
     });
 
     // Limit constraint
     size_t c_3 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = 0.0,
+        .type = ConstraintType::ROTATIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::ROTATIONAL
+        .compliance = 0.0,
     });
 
      // Drive constraint
     size_t c_4 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = params.compliance,
+        .type = ConstraintType::ROTATIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::ROTATIONAL
+        .compliance = params.compliance
+
     });
 
     jc.constraint_count.push_back(4);
@@ -204,20 +207,21 @@ size_t create_fixed_joint(JointCollection &jc, ConstraintCollection &cc, FixedJo
     size_t c_1 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = 0.0,
+        .type = ConstraintType::ROTATIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::ROTATIONAL
+        .compliance = 0.0
+        
     });
 
     // Attachment constraint
     size_t c_2 = create_constraint(cc, ConstraintsParams{
         .body_1 = params.body_1,
         .body_2 = params.body_2,
-        .compliance = 0.0,
+        .type = ConstraintType::POSITIONAL,
         .r_1 = params.r_1,
         .r_2 = params.r_2,
-        .type = ConstraintType::POSITIONAL
+        .compliance = 0.0
     });
 
     jc.constraint_count.push_back(2);

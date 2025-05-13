@@ -116,3 +116,11 @@ void apply_constraint_velocity_level(ContactCollection &cc, size_t i, BodyCollec
     apply_positional_velocity_constraint_impulse(bc, cc.body_1[i], impulse, r_1_wc);
     apply_positional_velocity_constraint_impulse(bc, cc.body_2[i], -impulse, r_2_wc);
 }
+
+void solve_contacts_velocity_level(ContactCollection &cc, BodyCollection &bc, scalar time_step)
+{
+    for (int i = 0; i < cc.n_contacts; i++)
+    {
+        apply_constraint_velocity_level(cc, i, bc, time_step);
+    }
+}

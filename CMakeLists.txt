@@ -4,6 +4,10 @@ SET(PROJECT_NAME "RoboSim")
 project(${PROJECT_NAME})
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
+find_package(PCL 1.12 REQUIRED)
+# Add PCL include directories and definitions:
+include_directories(${PCL_INCLUDE_DIRS})
+
 
 # Add your source files
 set(SOURCES 
@@ -41,6 +45,19 @@ set(PHYSICS_SOURCES
     #Interface
     "src/visInterface/Interface.cpp"
     )
+
+set(PHYSICS_ACC_SOURCES
+    # Math
+    "src/physics/math/math.cpp" 
+    # Constraints
+    "src/physicsAcc/Body/BodyCollection.cpp"
+    "src/physicsAcc/Constraints/ConstraintCollection.cpp"
+    "src/physicsAcc/Constraints/Contact.cpp"
+    "src/physicsAcc/Constraints/Joint.cpp"
+    # Collisions
+    "src/physicsAcc/Colliders/Collider.cpp"
+    )
+
 
 
 set(
@@ -85,11 +102,14 @@ include_directories("src/RoboVis/src"
                     "src/RoboVis/thirdParty/rlImGui" 
                     "src/RoboVis/thirdParty/imgui" 
                     "thirdParty/implot"
+                    "src/RoboVis/thirdParty/raylib-gizmo/src"
                     "src/RoboVis/thirdParty/rlights")
+
+
 add_subdirectory("src/RoboVis")
 add_subdirectory("thirdParty/URDF_Parser")
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${PHYSICS_SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${PHYSICS_ACC_SOURCES})
 
 
 

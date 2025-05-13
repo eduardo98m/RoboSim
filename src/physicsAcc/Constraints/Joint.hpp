@@ -22,33 +22,33 @@ enum JointActuationType
 struct JointCollection
 {
     size_t n_joints = 0;
-    std::vector<JointType> type;
-    std::vector<JointActuationType> actuation_type;
+    std::vector<JointType> type = {};
+    std::vector<JointActuationType> actuation_type = {};
 
     // bodies
-    std::vector<size_t> body_1;
-    std::vector<size_t> body_2;
+    std::vector<size_t> body_1 = {};
+    std::vector<size_t> body_2 = {};
 
-    std::vector<vec3> r_1; // First body attachement point
-    std::vector<vec3> r_2; // Second body attachement point
+    std::vector<vec3> r_1 = {}; // First body attachement point
+    std::vector<vec3> r_2 = {}; // Second body attachement point
 
     // Common Prismatic and Revolute
-    std::vector<vec3> main_axis;          // Moving axis for prismatic Aligned axis for revolute
-    std::vector<bool> limited;            // Boolean idnicating if the joint is limited
-    std::vector<scalar> lower_limit;      // [min angle or min distance]
-    std::vector<scalar> upper_limit;      // [max angle or max distance]
-    std::vector<scalar> target_position;  // Target position or Target angle
-    std::vector<scalar> target_speed;     // target linear speed or target angular speed
-    std::vector<scalar> current_position; // Target position or Target angle
-    std::vector<scalar> damping;
+    std::vector<vec3> main_axis = {};          // Moving axis for prismatic Aligned axis for revolute
+    std::vector<bool> limited = {};            // Boolean idnicating if the joint is limited
+    std::vector<scalar> lower_limit = {};      // [min angle or min distance]
+    std::vector<scalar> upper_limit = {};      // [max angle or max distance]
+    std::vector<scalar> target_position = {};  // Target position or Target angle
+    std::vector<scalar> target_speed = {};     // target linear speed or target angular speed
+    std::vector<scalar> current_position = {}; // Target position or Target angle
+    std::vector<scalar> damping = {};
 
     // Revolute-only:
-    std::vector<vec3> limit_axis;
+    std::vector<vec3> limit_axis = {};
 
     // Per-joint “child constraints” in the global CC:
     // (we reserve 3 per prismatic, 4 per revolute, etc.)
-    std::vector<size_t> constraint_start;  // index in CC where this joint’s constraints begin
-    std::vector<uint8_t> constraint_count; // how many low-level constraints
+    std::vector<size_t> constraint_start = {};  // index in CC where this joint’s constraints begin
+    std::vector<uint8_t> constraint_count = {}; // how many low-level constraints
 };
 
 /**

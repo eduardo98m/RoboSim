@@ -34,7 +34,7 @@ struct ColliderUserData
 struct ColliderCollection
 {
     size_t n_colliders = 0;
-    std::vector<std::shared_ptr<hpp::fcl::CollisionObject>> collider;
+    std::vector<std::shared_ptr<hpp::fcl::CollisionObject>> collider = {};
     hpp::fcl::DynamicAABBTreeArrayCollisionManager collision_manager;
 };
 

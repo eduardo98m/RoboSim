@@ -2,6 +2,7 @@
 
 #include "physicsAcc/Colliders/Collider.hpp"
 #include <hpp/fcl/shape/geometric_shapes.h> // for Convex
+#include <hpp/fcl/data_types.h>
 /**
  * @brief Enum representing different types of models that can be created.
  */
@@ -81,34 +82,59 @@ size_t create_collider(ColliderCollection &cc, ColliderParams params)
     case ColliderShape::CONVEX_MESH:
     {
         std::cout << "Currently mesh are not correctly supported(?)\n";
-        Model model = LoadModel(params.model_path.c_str());
-        Mesh mesh = model.meshes[0];
+        // Model model = LoadModel(params.model_path.c_str());
+        // Mesh mesh = model.meshes[0];
 
-        std::vector<hpp::fcl::Vec3f> vertices;
-        for (int i = 0; i < mesh.vertexCount; i += 3)
-        {
-            vertices.push_back(hpp::fcl::Vec3f{mesh.vertices[i + 0], mesh.vertices[i + 1], mesh.vertices[i + 2]});
-        }
+        // // 1) Extract vertices
+        // std::vector<hpp::fcl::Vec3f> tmp_vertices;
+        // tmp_vertices.reserve(mesh.vertexCount / 3);
+        // for (int i = 0; i < mesh.vertexCount; i += 3)
+        // {
+        //     tmp_vertices.emplace_back(
+        //         mesh.vertices[i + 0],
+        //         mesh.vertices[i + 1],
+        //         mesh.vertices[i + 2]);
+        // }
 
-        geometry = std::make_shared<hpp::fcl::ConvexBase>(
-            vertices.data(),
-            mesh.vertexCount);
+        // // 2) Allocate FCL-owned arrays
+        // const unsigned int num_points = static_cast<unsigned int>(tmp_vertices.size());
+        // const unsigned int num_polygons = mesh.triangleCount;
 
+        // // raw points array — FCL will delete[] it
+        // hpp::fcl::Vec3f *points = new hpp::fcl::Vec3f[num_points];
+        // for (unsigned int i = 0; i < num_points; ++i)
+        //     points[i] = tmp_vertices[i];
+
+        // // raw polygon array: one hpp::fcl::Triangle per triangle
+        // auto *polygons = new hpp::fcl::Triangle[num_polygons];
+        // for (unsigned int f = 0; f < num_polygons; ++f)
+        // {
+        //     unsigned int i0 = mesh.indices[f * 3 + 0];
+        //     unsigned int i1 = mesh.indices[f * 3 + 1];
+        //     unsigned int i2 = mesh.indices[f * 3 + 2];
+        //     polygons[f].set(i0, i1, i2);
+        // }
+
+        // // 3) Build the Convex<> and cast it into your CollisionGeometry ptr
+        // // geometry = std::shared_ptr<hpp::fcl::CollisionGeometry>(
+        // //     new hpp::fcl::Convex<hpp::fcl::Triangle>(
+        // //         /* ownStorage   = */ true,
+        // //         /* points_      = */ points,
+        // //         /* num_points_  = */ num_points,
+        // //         /* polygons_    = */ polygons,
+        // //         /* num_polygons_= */ num_polygons
+        // //     )
+        // // );
+
+        // hpp::fcl::Convex<hpp::fcl::Triangle> geom = hpp::fcl::Convex<hpp::fcl::Triangle>(
+        //     /* ownStorage   = */ true,
+        //     /* points_      = */ points,
+        //     /* num_points_  = */ num_points,
+        //     /* polygons_    = */ polygons,
+        //     /* num_polygons_= */ num_polygons)
+
+        // geometry = std::make_shared<hpp::fcl::Convex<hpp::fcl::Triangle>>(geom);
         break;
-        // if (params.model_path.empty()) {
-        //     std::cerr << "Error: Model path is empty for MESH collider." << std::endl;
-        //     return -1; // Or throw an exception
-        // }
-        // std::shared_ptr<hpp::fcl::BVHModel<hpp::fcl::OBBRSS>> model = std::make_shared<hpp::fcl::BVHModel<hpp::fcl::OBBRSS>>();
-
-        // if (hpp::fcl::loadModel(params.model_path, model->beginModel())){
-        //     model->endModel();
-        //     geometry = model;
-        // } else {
-        //     std::cerr << "Error: Failed to load mesh from " << params.model_path << std::endl;
-        //     return -1; // Or throw an exception
-        // }
-        // break;
     }
     default:
     {
@@ -121,7 +147,7 @@ size_t create_collider(ColliderCollection &cc, ColliderParams params)
     // hpp::fcl::CollisionObject collision_object(geometry, ti::get_eigen_transform(params.position, params.orientation));
 
     std::shared_ptr<hpp::fcl::CollisionObject> collision_object = std::make_shared<hpp::fcl::CollisionObject>(
-        (geometry, ti::get_eigen_transform(params.position, params.orientation)));
+        geometry, ti::get_eigen_transform(params.position, params.orientation));
 
     ColliderUserData *u_data = new ColliderUserData{
         .body_id = params.body_id,

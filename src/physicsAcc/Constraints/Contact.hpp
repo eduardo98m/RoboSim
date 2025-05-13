@@ -4,7 +4,6 @@
 #include "physicsAcc/Constraints/ConstraintCollection.hpp"
 #include "physicsAcc/Body/BodyCollection.hpp"
 
-
 /**
  * @brief Collection of per-contact data for non-persistent collision handling.
  *
@@ -14,21 +13,21 @@
  */
 struct ContactCollection
 {
-    size_t n_contacts; // Active contacts
-    std::vector<size_t> body_1;
-    std::vector<size_t> body_2;
-    std::vector<vec3> normal;
-    std::vector<vec3> p_1;
-    std::vector<vec3> p_2;
-    std::vector<bool> collision;
-    std::vector<scalar> static_friction;  // Static friction of the contact
-    std::vector<scalar> dynamic_friction; // Dynamic friction of the contact
-    std::vector<scalar> restitution;       // Restitution coefficient of the contact
-    std::vector<scalar> relative_velocity;
-    std::vector<scalar> normal_constraint_lagrange_multiplier;
-    std::vector<scalar> tangencial_constraint_lagrange_multiplier;
-    std::vector<vec3> normal_force;
-    std::vector<vec3> tangencial_force;
+    size_t n_contacts = 0; // Active contacts
+    std::vector<size_t> body_1 = {};
+    std::vector<size_t> body_2 = {};
+    std::vector<vec3> normal = {};
+    std::vector<vec3> p_1 = {};
+    std::vector<vec3> p_2 = {};
+    std::vector<bool> collision = {};
+    std::vector<scalar> static_friction = {};  // Static friction of the contact
+    std::vector<scalar> dynamic_friction = {}; // Dynamic friction of the contact
+    std::vector<scalar> restitution = {};      // Restitution coefficient of the contact
+    std::vector<scalar> relative_velocity = {};
+    std::vector<scalar> normal_constraint_lagrange_multiplier = {};
+    std::vector<scalar> tangencial_constraint_lagrange_multiplier = {};
+    std::vector<vec3> normal_force = {};
+    std::vector<vec3> tangencial_force = {};
 };
 
 /**
@@ -74,7 +73,7 @@ void solve_normal_constraint(ContactCollection &cc,
  *
  * 1. Computes tangential slip Δp_t = Δp – (Δp·n)n from the change in contact points.
  * 2. Computes Δλ for the friction constraint similarly to the normal case.
- * 3. Applies the friction impulse only if |λ_t| ≤ μ_s·λ_n (static friction) 
+ * 3. Applies the friction impulse only if |λ_t| ≤ μ_s·λ_n (static friction)
  *    or else applies dynamic friction.
  * 4. Updates tangencial_force and λ_t.
  *
@@ -105,8 +104,4 @@ void apply_constraint_velocity_level(ContactCollection &cc, size_t i, BodyCollec
  * @brief Applies the constraints on all contacts at the velocity level
  */
 
- void solve_contacts_velocity_level(ContactCollection &cc, BodyCollection &bc, scalar time_step){
-    for (int i = 0; i < cc.n_contacts; i++){
-        apply_constraint_velocity_level(cc, i,  bc, time_step);
-    }
- }
+void solve_contacts_velocity_level(ContactCollection &cc, BodyCollection &bc, scalar time_step);

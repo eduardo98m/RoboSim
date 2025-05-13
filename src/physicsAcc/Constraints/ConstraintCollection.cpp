@@ -1,6 +1,5 @@
 #include "physicsAcc/Constraints/ConstraintCollection.hpp"
 
-
 void set_value(ConstraintCollection &cc, size_t i, vec3 value)
 {
     cc.magnitude[i] = ti::magnitude(value);
@@ -44,12 +43,10 @@ void compute_positional_constraint_impulse(BodyCollection &bc, ConstraintCollect
     apply_positional_constraint_impulse(bc, i, -cc.impulse[i], r_2_wc);
 };
 
-
 void reset_lagrange_multiplier(ConstraintCollection &cc, size_t i)
 {
     cc.lambda[i] = 0.0;
 };
-
 
 void set_constraint_positions(ConstraintCollection &cc,
                               size_t i,
@@ -59,7 +56,6 @@ void set_constraint_positions(ConstraintCollection &cc,
     cc.r_1[i] = r_1;
     cc.r_2[i] = r_2;
 }
-
 
 scalar get_lagrange_multiplier(const ConstraintCollection &cc, size_t i)
 {
@@ -86,3 +82,22 @@ scalar compute_lagrange_multiplier(BodyCollection &bc, ConstraintCollection &cc,
     scalar delta_lambda = compute_delta_lambda(cc, i, w_1, w_2, inverse_time_step);
     return cc.lambda[i] + delta_lambda;
 };
+
+void solve_constraints(BodyCollection &bc, ConstraintCollection &cc, scalar inverse_time_step)
+{
+
+    for (size_t i = 0; i < cc.n_constraints; ++i)
+    {
+        switch (cc.type[i])
+        {
+        case ConstraintType::POSITIONAL:
+            compute_positional_constraint_impulse(bc, cc, i, inverse_time_step);
+            break;
+        case ConstraintType::ROTATIONAL:
+            compute_rotational_constraint_impulse(bc, cc, i, inverse_time_step);
+            break;
+        default:
+            break;
+        }
+    }
+}

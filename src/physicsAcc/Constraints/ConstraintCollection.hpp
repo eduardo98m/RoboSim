@@ -131,23 +131,27 @@ scalar compute_lagrange_multiplier(BodyCollection &bc, ConstraintCollection &cc,
 
 
 /**
- * @brief Solves the constraints (i.e. applies impulses to the bodies)
+ * @brief Solves the constraints by computing impulses of the bodies.
+ *
+ *
+ * @param bc                The BodyCollection containing all bodies.
+ * @param cc                The ConstraintCollection containing all constraints.
+ * @param inverse_time_step Inverse of the time step (1/Δt).
  */
-
- void solve_constraints(BodyCollection &bc, ConstraintCollection &cc, scalar inverse_time_step){
+void solve_constraints(BodyCollection &bc, ConstraintCollection &cc, scalar inverse_time_step);
     
-    for (size_t i = 0; i < cc.n_constraints; ++i)
-    {
-        switch (cc.type[i])
-        {
-        case ConstraintType::POSITIONAL:
-            compute_positional_constraint_impulse(bc, cc, i, inverse_time_step);
-            break;
-        case ConstraintType::ROTATIONAL:
-            compute_rotational_constraint_impulse(bc, cc, i, inverse_time_step);
-        break;
-        default:
-            break;
-        }
-    }
- }
+//     for (size_t i = 0; i < cc.n_constraints; ++i)
+//     {
+//         switch (cc.type[i])
+//         {
+//         case ConstraintType::POSITIONAL:
+//             compute_positional_constraint_impulse(bc, cc, i, inverse_time_step);
+//             break;
+//         case ConstraintType::ROTATIONAL:
+//             compute_rotational_constraint_impulse(bc, cc, i, inverse_time_step);
+//         break;
+//         default:
+//             break;
+//         }
+//     }
+//  }
