@@ -6,9 +6,11 @@
 struct BodyParams {
     BodyType type = DYNAMIC;
     scalar mass = 1.0;
-    mat3 inertia_tensor = mat3(1.0); // Default to identity
+    mat3 inertia_tensor = mat3{1.0, 0.0, 0.0, 
+                                0.0, 1.0, 0.0, 
+                                0.0, 0.0, 1.0}; // Default to identity
     vec3 position = vec3(0.0);
-    quat orientation = quat(1.0, 0.0, 0.0, 0.0); // Default to identity
+    quat orientation = ti::quat_from_axis_angle({1.0, 0.0, 0.0}, 0.0); // Default to identity
     vec3 linear_velocity = vec3(0.0);
     vec3 angular_velocity = vec3(0.0);
 };
@@ -39,7 +41,7 @@ size_t create_body(BodyCollection &bc, BodyParams params) {
     bc.orientation.push_back(params.orientation);
     bc.linear_velocity.push_back(params.linear_velocity);
     bc.angular_velocity.push_back(params.angular_velocity);
-    bc.force.push_back(vec3(0.0));        // Initialize force to zero
+    bc.force.push_back({0.0, -9.8*params.mass, 0.0});        // Initialize force to zero
     bc.torque.push_back(vec3(0.0));       // Initialize torque to zero
     bc.prev_position.push_back(params.position);
     bc.prev_orientation.push_back(params.orientation);
