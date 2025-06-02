@@ -6,7 +6,8 @@ void set_value(ConstraintCollection &cc, size_t i, vec3 value)
 
     cc.direction[i] = (cc.magnitude[i] > EPSILON)
                           ? ti::normalize(value)
-                          : vec3{0.0, 0.0, 0.0};
+                          : vec3{1.0, 0.0, 0.0}; // Needs to be a unit vector
+    
 };
 
 scalar compute_delta_lambda(const ConstraintCollection &cc, size_t i, scalar w_1, scalar w_2, scalar inverse_time_step)
@@ -24,8 +25,8 @@ void compute_rotational_constraint_impulse(BodyCollection &bc, ConstraintCollect
     cc.lambda[i] += delta_lambda;
     cc.impulse[i] = delta_lambda * cc.direction[i];
     cc.torque[i] = cc.direction[i] * cc.lambda[i] * inverse_time_step * inverse_time_step;
-    apply_rotational_constraint_impulse(bc, i, cc.impulse[i]);
-    apply_rotational_constraint_impulse(bc, i, -cc.impulse[i]);
+    apply_rotational_constraint_impulse(bc, cc.body_1[i], cc.impulse[i]);
+    apply_rotational_constraint_impulse(bc, cc.body_2[i], -cc.impulse[i]);
 };
 
 void compute_positional_constraint_impulse(BodyCollection &bc, ConstraintCollection &cc, size_t i, scalar inverse_time_step)
@@ -39,8 +40,8 @@ void compute_positional_constraint_impulse(BodyCollection &bc, ConstraintCollect
     cc.lambda[i] += delta_lambda;
     cc.impulse[i] = delta_lambda * cc.direction[i];
     cc.force[i] = cc.direction[i] * cc.lambda[i] * inverse_time_step * inverse_time_step;
-    apply_positional_constraint_impulse(bc, i, cc.impulse[i], r_1_wc);
-    apply_positional_constraint_impulse(bc, i, -cc.impulse[i], r_2_wc);
+    apply_positional_constraint_impulse(bc, cc.body_1[i], cc.impulse[i], r_1_wc);
+    apply_positional_constraint_impulse(bc, cc.body_2[i], -cc.impulse[i], r_2_wc);
 };
 
 void reset_lagrange_multiplier(ConstraintCollection &cc, size_t i)
@@ -87,7 +88,7 @@ void solve_constraints(BodyCollection &bc, ConstraintCollection &cc, scalar inve
 {
 
     for (size_t i = 0; i < cc.n_constraints; ++i)
-    {
+    {   
         switch (cc.type[i])
         {
         case ConstraintType::POSITIONAL:
