@@ -1,6 +1,9 @@
 
 #include "physics/math/math.hpp"
 #include "physicsAcc/API/World.hpp"
+#include "physicsAcc/Utils/PrintUtils.hpp"
+#include "physicsAcc/Utils/DebugWindows.hpp"
+
 #include "VisualizerNew.hpp"
 
 int main(int argc, char *argv[])
@@ -11,32 +14,36 @@ int main(int argc, char *argv[])
 
     size_t body_1 = world.create_body(BodyParams{
         .type = BodyType::STATIC,
-        .orientation = ti::quat_from_axis_angle({1.0, 0.0, 1.0}, -PI/6),
+        .orientation = ti::quat_from_axis_angle({1.0, 1.0, 1.0}, 0.75)
         });
 
     size_t body_2 = world.create_body(BodyParams({
-        .mass = 500.0,
-        .position = {1.0, 0.0, 0.0},
-    }));
+        .mass = 1.0,    
+        .inertia_tensor = mat3{1.0, 0.0, 0.0, 
+            0.0, 1.0, 0.0, 
+            0.0, 0.0, 500.0},
+        .position = {-5.0, 0.0, 0.0}
+        
+    }));    
 
 
-    // size_t joint_a = world.create_revolute_joint(RevoluteJointParams{
-    //     .body_1 = body_1,
-    //     .body_2 = body_2,
-    //     .aligned_axis = {1.0, 0.0, 0.0},
-    //     .limit_axis = {1.0, 0.0, 0.0},
-    //     .r_1 =  {-5.0, 0.0, 5.0},
-    //     .actuation_type = JointActuationType::FREE,
-    // });
-
-
-    size_t joint_a = world.create_prismatic_joint(PrismaticJointParams{
+    size_t joint_a = world.create_revolute_joint(RevoluteJointParams{
         .body_1 = body_1,
         .body_2 = body_2,
-        .moving_axis = {1.0, 0.0, 0.0},
+        .aligned_axis = {0.0, 0.0, 1.0},
+        .limit_axis = {0.0, 1.0, 0.0},
         .r_1 =  {-5.0, 0.0, 5.0},
         .actuation_type = JointActuationType::FREE,
     });
+
+
+    // size_t joint_a = world.create_rotational_joint(PrismaticJointParams{
+    //     .body_1 = body_1,
+    //     .body_2 = body_2,
+    //     .moving_axis = {1.0, 0.0, 0.0},
+    //     .r_1 =  {-5.0, 0.0, 5.0},
+    //     .actuation_type = JointActuationType::FREE,
+    // });
 
     rbvs::Entity body_1_model = visualizer.create_model(rbvs::ModelParams{
         .position = {1.0, 0.0, 0.0},
@@ -52,8 +59,10 @@ int main(int argc, char *argv[])
         
     });
 
-    vec3 pos = world.bodies.position[body_2];
-    std::cerr << "Body 2 [" << pos.x << ", "<< pos.y << ", " << pos.z <<"]\n";
+    DebugGUIHandler debug_gui_handler;
+    visualizer.add_gui("Physics Debugger", [&]() {
+        debug_gui_handler.render_debug_uis(world);
+    });
 
     while (!WindowShouldClose())
     {
@@ -62,22 +71,19 @@ int main(int argc, char *argv[])
         // Update the visualizer
         visualizer.update();
 
-        //visualizer.update_visual_object_position_orientation(body_1_model, new_pos, new_orientation);
-
         visualizer.update_model(rbvs::ModelUpdateParams{
             .entity = body_1_model,
             .position = ti::to_raylib(world.bodies.position[body_1]),
-            .orientation = ti::to_raylib(ti::quat_from_axis_angle({1.0, 0.0, 1.0}, PI/12))
+            .orientation = ti::to_raylib(world.bodies.orientation[body_1])
         });
 
         visualizer.update_model(rbvs::ModelUpdateParams{
             .entity = body_2_model,
             .position = ti::to_raylib(world.bodies.position[body_2]),
-            .orientation = ti::to_raylib(ti::quat_from_axis_angle({1.0, 1.0, 0.0}, -PI))
+            .orientation = ti::to_raylib(world.bodies.orientation[body_2])
         });
 
-        vec3 pos = world.bodies.position[body_2];
-        //std::cerr << "Body 2 [" << pos.x << ", "<< pos.y << ", " << pos.z <<"]\n";
+        
     }
 
     // De-initialize

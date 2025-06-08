@@ -48,7 +48,7 @@ struct JointCollection
     // Per-joint “child constraints” in the global CC:
     // (we reserve 3 per prismatic, 4 per revolute, etc.)
     std::vector<size_t> constraint_start = {};  // index in CC where this joint’s constraints begin
-    std::vector<uint8_t> constraint_count = {}; // how many low-level constraints
+    std::vector<u_short> constraint_count = {}; // how many low-level constraints
 };
 
 /**
