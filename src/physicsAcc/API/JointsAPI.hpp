@@ -185,12 +185,14 @@ size_t create_revolute_joint(JointCollection &jc, ConstraintCollection &cc, Revo
     jc.main_axis.push_back(params.aligned_axis);
     jc.limit_axis.push_back(params.limit_axis);
     jc.damping.push_back(params.damping);
+    jc.target_position.push_back(0.0);  // Pading
     jc.target_speed.push_back(0.0); // Pading
     jc.current_position.push_back(0.0);
 
     return id;
 }
 
+/**
 /**
  * @brief Creates a fixed joint between two bodies.
  *
