@@ -76,7 +76,6 @@ struct World
         scalar h = timestep / this->substeps;
         scalar inv_h = 1 / h;
 
-        // this->broad_phase_collision_detection();
         update_collider_poses(colliders, bodies, timestep);
         BroadPhaseResult broad_phase_pairs = broad_phase_collision_detection(colliders);
 
