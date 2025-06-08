@@ -109,7 +109,12 @@ include_directories("src/RoboVis/src"
 add_subdirectory("src/RoboVis")
 add_subdirectory("thirdParty/URDF_Parser")
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${IMPLOT_SOURCES} ${PHYSICS_ACC_SOURCES})
+
+add_executable(${PROJECT_NAME} 
+               ${SOURCES} 
+               ${IMGUI_SOURCES} 
+               ${IMPLOT_SOURCES} 
+               ${PHYSICS_ACC_SOURCES})
 
 
 
