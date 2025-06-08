@@ -139,19 +139,3 @@ scalar compute_lagrange_multiplier(BodyCollection &bc, ConstraintCollection &cc,
  * @param inverse_time_step Inverse of the time step (1/Δt).
  */
 void solve_constraints(BodyCollection &bc, ConstraintCollection &cc, scalar inverse_time_step);
-    
-//     for (size_t i = 0; i < cc.n_constraints; ++i)
-//     {
-//         switch (cc.type[i])
-//         {
-//         case ConstraintType::POSITIONAL:
-//             compute_positional_constraint_impulse(bc, cc, i, inverse_time_step);
-//             break;
-//         case ConstraintType::ROTATIONAL:
-//             compute_rotational_constraint_impulse(bc, cc, i, inverse_time_step);
-//         break;
-//         default:
-//             break;
-//         }
-//     }
-//  }
