@@ -9,6 +9,10 @@
 
 #include <vector>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
+#include <queue>
+
 
 #include "physics/math/math.hpp"
 #include "physicsAcc/Constraints/Contact.hpp"
@@ -38,6 +42,12 @@ struct ColliderCollection
     hpp::fcl::DynamicAABBTreeArrayCollisionManager collision_manager;
 };
 
+/**
+ * @brief Result of the broad phase collision detection step
+ * @param n_possible_collisions Number of detected (possible) collision pairs.
+ * @param collider_1 List of the first collider of the pair
+ * @param collider_2 List of the second collider of the pair.
+ */
 struct BroadPhaseResult
 {
     size_t n_possible_collisions = 0;

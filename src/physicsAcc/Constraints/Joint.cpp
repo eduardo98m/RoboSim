@@ -87,16 +87,22 @@ void compute_revolute_joint_errors(JointCollection &jc,
     // main_axis in world on each body
     vec3 a1 = ti::rotate(bc.orientation[b1], jc.main_axis[i]);
     vec3 a2 = ti::rotate(bc.orientation[b2], jc.main_axis[i]);
-    vec3 err_align = -ti::cross(a1, a2); // According to the original paper err = a_1 x a_2
+    vec3 err_align = ti::cross(a1, a2); // According to the original paper err = a_1 x a_2
     set_value(cc, start + 0, err_align);
-    //compute_rotational_constraint_impulse(bc, cc, start + 0, 1/time_step);
     // 2) attachment (positional)
     vec3 r1_wc = ti::rotate(bc.orientation[b1], jc.r_1[i]);
     vec3 r2_wc = ti::rotate(bc.orientation[b2], jc.r_2[i]);
     vec3 p1 = bc.position[b1] + r1_wc;
     vec3 p2 = bc.position[b2] + r2_wc;
     set_value(cc, start + 1, p1 - p2);
-    //compute_positional_constraint_impulse(bc, cc, start + 1, 1/time_step);
+
+    // This peice of code was just to test the distance constraint
+    // scalar current_distance = ti::magnitude(p1 - p2);
+    // scalar desired_length = ti::magnitude(jc.r_1[i] - jc.r_2[i]); 
+    // vec3 direction = ti::normalize(p1 - p2); 
+    // vec3 error_vector_for_distance_constraint = direction * (current_distance - desired_length);
+    // set_value(cc, start + 1, error_vector_for_distance_constraint);
+
     // 3) angle limit (rotational)
     // compute current angle φ = atan2( (b1×b2)·a1, b1·b2 )
     vec3 b1_lim = ti::rotate(bc.orientation[b1], jc.limit_axis[i]);
@@ -116,7 +122,6 @@ void compute_revolute_joint_errors(JointCollection &jc,
             jc.upper_limit[i]);
     }
     set_value(cc, start + 2, -err_limit);
-    //compute_rotational_constraint_impulse(bc, cc, start + 2, 1/time_step);
     // 4) drive (rotational)
     vec3 err_drive{0.0, 0.0, 0.0};
     switch (jc.actuation_type[i])
@@ -136,7 +141,6 @@ void compute_revolute_joint_errors(JointCollection &jc,
     }
     }
     set_value(cc, start + 3, err_drive);
-    //compute_rotational_constraint_impulse(bc, cc, start + 3, 1/time_step);
     jc.current_position[i] = phi;
 }
 

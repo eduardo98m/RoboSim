@@ -18,6 +18,7 @@ enum ColliderShape
 
 /**
  * @brief Struct holding parameters for creating a 3D model.
+ * @param body_id
  */
 struct ColliderParams
 {

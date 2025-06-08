@@ -4,3 +4,4 @@ imgui.ini
 /.vscode
 /resources/coral
 /resources/*
+/.cache

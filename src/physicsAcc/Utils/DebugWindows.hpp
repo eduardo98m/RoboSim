@@ -35,7 +35,6 @@ class DebugGUIHandler {
 public:
     DebugGUIHandler() = default; // Constructor por defecto
 
-    // Este es el método principal que se llamará desde la lambda del Visualizer
     void render_debug_uis(World& world) {
         // Panel de control principal
         ImGui::Begin("Debug Control Panel");

@@ -123,3 +123,80 @@ ContactCollection narrow_phase_collision(ColliderCollection &cc,
 
     return contact_collection;
 }
+
+
+/**
+ * @brief For future improvements
+ * -> Use greedy graph coloring
+ */
+std::vector<std::vector<size_t>> get_independent_collision_groups(const BroadPhaseResult& result, const ColliderCollection& cc) {
+    // Mapa: cuerpo -> cuerpos con los que colisiona
+    std::unordered_map<size_t, std::unordered_set<size_t>> graph;
+
+    // Mapa: cuerpo -> lista de colisiones en las que aparece
+    std::unordered_map<size_t, std::vector<size_t>> body_to_collision;
+
+    std::vector<std::pair<size_t, size_t>> collision_bodies(result.n_possible_collisions);
+
+    for (size_t i = 0; i < result.n_possible_collisions; ++i) {
+        size_t collider_a = result.collider_1[i];
+        size_t collider_b = result.collider_2[i];
+
+        auto* data_a = static_cast<ColliderUserData*>(cc.collider[collider_a]->getUserData());
+        auto* data_b = static_cast<ColliderUserData*>(cc.collider[collider_b]->getUserData());
+
+        size_t body_a = data_a->body_id;
+        size_t body_b = data_b->body_id;
+
+        collision_bodies[i] = {body_a, body_b};
+
+        // Construir grafo de cuerpos
+        graph[body_a].insert(body_b);
+        graph[body_b].insert(body_a);
+
+        body_to_collision[body_a].push_back(i);
+        body_to_collision[body_b].push_back(i);
+    }
+
+    // BFS 
+    std::unordered_set<size_t> visited;
+    std::vector<std::vector<size_t>> collision_groups;
+
+    for (const auto& [start_body, _] : graph) {
+        if (visited.count(start_body)) continue;
+
+        std::unordered_set<size_t> group_bodies;
+        std::queue<size_t> q;
+        q.push(start_body);
+        visited.insert(start_body);
+        group_bodies.insert(start_body);
+
+        while (!q.empty()) {
+            size_t body = q.front(); q.pop();
+            for (size_t neighbor : graph[body]) {
+                if (!visited.count(neighbor)) {
+                    visited.insert(neighbor);
+                    group_bodies.insert(neighbor);
+                    q.push(neighbor);
+                }
+            }
+        }
+
+        std::unordered_set<size_t> group_collisions;
+        for (size_t body : group_bodies) {
+            for (size_t coll_idx : body_to_collision[body]) {
+                auto [a, b] = collision_bodies[coll_idx];
+                if (group_bodies.count(a) && group_bodies.count(b)) {
+                    group_collisions.insert(coll_idx);
+                }
+            }
+        }
+        collision_groups.emplace_back(group_collisions.begin(), group_collisions.end());
+    }
+
+    // Order the groups on descending order
+    std::sort(collision_groups.begin(), collision_groups.end(),
+          [](const auto& a, const auto& b) { return a.size() > b.size(); });
+
+    return collision_groups;
+}
