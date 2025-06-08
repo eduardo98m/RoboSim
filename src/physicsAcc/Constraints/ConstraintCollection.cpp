@@ -77,6 +77,7 @@ scalar compute_lagrange_multiplier(BodyCollection &bc, ConstraintCollection &cc,
     case ConstraintType::ROTATIONAL:
         w_1 = get_rotational_generalized_inverse_mass(bc, cc.body_1[i], cc.direction[i]);
         w_2 = get_rotational_generalized_inverse_mass(bc, cc.body_2[i], cc.direction[i]);
+        break;
     default:
         break;
     }
