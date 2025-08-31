@@ -5,3 +5,4 @@ imgui.ini
 /resources/coral
 /resources/*
 /.cache
+compile_commands.json
