@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
-SET(PROJECT_NAME "RoboSim")
+set(PROJECT_NAME "RoboSim")
 
 project(${PROJECT_NAME})
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
+# Pre - installed libraries
 find_package(PCL 1.12 REQUIRED)
-# Add PCL include directories and definitions:
 include_directories(${PCL_INCLUDE_DIRS})
 
 
 # Add your source files
-set(SOURCES 
+set(SOURCES
     "src/main.cpp")
 
 set(COLLISION_SOURCES
@@ -33,7 +33,7 @@ set(PHYSICS_SOURCES
     # Collisions
     ${COLLISION_SOURCES}
     # Math
-    "src/physics/math/math.cpp"    
+    "src/physics/math/math.cpp"
     # World
     "src/physics/World.cpp"
     "src/physics/WorldColliders.cpp"
@@ -48,7 +48,7 @@ set(PHYSICS_SOURCES
 
 set(PHYSICS_ACC_SOURCES
     # Math
-    "src/physics/math/math.cpp" 
+    "src/physics/math/math.cpp"
     # Constraints
     "src/physicsAcc/Body/BodyCollection.cpp"
     "src/physicsAcc/Constraints/ConstraintCollection.cpp"
@@ -57,8 +57,6 @@ set(PHYSICS_ACC_SOURCES
     # Collisions
     "src/physicsAcc/Colliders/Collider.cpp"
     )
-
-
 
 set(
     PHYSICS_INCLUDE_DIRS
@@ -79,28 +77,25 @@ set(
     "scenarios"
 )
 
-# IMplot
-
 set(
     IMPLOT_SOURCES
     "thirdParty/implot/implot.cpp"
     "thirdParty/implot/implot_items.cpp"
 )
 
-# GLEW
-find_package(GLEW REQUIRED) # Im using GLEW 2.2.0
+find_package(GLEW REQUIRED) # I'm using gle 2.2.0
 find_package(raylib REQUIRED)
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(hpp-fcl REQUIRED)
-include_directories(${hpp-fcl_INCLUDE_DIRS})
 
+include_directories(${hpp-fcl_INCLUDE_DIRS})
 # include_directories("thirdParty/assimp/include/")
 # add_subdirectory("thirdParty/assimp")
 
 
-include_directories("src/RoboVis/src" 
-                    "src/RoboVis/thirdParty/rlImGui" 
-                    "src/RoboVis/thirdParty/imgui" 
+include_directories("src/RoboVis/src"
+                    "src/RoboVis/thirdParty/rlImGui"
+                    "src/RoboVis/thirdParty/imgui"
                     "thirdParty/implot"
                     "src/RoboVis/thirdParty/raylib-gizmo/src"
                     "src/RoboVis/thirdParty/rlights")
@@ -110,13 +105,24 @@ add_subdirectory("src/RoboVis")
 add_subdirectory("thirdParty/URDF_Parser")
 
 
-add_executable(${PROJECT_NAME} 
-               ${SOURCES} 
-               ${IMGUI_SOURCES} 
-               ${IMPLOT_SOURCES} 
-               ${PHYSICS_ACC_SOURCES})
+add_executable(${PROJECT_NAME}
+${SOURCES}
+${IMGUI_SOURCES}
+${IMPLOT_SOURCES}
+${PHYSICS_ACC_SOURCES})
 
+target_include_directories(${PROJECT_NAME}
+PRIVATE
+${PHYSICS_INCLUDE_DIRS}
+"src/RoboVis/src"
+${INTERFACE_INCLUDE_DIRS}
+${DEMOS_INCLUDE_DIRS}
+"thirdParty/URDF_Parser/include")
 
-
-target_include_directories(${PROJECT_NAME} PRIVATE  ${PHYSICS_INCLUDE_DIRS} "src/RoboVis/src" ${INTERFACE_INCLUDE_DIRS} ${DEMOS_INCLUDE_DIRS} "thirdParty/URDF_Parser/include")
-target_link_libraries(${PROJECT_NAME} PRIVATE RoboVis raylib Eigen3::Eigen ${hpp-fcl_LIBRARIES} urdfparser)
+target_link_libraries(${PROJECT_NAME}
+PRIVATE
+RoboVis
+raylib
+Eigen3::Eigen
+${hpp-fcl_LIBRARIES}
+urdfparser)

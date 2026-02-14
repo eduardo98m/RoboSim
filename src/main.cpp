@@ -1,7 +1,7 @@
 
 #include "physics/math/math.hpp"
 #include "physicsAcc/API/World.hpp"
-#include "physicsAcc/Utils/DebugWindows.hpp"
+#include "physicsAcc/Utils/VisualsDebugWindow.hpp"
 
 int main(int argc, char *argv[]) {
   auto world = World(true);
@@ -36,13 +36,19 @@ int main(int argc, char *argv[]) {
   });
 
   // We can inject GUIS into the visualizer
-  if (world.visualizer) {
-    DebugGUIHandler debug_gui_handler;
-    world.visualizer->visualizer.add_gui("Physics Debugger", [&]() {
-      debug_gui_handler.render_debug_uis(world);
-    });
-  }
+  // if (world.visualizer) {
+  //   DebugGUIHandler debug_gui_handler;
+  //   world.visualizer->visualizer.add_gui("Physics Debugger", [&]() {
+  //     debug_gui_handler.render_debug_uis(world);
+  //   });
+  // }
 
+  if (world.visualizer) {
+    VisualsDebugWindow visuals_debug;
+    world.visualizer->visualizer.add_gui(
+        "Visuals Debug", [&]() { visuals_debug.render(world); });
+  }
+  //
   while (!WindowShouldClose()) {
     world.step();
   }

@@ -1,4 +1,5 @@
 #pragma once
+#include "BodyAPI.hpp"
 #include "physics/math/math.hpp"
 #include "physicsAcc/Body/BodyCollection.hpp"
 #include "physicsAcc/Colliders/Collider.hpp"
@@ -32,7 +33,11 @@ struct World {
 
   // Body Creation
   size_t create_body(BodyParams params) {
-    return ::create_body(this->bodies, params);
+    size_t id = ::create_body(this->bodies, params);
+    if (this->visualizer) {
+      this->visualizer->add_body(params, id);
+    }
+    return id;
   }
 
   size_t create_collider(ColliderParams params) {
@@ -94,7 +99,7 @@ struct World {
 
     // Visualizer Update
     if (this->visualizer) {
-      this->visualizer->update(colliders);
+      this->visualizer->update(bodies, colliders);
     }
   };
 };
